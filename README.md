@@ -5,6 +5,7 @@ A python package for explanation experimentation. It provides:
 * A way to generate synthetic data, with available ground truth explanations. The data will be of different kinds:
 
 |**Type of data**|**Type of g.t. explanations**|
+|----------------|-----------------------------|
 |Tabular [1]     |Feature Importance           |
 |Tabular [1]     |Decision Rules               |
 |Images [1]      |Pixel Importance             |
@@ -12,6 +13,7 @@ A python package for explanation experimentation. It provides:
 * Explanation quality metrics. Given a generated explanation and a ground-truth, multiple scores are provided:
 
 |**Type of g.t. explanations**|**Quality Metric**       |
+|-----------------------------|-------------------------|
 |Feature Importance           |Cosine Similarity [1]    |
 |Decision Rules               |Precision [1]            |
 |Decision Rules               |Recall [1]               |
