@@ -23,4 +23,8 @@ A python package for explanation experimentation. It provides:
 |Pixel Importance             |Recall                   |
 |Pixel Importance             |Fß-Score                 |
 
-[1] [Evaluating local explanation methods on ground truth](evernote:///view/223543586/s738/b3946cf1-7da3-dd59-d2f2-db83c12a6301/8979951d-2c39-198b-bea9-3e9d23159cba/)
+* Utility functions
+
+    * image_utils.binary_mask_rgb_image: create a binary mask from an RBG image mask.
+
+[1] [Evaluating local explanation methods on ground truth](https://www.researchgate.net/publication/346916247_Evaluating_local_explanation_methods_on_ground_truth)
