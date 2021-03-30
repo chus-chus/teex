@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 from sklearn.metrics import fbeta_score, recall_score, precision_score
 
-from image_utils import binarize_rgb_img
+from image_utils import binarize_rgb_img, read_rgb_img
 
 
 def feature_importance_similarity(u: np.array, v: np.array) -> float:
@@ -35,11 +35,11 @@ def pixel_importance_similarity(gt: np.array, image: np.array, metric: str = 'fs
     """
 
     if metric == 'fscore':
-        return fbeta_score(gt.flatten(), image.flatten(), beta=beta, average='binary', kwargs=kwargs)
+        return fbeta_score(gt.flatten(), image.flatten(), beta=beta, average='binary', **kwargs)
     elif metric == 'prec':
-        return precision_score(gt.flatten(), image.flatten(), average='binary', kwargs=kwargs)
+        return precision_score(gt.flatten(), image.flatten(), average='binary', **kwargs)
     elif metric == 'rec':
-        return recall_score(gt.flatten(), image.flatten(), average='binary', kwargs=kwargs)
+        return recall_score(gt.flatten(), image.flatten(), average='binary', **kwargs)
     else:
         metrics = ['fscore', 'prec', 'rec']
         raise ValueError(f'Invalid metric. Available: {metrics}')
@@ -49,25 +49,17 @@ if __name__ == '__main__':
     # testing
     imgpath = '../TAIAOexp_CLI/data/Kahikatea/data/ve_positive/Biospatial_20160702U_1860_01_03.png'
 
-    img = cv2.imread(imgpath)
-
-    b, g, r = cv2.split(img)
-
-    img = cv2.merge([r, g, b])
+    img = read_rgb_img(imgpath)
 
     maskpath = '../TAIAOexp_CLI/data/Kahikatea/expl/ve_positive/Biospatial_20160702U_1860_01_03.png'
 
     # load ground truth mask and generate perturbed mask for testing
-    mask = cv2.imread(maskpath)
-
-    b, g, r = cv2.split(mask)
-
-    gtmask = cv2.merge([r, g, b])
+    gtmask = read_rgb_img(maskpath)
 
     plt.imshow(gtmask)
     plt.show()
 
-    gtmask = binarize_rgb_img(gtmask)
+    gtmask = binarize_rgb_img(gtmask, normalize=True)
 
     plt.imshow(gtmask)
     plt.show()
