@@ -70,5 +70,9 @@ if __name__ == '__main__':
     plt.imshow(testmask)
     plt.show()
 
-    a = 1
+    f1Score = pixel_importance_similarity(gtmask, testmask, metric='fscore', beta=1)
+    precision = pixel_importance_similarity(gtmask, testmask, metric='prec')
+    recall = pixel_importance_similarity(gtmask, testmask, metric='rec')
+
+    print(f'F1Score: {f1Score}, Precision: {precision}, Recall: {recall}')
 
