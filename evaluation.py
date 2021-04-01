@@ -5,9 +5,9 @@ import cv2
 import matplotlib.pyplot as plt
 
 from scipy.spatial.distance import cdist
-from sklearn.metrics import fbeta_score, recall_score, precision_score
+from sklearn.metrics import fbeta_score, recall_score, precision_score, roc_auc_score
 
-from image_utils import binarize_rgb_img, read_rgb_img
+from image_utils import read_rgb_img, binarize_rgb_mask, normalize_array, array_is_binary
 
 
 def feature_importance_similarity(u: np.array, v: np.array) -> float:
@@ -21,13 +21,13 @@ def feature_importance_similarity(u: np.array, v: np.array) -> float:
     return max(0, cdist(u, v, metric='cosine')[0][0])
 
 
-def pixel_importance_similarity(gt: np.array, image: np.array, metric: str = 'fscore', beta: float = 1,
-                                **kwargs: dict) -> float:
+def pixel_importance_mask_quality(gt: np.array, explanation: np.array, metric: str = 'fscore', beta: float = 1,
+                                  **kwargs: dict) -> float:
     """
     Metrics for the evaluation of image pixel importance explanations.
 
     :param gt: array, ground truth pixel importance n x m binary mask.
-    :param image: array, image pixel importance n x m binary explanation.
+    :param explanation: array, image pixel importance n x m binary explanation.
     :param metric: 'fscore', 'prec' or 'rec'.
     :param beta: beta value for the fscore.
     :param kwargs: extra parameters for sklearn.metrics functions.
@@ -35,14 +35,46 @@ def pixel_importance_similarity(gt: np.array, image: np.array, metric: str = 'fs
     """
 
     if metric == 'fscore':
-        return fbeta_score(gt.flatten(), image.flatten(), beta=beta, average='binary', **kwargs)
+        return fbeta_score(gt.flatten(), explanation.flatten(), beta=beta, average='binary', **kwargs)
     elif metric == 'prec':
-        return precision_score(gt.flatten(), image.flatten(), average='binary', **kwargs)
+        return precision_score(gt.flatten(), explanation.flatten(), average='binary', **kwargs)
     elif metric == 'rec':
-        return recall_score(gt.flatten(), image.flatten(), average='binary', **kwargs)
+        return recall_score(gt.flatten(), explanation.flatten(), average='binary', **kwargs)
     else:
         metrics = ['fscore', 'prec', 'rec']
-        raise ValueError(f'Invalid metric. Available: {metrics}')
+        raise ValueError(f'Invalid metric. Use {metrics}')
+
+
+def saliency_map_quality(gt: np.array, explanation: np.array, metric: str = 'AUC', binarizeGt: bool = True,
+                         fScoreBeta: float = 1, gtBackground: str = 'white', expBackground: str = 'white',
+                         **kwargs: dict) -> float:
+    """
+    Computes the quality of a saliency map explanation w.r.t. its ground truth explanation (a binary mask).
+    :param gt: ground truth mask
+    :param explanation: saliency map explanation
+    :param metric: Quality metric to compute: {'AUC', 'fscore', 'prec', 'rec'}
+    :param binarizeGt: Should the g.t. mask provided be binarized?
+    :param fScoreBeta: Beta for the fscore in case of it being computed.
+    :param gtBackground: Color of the background of the g.t. mask ('black' for 0, 'white' for 255)
+    :param expBackground: Color of the background of the explanation ('black' for 0, 'white' for 255)
+    :param kwargs: Extra arguments for 'pixel_importance_mask_quality'
+    :return: desired metric
+    """
+    if not array_is_binary(gt) and not binarizeGt:
+        raise ValueError('Ground truth is not binary: binarize before calling.')
+    elif binarizeGt:
+        gt = binarize_rgb_mask(gt, bgColor=gtBackground)
+
+    if metric == 'AUC':
+        # saliency map's background has to be 0
+        explanation = normalize_array(explanation)
+        return roc_auc_score(gt.flatten(), explanation.flatten())
+    elif metric in ['fscore', 'prec', 'rec']:
+        explanation = binarize_rgb_mask(explanation, bgColor=expBackground)
+        return pixel_importance_mask_quality(gt, explanation, metric=metric, beta=fScoreBeta, **kwargs)
+    else:
+        metrics = ['AUC', 'fscore', 'prec', 'rec']
+        raise ValueError(f'Metric not available. Use {metrics}')
 
 
 if __name__ == '__main__':
@@ -59,7 +91,7 @@ if __name__ == '__main__':
     plt.imshow(gtmask)
     plt.show()
 
-    gtmask = binarize_rgb_img(gtmask, normalize=True)
+    gtmask = binarize_rgb_mask(gtmask, bgColor='white')
 
     plt.imshow(gtmask)
     plt.show()
@@ -70,9 +102,9 @@ if __name__ == '__main__':
     plt.imshow(testmask)
     plt.show()
 
-    f1Score = pixel_importance_similarity(gtmask, testmask, metric='fscore', beta=1)
-    precision = pixel_importance_similarity(gtmask, testmask, metric='prec')
-    recall = pixel_importance_similarity(gtmask, testmask, metric='rec')
+    f1Score = pixel_importance_mask_quality(gtmask, testmask, metric='fscore', beta=1)
+    precision = pixel_importance_mask_quality(gtmask, testmask, metric='prec')
+    recall = pixel_importance_mask_quality(gtmask, testmask, metric='rec')
 
     print(f'F1Score: {f1Score}, Precision: {precision}, Recall: {recall}')
 

@@ -22,6 +22,7 @@ A python package for explanation experimentation. It provides:
 |Pixel Importance             |Precision                |
 |Pixel Importance             |Recall                   |
 |Pixel Importance             |Fß-Score                 |
+|Saliency maps                |AUC                      |
 
 * Utility functions
 
