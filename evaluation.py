@@ -12,6 +12,7 @@ from image_utils import read_rgb_img, binarize_rgb_mask, normalize_array, array_
 
 def feature_importance_similarity(u: np.array, v: np.array) -> float:
     """
+    # todo param for max or abs value
     Computes cosine similarity between two real valued vectors. If negative, returns 0.
      
     :param u: array, first real valued vector of dimension n.
@@ -51,7 +52,7 @@ def saliency_map_quality(gt: np.array, explanation: np.array, metric: str = 'AUC
     """
     Computes the quality of a saliency map explanation w.r.t. its ground truth explanation (a binary mask).
     :param gt: ground truth mask
-    :param explanation: saliency map explanation
+    :param explanation: saliency map explanation (non-salient areas must be 0-valued.)
     :param metric: Quality metric to compute: {'AUC', 'fscore', 'prec', 'rec'}
     :param binarizeGt: Should the g.t. mask provided be binarized?
     :param fScoreBeta: Beta for the fscore in case of it being computed.
@@ -107,4 +108,3 @@ if __name__ == '__main__':
     recall = pixel_importance_mask_quality(gtmask, testmask, metric='rec')
 
     print(f'F1Score: {f1Score}, Precision: {precision}, Recall: {recall}')
-

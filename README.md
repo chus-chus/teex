@@ -19,10 +19,10 @@ A python package for explanation experimentation. It provides:
 |Decision Rules               |Recall [1]               |
 |Decision Rules               |Fß-Score [1]             |
 |Decision Rules               |Complete Rule Quality [1]|
-|Pixel Importance             |Precision                |
-|Pixel Importance             |Recall                   |
-|Pixel Importance             |Fß-Score                 |
-|Saliency maps                |AUC                      |
+|Pixel Importance / SM        |Precision                |
+|Pixel Importance / SM        |Recall                   |
+|Pixel Importance / SM        |Fß-Score                 |
+|Saliency maps (SM)           |AUC (ROC)                |
 
 * Utility functions
 
