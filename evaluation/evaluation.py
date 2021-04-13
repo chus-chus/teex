@@ -10,16 +10,22 @@ from sklearn.metrics import fbeta_score, recall_score, precision_score, roc_auc_
 from image_utils import read_rgb_img, binarize_rgb_mask, normalize_array, array_is_binary
 
 
-def feature_importance_similarity(u: np.array, v: np.array) -> float:
+def feature_importance_similarity(u: np.array, v: np.array, bounding: str = 'abs') -> float:
     """
-    # todo param for max or abs value
     Computes cosine similarity between two real valued vectors. If negative, returns 0.
      
     :param u: array, first real valued vector of dimension n.
     :param v: array, second real valued vector of dimension n.
+    :param bounding: if the CS is < 0, bound it in [0, 1] via absolute value ('abs') or max(0, value) ('max')
     :return: (0, 1) cosine similarity.
     """
-    return max(0, cdist(u, v, metric='cosine')[0][0])
+    dist = cdist(u, v, metric='cosine')[0][0]
+    if bounding == 'abs':
+        return np.abs(dist)
+    elif bounding == 'max':
+        return max(0, dist)
+    else:
+        raise ValueError('bounding method not valid.')
 
 
 def pixel_importance_mask_quality(gt: np.array, explanation: np.array, metric: str = 'fscore', beta: float = 1,

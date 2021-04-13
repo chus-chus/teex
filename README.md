@@ -2,7 +2,8 @@
 
 A python package for explanation experimentation. It provides:
 
-* A way to generate synthetic data, with available ground truth explanations. The data will be of different kinds:
+* Transparent models with available ground truth explanations. The data used to train them is synthetically generated
+  and of different kinds:
 
 |**Type of data**|**Type of g.t. explanations**|
 |----------------|-----------------------------|
