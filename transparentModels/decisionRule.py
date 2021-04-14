@@ -1,15 +1,16 @@
 import numpy as np
+from sklearn.tree import DecisionTreeClassifier
 
 from dataGen.datagen import gen_tabular_data
 from transparentModels.baseClassifier import BaseClassifier
 
-VALID_OPERATORS = {'==', '!=', '>', '<', '>=', '<='}
+VALID_OPERATORS = {'=', '!=', '>', '<', '>=', '<='}
 
 
-class Condition(object):
-    """ A condition follows the structure of if 'feature' <operator> 'value'. It can also be binary as in
-        value1 <operatorLower> feature <operatorHigher> value2 (if binary=True then 'value' and 'operator' are expected
-        to be list-like with [lower, upper] and [operatorLower, operatorUpper], respectively. """
+class Statement(object):
+    """ An Statement follows the structure of 'feature' <operator> 'value'. It can also be binary as in
+        feature <operatorLower> value1, feature <operatorHigher> value2 (if binary=True then 'value' and 'operator' are
+        expected to be list-like with [lower, upper] and [operatorLower, operatorUpper], respectively. """
 
     def __init__(self, feature, operator, value, binary=False):
         self.feature = feature
@@ -39,46 +40,67 @@ class Condition(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def show(self):
+    def __str__(self):
         if self.isBinary:
-            print(f'{self.lowerValue} {self.lowerOperator} {self.feature} {self.upperOperator} {self.upperValue}')
+            return f'{self.lowerValue} {self.lowerOperator} {self.feature} {self.upperOperator} {self.upperValue}'
         else:
-            print(f'{self.feature} {self.operator} {self.value}')
+            return f'{self.feature} {self.operator} {self.value}'
+
+    def __hash__(self):
+        return hash(str(self))
 
 
 class DecisionRule(object):
-    """ A conjunction of conditions that imply a result. 'conditions' must be a list-like array of Condition objects.
-        Internally, the rule is represented as a dictionary of conditions with the feature names as keys. A feature
-        cannot have more than one condition (conditions can be binary).
+    """ A conjunction of statements as conditionsn that imply a result. 'statements' must be a list-like array of
+    Statement objects. Internally, the rule is represented as a dictionary of statements with the feature names as
+    keys. A feature cannot have more than one Statement (Statements can be binary). 'result' is also an statement.
     """
-    def __init__(self, conditions=None, result=None):
-        if conditions is not None:
-            self.conditions = {}
+    def __init__(self, statements=None, result=None):
+        if statements is not None:
+            self.statements = {}
             # if array-like, convert it into a dict
-            if isinstance(conditions, (np.array, tuple, list)):
-                for condition in conditions:
-                    if not isinstance(condition, Condition):
-                        raise ValueError('Conditions are not instances of the Condition class.')
-                    elif condition.feature in self.conditions:
+            if isinstance(statements, (np.ndarray, tuple, list)):
+                for statement in statements:
+                    if not isinstance(statement, Statement):
+                        raise ValueError('Statements are not instances of the Statement class.')
+                    elif statement.feature in self.statements:
                         raise ValueError('Only one rule per feature is allowed.')
                     else:
-                        self.conditions[condition.feature] = condition
+                        self.statements[statement.feature] = statement
             else:
-                raise ValueError('Conditions not valid.')
+                raise ValueError('Statements not valid.')
         else:
-            self.conditions = None
+            self.statements = None
+
+        if result is not None and not isinstance(result, Statement):
+            raise ValueError('Result must be an Statement.')
+
         self.result = result
 
-    def add_condition(self, other):
+    def __str__(self):
+        return f"{', '.join([str(statement) for statement in self.statements])} -> {self.result}"
+
+    def __len__(self):
+        return len(self.statements)
+
+    def __hash__(self):
+        return hash(str(self))
+
+    def __eq__(self, other):
+        return self.statements == other.statements and self.result == other.result
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def add_condition(self, statement):
         """ Add Condition inplace to the conjunction """
-        if other.feature in self.conditions:
+        if statement.feature in self.statements:
             raise ValueError('Only one rule per feature is allowed.')
         else:
-            self.conditions[other.feature] = other
+            self.statements[statement.feature] = statement
 
-    def show(self):
-        for condition in list(self.conditions.values()):
-            condition.show()
+    def set_result(self, result):
+        self.result = result
 
 
 class RuleClassifier(BaseClassifier):
@@ -86,21 +108,27 @@ class RuleClassifier(BaseClassifier):
 
     def __init__(self):
         super().__init__()
+        self.model = DecisionTreeClassifier()
 
     def fit(self, data, target):
-        pass
+        self.model.fit(data, target)
 
     def predict(self, obs):
-        pass
+        return self.model.predict(obs)
 
     def predict_proba(self, obs):
-        pass
+        return self.model.predict_proba(obs)
 
     def predict_explain(self, obs):
+        proba = self.predict_proba(obs)
         pass
 
 
 if __name__ == '__main__':
+    c = Statement('f', ['<=', '<'], [9, 13], binary=True)
+    r = DecisionRule([c], result=Statement('a', '=', 5))
+    r.show()
+
     ruleModel = RuleClassifier()
     X, y = gen_tabular_data()
     ruleModel.fit(X, y)
