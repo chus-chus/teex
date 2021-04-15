@@ -8,18 +8,21 @@ class BaseClassifier(object):
         self.classValues = None
 
     @abc.abstractmethod
-    def fit(self, data, target):
+    def fit(self, data, target, featureNames=None):
+        """ Fits the model to the data """
         pass
 
     @abc.abstractmethod
     def predict_proba(self, obs):
+        """ Returns predicted probabilities for each class label and observation. """
         pass
 
     @abc.abstractmethod
     def predict(self, obs):
+        """ Returns predicted label for each observation. """
         pass
 
     @abc.abstractmethod
-    def predict_explain(self, obs):
-        """ Returns predicted label with probability and explanation. """
+    def explain(self, obs):
+        """ Returns explanation for each observation. """
         pass
