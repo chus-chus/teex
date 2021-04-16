@@ -1,16 +1,18 @@
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 
-from dataGen.datagen import gen_tabular_data
+from syntheticData.datagen import gen_tabular_data
 from transparentModels.baseClassifier import BaseClassifier
 
 VALID_OPERATORS = {'=', '!=', '>', '<', '>=', '<='}
+# operators for statements of shape: value1 <opLower> feature <opUpper> value2
+BINARY_OPERATORS = {'<', '<='}
 
 
 class Statement(object):
     f""" A Statement follows the structure of 'feature' <operator> 'value'. It can also be binary, like so: 
              value1 <operatorLower> feature <operatorHigher> value2 
-        Valid operators are {VALID_OPERATORS}"""
+        Valid operators are {VALID_OPERATORS} or {BINARY_OPERATORS} in the case of a binary statement. """
 
     def __init__(self, feature, binary=False, lowOp='<', lowBound=-np.inf, upperOp='<=', upperBound=np.inf, op='=',
                  val=np.inf):
@@ -27,13 +29,13 @@ class Statement(object):
         self.feature = feature
         self.binary = binary
         if binary is True:
-            self._check_operators([lowOp, upperOp])
+            self._check_binary_operators(lowOp, upperOp)
             self.lowerOperator = lowOp
             self.upperOperator = upperOp
             self.lowerBound = lowBound
             self.upperBound = upperBound
         else:
-            self._check_operators([op])
+            self._check_operator(op)
             self.operator = op
             self.value = val
 
@@ -58,10 +60,14 @@ class Statement(object):
         return hash(str(self))
 
     @staticmethod
-    def _check_operators(operators):
-        for op in operators:
-            if op not in VALID_OPERATORS:
-                raise ValueError(f"Operator '{op}' not valid. Choose from {VALID_OPERATORS}")
+    def _check_operator(op):
+        if op not in VALID_OPERATORS:
+            raise ValueError(f"Operator '{op}' not valid. Choose from {VALID_OPERATORS}")
+
+    @staticmethod
+    def _check_binary_operators(lowerOp, upperOp):
+        if lowerOp not in BINARY_OPERATORS or upperOp not in BINARY_OPERATORS:
+            raise ValueError(f'Operator not valid, must be in {BINARY_OPERATORS} for a binary statement.')
 
 
 class DecisionRule(object):
@@ -113,6 +119,10 @@ class DecisionRule(object):
     def __getitem__(self, feature):
         return self._statements[feature]
 
+    def __contains__(self, feature):
+        """ Check if a Statement related to a feature is in the rule. """
+        return True if feature in self._statements else False
+
     def insert_condition(self, statement):
         """ Add Condition inplace to the conjunction.
         :param statement: Statement object
@@ -150,6 +160,10 @@ class DecisionRule(object):
                 prevStatType = 'binary' if self._statements[statement.feature].binary else 'non-binary'
                 newStatType = 'binary' if statement.binary else 'non-binary'
                 raise ValueError(f'Cannot update {prevStatType} statement with new {newStatType} statement.')
+
+    def get_features(self):
+        """ Returns list with the features present in the rule conditions. """
+        return list(self._statements.keys())
 
     def set_result(self, result):
         self.result = result
@@ -241,18 +255,18 @@ class RuleClassifier(BaseClassifier):
 
 
 if __name__ == '__main__':
-    c = Statement('f', binary=True)
-    r = DecisionRule([c], result=Statement('a', op='=', val=5))
+    # c = Statement('f', binary=True)
+    # r = DecisionRule([c], result=Statement('a', op='=', val=5))
 
     ruleModel = RuleClassifier()
     X, y = gen_tabular_data(nFeatures=2)
     ruleModel.fit(X, y, featureNames=['alpha', 'beta'])
 
-    exp = ruleModel.explain(X[1])
     print('Only one observation:')
+    exp = ruleModel.explain(X[1].reshape(1, -1))
     print(exp[0])
+
     print('\n Multiple observations at once:')
     exp = ruleModel.explain(X[2:5])
-
     for e in exp:
         print(e)

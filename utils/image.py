@@ -1,3 +1,5 @@
+""" Image utils """
+
 import numpy as np
 
 from cv2 import COLOR_RGB2GRAY, cvtColor, COLOR_BGR2RGB, imread, findContours, drawContours, THRESH_OTSU, RETR_CCOMP, \
@@ -76,6 +78,7 @@ def array_is_binary(array: np.array) -> bool:
 
 def normalize_array(array: np.array) -> np.array:
     """
+    # todo minmax normalization
     Normalizes an array (NOT 0 mean, 1 std).
     :param array: np.array to normalize
     :return: np.array with values in {0, 1}
