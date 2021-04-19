@@ -1,7 +1,6 @@
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 
-from syntheticData.datagen import gen_tabular_data
 from transparentModels.baseClassifier import BaseClassifier
 
 VALID_OPERATORS = {'=', '!=', '>', '<', '>=', '<='}
@@ -14,13 +13,13 @@ class Statement(object):
              value1 <operatorLower> feature <operatorHigher> value2 
         Valid operators are {VALID_OPERATORS} or {BINARY_OPERATORS} in the case of a binary statement. """
 
-    def __init__(self, feature, binary=False, lowOp='<', lowBound=-np.inf, upperOp='<=', upperBound=np.inf, op='=',
+    def __init__(self, feature, binary=False, lowOp='<', lowerBound=-np.inf, upperOp='<=', upperBound=np.inf, op='=',
                  val=np.inf):
         """
         :param feature: (str) name of the feature for the Statement
         :param binary: (bool) is the statement binary?
         :param lowOp: (str) Operator for the lower bound (if binary)
-        :param lowBound: Value of the upper bound (if binary)
+        :param lowerBound: Value of the upper bound (if binary)
         :param upperOp: (str) Operator for the upper bound (if binary)
         :param upperBound: Value of the lower bound (if binary)
         :param op: (str) Operator for the statement (if not binary)
@@ -32,7 +31,7 @@ class Statement(object):
             self._check_binary_operators(lowOp, upperOp)
             self.lowerOperator = lowOp
             self.upperOperator = upperOp
-            self.lowerBound = lowBound
+            self.lowerBound = lowerBound
             self.upperBound = upperBound
         else:
             self._check_operator(op)
@@ -52,9 +51,19 @@ class Statement(object):
 
     def __str__(self):
         if self.binary:
-            return f'{self.lowerBound} {self.lowerOperator} {self.feature} {self.upperOperator} {self.upperBound}'
+            if self.lowerBound != -np.inf and self.upperBound != np.inf:
+                return f"{self.lowerBound} {self.lowerOperator} '{self.feature}' {self.upperOperator} {self.upperBound}"
+            elif self.lowerBound != -np.inf:
+                return f"{self.lowerBound} {self.lowerOperator} '{self.feature}'"
+            elif self.upperBound != np.inf:
+                return f"'{self.feature}' {self.upperOperator} {self.upperBound}"
+            else:
+                return f"'{self.feature}' not bounded"
         else:
-            return f'{self.feature} {self.operator} {self.value}'
+            if self.value != np.inf:
+                return f"'{self.feature}' {self.operator} {self.value}"
+            else:
+                return f"'{self.feature}' not bounded"
 
     def __hash__(self):
         return hash(str(self))
@@ -183,7 +192,7 @@ class RuleClassifier(BaseClassifier):
         self.model.fit(data, target)
 
         if featureNames is None:
-            self.featureNames = list(range(data.shape[1]))
+            self.featureNames = [str(num) for num in range(data.shape[1])]
         else:
             self.featureNames = featureNames
 
@@ -220,7 +229,7 @@ class RuleClassifier(BaseClassifier):
                 if self.nodeStatements[nodeId] is not None:
                     feature = self.nodeStatements[nodeId].feature
                     threshold = self.nodeStatements[nodeId].value
-                    statement = Statement(self.featureNames[feature], lowOp='<', upperOp='<=', binary=True)
+                    statement = Statement(self.featureNames[feature], binary=True, lowOp='<', upperOp='<=')
                     # define bounds. Remember that the tree splits are of the form: feature '<=' value
                     if obs[sampleId][feature] <= threshold:
                         statement.upperBound = round(threshold, 3)
@@ -255,11 +264,15 @@ class RuleClassifier(BaseClassifier):
 
 
 if __name__ == '__main__':
+
+    from syntheticData.dataGen import gen_tabular_data
+
     # c = Statement('f', binary=True)
     # r = DecisionRule([c], result=Statement('a', op='=', val=5))
 
+    print('MANUALLY GENERATING EXPLANATIONS')
     ruleModel = RuleClassifier()
-    X, y = gen_tabular_data(nFeatures=2)
+    X, y = gen_tabular_data(nFeatures=2, explanations=None)
     ruleModel.fit(X, y, featureNames=['alpha', 'beta'])
 
     print('Only one observation:')

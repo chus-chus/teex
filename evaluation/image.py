@@ -67,8 +67,7 @@ def binary_mask_quality(gt: np.array, explanation: np.array, metric: str = 'fsco
     elif metric == 'rec':
         return recall(gt.flatten(), explanation.flatten(), average='binary', **kwargs)
     else:
-        metrics = ['fscore', 'prec', 'rec']
-        raise ValueError(f'Invalid metric. Use {metrics}')
+        raise ValueError(f"Invalid metric. Use {['fscore', 'prec', 'rec']}")
 
 
 if __name__ == '__main__':
