@@ -1,10 +1,12 @@
 """ Module for generation of synthetic datasets and their ground truth explanations. """
-import random
 
+import random
 import numpy as np
+
 from sklearn.datasets import make_classification
 
 from transparentModels.decisionRule import RuleClassifier
+from transparentModels.pixelImportance import ImageClassifier
 from utils.rule import rule_to_feature_importance
 
 
@@ -58,6 +60,26 @@ def gen_tabular_data(nSamples: int = 1000, nClasses: int = 2, nFeatures: int = 3
 
 def gen_image_data(nSamples=1000, imageH=32, imageW=32, patternH=16, patternW=16, cellH=4, cellW=4, patternProp=0.5,
                    fillPct=0.4, colorDev=0.1, randomState=888, returnModel=False):
+    """ Generate synthetic classification image data with ground truth explanations as binary masks (feature
+     importance vectors where each pixel represents a feature). The images belong to one class if they contain a certain
+     generated pattern and to the other if not. The images are composed of homogeneous cells.
+
+     :param nSamples: number of images to generate.
+     :param imageH: height in pixels of the images.
+     :param imageW: width in pixels of the images.
+     :param patternH: height in pixels of the pattern.
+     :param patternW: width in pixels of the pattern.
+     :param cellH: height in pixels of each cell.
+     :param cellW: width in pixels of each cell.
+     :param patternProp: (float, [0, 1]) percentage of appearance of the pattern in the dataset.
+     :param fillPct: (float, [0, 1]) percentage of cells filled (not black) in each image.
+     :param colorDev: (float, [0, 0.5]) maximum value summed to 0 valued channels and minimum value substracted to 1
+                      valued channels of filled cells. If 0, each cell will be completely red, green or blue.
+                      If > 0, colors may be a mix of the three channels (one ~1, the other two ~0).
+     :param randomState: random seed.
+     :param returnModel: should a transparent image classifier trained with the data be returned?
+     :return: images (list), explanations (list), pattern (ndarray), (model (ImageClassifier) if returnModel is True)"""
+
     if imageH % patternH != 0 or imageW % patternW != 0 or imageH % cellH != 0 or imageW % cellW != 0:
         raise ValueError('Image height and widht not multiple of cell or pattern dimensions.')
     if imageH < patternH or imageH < cellH or imageW < patternW or imageW < cellW or patternH < cellH or \
@@ -81,6 +103,7 @@ def gen_image_data(nSamples=1000, imageH=32, imageW=32, patternH=16, patternW=16
                                              rng=rng, colorDev=colorDev, pattern=pattern, binaryPattern=binaryPattern)
         imgs.append((image, explanation))
     for _ in range(nSamples - nWithPattern):
+        # todo should explanations be a blank image for images without the pattern?
         image = _generate_image(imageH=imageH, imageW=imageW, cellH=cellH, cellW=cellW, fillPct=fillPct,
                                 rng=rng, colorDev=colorDev, pattern=None)
         imgs.append((image, None))
@@ -89,9 +112,9 @@ def gen_image_data(nSamples=1000, imageH=32, imageW=32, patternH=16, patternW=16
     imgs, exps = zip(*imgs)
 
     if returnModel:
-        # todo instantiate model
-        # todo return is not correct
-        return imgs, exps, pattern, 0
+        mod = ImageClassifier()
+        mod.fit(pattern)
+        return imgs, exps, pattern, mod
     else:
         return imgs, exps, pattern
 
@@ -146,14 +169,18 @@ if __name__ == '__main__':
 
     import matplotlib.pyplot as plt
 
-    fig, axs = plt.subplots(1, 3)
-    images, explanations, pattern = gen_image_data(nSamples=1, patternProp=1)
-    axs[0].imshow(pattern)
-    axs[0].set_title('pattern')
-    axs[1].imshow(images[0])
-    axs[1].set_title('image')
-    axs[2].imshow(explanations[0])
-    axs[2].set_title('explanation')
+    fig, axs = plt.subplots(2, 3)
+    images, e, p = gen_image_data(nSamples=2, patternProp=1, randomState=3)
+    axs[0, 0].imshow(p)
+    axs[0, 0].set_title('Pattern')
+    axs[0, 1].imshow(images[0])
+    axs[0, 1].set_title('Generated image')
+    axs[0, 2].imshow(e[0])
+    axs[0, 2].set_title('Explanation')
+
+    axs[1, 0].imshow(p)
+    axs[1, 1].imshow(images[1])
+    axs[1, 2].imshow(e[1])
     plt.show()
 
     print('AUTOMATICALLY GENERATING RULE EXPLANATIONS.')

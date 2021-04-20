@@ -49,7 +49,7 @@ def rule_scores(gt: DecisionRule, rule: DecisionRule, allFeatures, metrics=None,
     :param allFeatures: (array-like) names of all of the relevant features.
     :param metrics: (array-like, default = ['fscore']) metris to compute.
     :param beta: beta value used when computing the fscore.
-    :return: (list) specified metrics.
+    :return: (float / list) specified metric/s.
     """
     if metrics is None:
         metrics = ['fscore']
@@ -67,6 +67,8 @@ def rule_scores(gt: DecisionRule, rule: DecisionRule, allFeatures, metrics=None,
             res.append(recall(gt, rule, **kwargs))
         else:
             raise ValueError(f"Metric not valid. Use: {['fscore', 'prec', 'rec']}")
+    if len(res) == 1:
+        return res[0]
     return res
 
 

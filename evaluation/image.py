@@ -8,19 +8,14 @@ from evaluation.featureImportance import f_score, auc_score, precision, recall
 from utils.image import array_is_binary, binarize_rgb_mask, normalize_array, read_rgb_img
 
 
-# todo saliency_map_score to only compute auc (rename) for saliency
-# todo binary_mask_quality to be segmented into saliency_map precision, recall and fscore
-# todo functions for precision, recall and fscore of binary masks (will be
-#   called by the previous three after binarizing)
-
-
 def saliency_map_score(gt: np.array, explanation: np.array, metric: str = 'AUC', binarizeGt: bool = True,
                        fScoreBeta: float = 1, gtBackground: str = 'white', expBackground: str = 'white',
                        **kwargs: dict) -> float:
     """
     Computes different scores of a saliency map explanation w.r.t. its ground truth explanation (a binary mask).
+    The saliency map should not be binary. If it is, use the 'binary_mask_scores' method instead.
 
-    :param gt: ground truth mask
+    :param gt: ground truth binary mask
     :param explanation: saliency map explanation (non-salient areas must be 0-valued.)
     :param metric: Quality metric to compute: {'AUC', 'fscore', 'prec', 'rec'}
     :param binarizeGt: Should the g.t. mask provided be binarized?
@@ -41,33 +36,49 @@ def saliency_map_score(gt: np.array, explanation: np.array, metric: str = 'AUC',
         return auc_score(gt.flatten(), explanation.flatten())
     elif metric in ['fscore', 'prec', 'rec']:
         explanation = binarize_rgb_mask(explanation, bgColor=expBackground)
-        return binary_mask_quality(gt, explanation, metric=metric, beta=fScoreBeta, **kwargs)
+        return binary_mask_scores(gt, explanation, metric=metric, beta=fScoreBeta, **kwargs)
     else:
         metrics = ['AUC', 'fscore', 'prec', 'rec']
         raise ValueError(f'Metric not available. Use {metrics}')
 
 
-def binary_mask_quality(gt: np.array, explanation: np.array, metric: str = 'fscore', beta: float = 1, **kwargs: dict) \
+def binary_mask_scores(gt: np.array, explanation: np.array, metrics=None, beta: float = 1, **kwargs: dict) \
         -> float:
     """
     Computes metrics for the evaluation of image binary pixel importance explanations.
 
     :param gt: array, ground truth pixel importance n x m binary mask.
     :param explanation: array, image pixel importance n x m binary explanation.
-    :param metric: 'fscore', 'prec' or 'rec'.
+    :param metrics: 'fscore', 'prec' or 'rec'.
     :param beta: beta value for the fscore.
     :param kwargs: extra parameters for sklearn.metrics functions.
-    :return: the specified similarity metric.
+    :return: (float / list) the specified similarity metric/s.
     """
 
-    if metric == 'fscore':
-        return f_score(gt.flatten(), explanation.flatten(), beta=beta, average='binary', **kwargs)
-    elif metric == 'prec':
-        return precision(gt.flatten(), explanation.flatten(), average='binary', **kwargs)
-    elif metric == 'rec':
-        return recall(gt.flatten(), explanation.flatten(), average='binary', **kwargs)
-    else:
-        raise ValueError(f"Invalid metric. Use {['fscore', 'prec', 'rec']}")
+    if metrics is None:
+        metrics = ['fscore']
+
+    gt = gt.flatten()
+    explanation = explanation.flatten()
+
+    ret = []
+    for metric in metrics:
+        if metric == 'fscore':
+            ret.append(f_score(gt, explanation, beta=beta, average='binary', **kwargs))
+        elif metric == 'prec':
+            ret.append(precision(gt, explanation, average='binary', **kwargs))
+        elif metric == 'rec':
+            ret.append(recall(gt, explanation, average='binary', **kwargs))
+        else:
+            raise ValueError(f"Invalid metric. Use {['fscore', 'prec', 'rec']}")
+
+    if len(ret) == 1:
+        return ret[0]
+    return ret
+
+# todo implement in featureImportance evaluation a method for computing the metrics all at one (same as here or in
+#  evaluation/rule) and make those two call the featureImportance method. Saliency map scores calls binary mask scores
+#  if one ones to compute any metric other than AUC and also returns an array of metrics.
 
 
 if __name__ == '__main__':
@@ -94,8 +105,8 @@ if __name__ == '__main__':
     plt.imshow(testmask)
     plt.show()
 
-    f1Score = binary_mask_quality(gtmask, testmask, metric='fscore', beta=1)
-    precision = binary_mask_quality(gtmask, testmask, metric='prec')
-    recall = binary_mask_quality(gtmask, testmask, metric='rec')
+    f1Score = binary_mask_scorse(gtmask, testmask, metric='fscore', beta=1)
+    precision = binary_mask_scores(gtmask, testmask, metric='prec')
+    recall = binary_mask_scores(gtmask, testmask, metric='rec')
 
     print(f'F1Score: {f1Score}, Precision: {precision}, Recall: {recall}')
