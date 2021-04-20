@@ -78,9 +78,9 @@ def array_is_binary(array: np.array) -> bool:
 
 def normalize_array(array: np.array) -> np.array:
     """
-    # todo minmax normalization
-    Normalizes an array (NOT 0 mean, 1 std).
+    Normalizes an array via min-max.
     :param array: np.array to normalize
-    :return: np.array with values in {0, 1}
+    :return: np.array with values in [0, 1]
     """
-    return array / np.max(array)
+    arrayMin = np.min(array)
+    return (array - arrayMin) / (np.max(array) - arrayMin)

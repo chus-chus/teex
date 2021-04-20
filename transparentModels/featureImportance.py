@@ -7,14 +7,18 @@ class LinearClassifier(BaseClassifier):
     def __init__(self):
         super().__init__()
 
-    def fit(self, data, target):
+    def fit(self, data, target, featureNames=None):
         pass
 
-    def predict(self):
+    def predict(self, obs):
         pass
 
     def predict_proba(self, obs):
         pass
 
-    def predict_explain(self, obs):
+    def explain(self, obs):
         pass
+
+
+if __name__ == '__main__':
+    pass

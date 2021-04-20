@@ -8,7 +8,7 @@ class BaseClassifier(object):
         self.classValues = None
 
     @abc.abstractmethod
-    def fit(self, data, target, featureNames=None):
+    def fit(self, data, target):
         """ Fits the model to the data """
         pass
 

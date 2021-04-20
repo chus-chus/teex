@@ -181,11 +181,11 @@ class DecisionRule(object):
 class RuleClassifier(BaseClassifier):
     """ Transparent, rule-based classifier with decision rules as explanations. """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
-        self.model = DecisionTreeClassifier()
+        self.model = DecisionTreeClassifier(**kwargs)
         # dict. for each tree node, contains its learned condition as a "Statement" (None if node is a leaf)
-        self.nodeStatements = None
+        self._nodeStatements = None
 
     def fit(self, data, target, featureNames=None):
         """ Fits the classifier and automatically parses the learned tree structure into statements. """
@@ -226,9 +226,9 @@ class RuleClassifier(BaseClassifier):
             rule = DecisionRule()
             for nodeId in nodePath:
                 # node is not a leaf if None
-                if self.nodeStatements[nodeId] is not None:
-                    feature = self.nodeStatements[nodeId].feature
-                    threshold = self.nodeStatements[nodeId].value
+                if self._nodeStatements[nodeId] is not None:
+                    feature = self._nodeStatements[nodeId].feature
+                    threshold = self._nodeStatements[nodeId].value
                     statement = Statement(self.featureNames[feature], binary=True, lowOp='<', upperOp='<=')
                     # define bounds. Remember that the tree splits are of the form: feature '<=' value
                     if obs[sampleId][feature] <= threshold:
@@ -248,7 +248,7 @@ class RuleClassifier(BaseClassifier):
         childrenRight = self.model.tree_.children_right
         childrenLeft = self.model.tree_.children_left
 
-        self.nodeStatements = {nodeId: None for nodeId in range(self.model.tree_.node_count)}
+        self._nodeStatements = {nodeId: None for nodeId in range(self.model.tree_.node_count)}
 
         # root node
         nodeStack = [0]
@@ -260,7 +260,7 @@ class RuleClassifier(BaseClassifier):
                 nodeStack.append(childrenLeft[nodeId])
                 # all split nodes check with the '<=' operator
                 nodeStatement = Statement(nodeFeatures[nodeId], op='<=', val=nodeThresholds[nodeId])
-                self.nodeStatements[nodeId] = nodeStatement
+                self._nodeStatements[nodeId] = nodeStatement
 
 
 if __name__ == '__main__':

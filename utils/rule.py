@@ -1,7 +1,5 @@
 """ Rule utils """
-import numpy as np
-
-from transparentModels.decisionRule import DecisionRule
+from numpy import ndarray
 
 
 def rule_to_feature_importance(rules, allFeatures) -> list:
@@ -11,7 +9,7 @@ def rule_to_feature_importance(rules, allFeatures) -> list:
     will follow
     :return: binary array (list if > 1 rule) of length m where a 1 indicates that the feature appears in the rule
     """
-    if isinstance(rules, (list, np.ndarray, tuple)):
+    if isinstance(rules, (list, ndarray, tuple)):
         res = []
         for rule in rules:
             res.append([1 if feature in rule else 0 for feature in allFeatures])
