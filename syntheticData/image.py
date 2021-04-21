@@ -1,61 +1,10 @@
-""" Module for generation of synthetic datasets and their ground truth explanations. """
+""" Module for generation of synthetic tabular data and ground truth pixel importance (feature importance) explanations.
+"""
 
 import random
 import numpy as np
 
-from sklearn.datasets import make_classification
-
-from transparentModels.decisionRule import RuleClassifier
 from transparentModels.pixelImportance import ImageClassifier
-from utils.rule import rule_to_feature_importance
-
-
-def gen_tabular_data(nSamples: int = 1000, nClasses: int = 2, nFeatures: int = 3, nInformative: int = None,
-                     nRedundant: int = None, randomState: int = 888, explanations='rule', returnModel=False):
-    """ Generate synthetic classification tabular data with ground truth explanations as feature importance vectors.
-
-    :param nSamples: number of samples in the data
-    :param nClasses: numer of classes in the data
-    :param nFeatures: total number of features
-    :param nInformative: number of informative features
-    :param nRedundant: number of redundant features
-    :param randomState: random seed
-    :param explanations: how the explanations are generated. If None, no explanations are computed.
-                         Available: 'rule' (vectors will be binary), 'linear' (vectors will be real-valued)
-    :param returnModel: should the model used for the generation of the explanations be returned?
-                        (only if 'explanations' != None)
-    :return: arrays X, y, explanations (optional), model (optional)
-    """
-    if nInformative is None and nRedundant is not None:
-        nInformative = nFeatures - nRedundant
-    elif nRedundant is None and nInformative is not None:
-        nRedundant = nFeatures - nInformative
-    else:
-        nInformative = nFeatures
-        nRedundant = 0
-    data, targets = make_classification(n_samples=nSamples, n_classes=nClasses, n_features=nFeatures,
-                                        n_informative=nInformative, n_redundant=nRedundant, random_state=randomState)
-    # todo add randomness
-
-    if explanations is None:
-        if returnModel:
-            raise ValueError('Cannot return model without generating explanations.')
-        else:
-            return data, targets
-
-    if explanations == 'rule':
-        classifier = RuleClassifier(random_state=randomState)
-        classifier.fit(data, targets)
-        explanations = rule_to_feature_importance(classifier.explain(data), classifier.featureNames)
-    elif explanations == 'linear':
-        raise NotImplementedError
-    else:
-        raise ValueError(f"Explanation method not valid. Use {['rule', 'linear']}")
-
-    if returnModel:
-        return data, targets, explanations, classifier
-    else:
-        return data, targets, explanations
 
 
 def gen_image_data(nSamples=1000, imageH=32, imageW=32, patternH=16, patternW=16, cellH=4, cellW=4, patternProp=0.5,
@@ -170,7 +119,7 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
     fig, axs = plt.subplots(2, 3)
-    images, e, p = gen_image_data(nSamples=2, patternProp=1, randomState=3)
+    images, e, p = gen_image_data(nSamples=1, patternProp=1, randomState=3)
     axs[0, 0].imshow(p)
     axs[0, 0].set_title('Pattern')
     axs[0, 1].imshow(images[0])
@@ -178,20 +127,8 @@ if __name__ == '__main__':
     axs[0, 2].imshow(e[0])
     axs[0, 2].set_title('Explanation')
 
+    images, e, p = gen_image_data(nSamples=1, patternProp=1, randomState=4)
     axs[1, 0].imshow(p)
-    axs[1, 1].imshow(images[1])
-    axs[1, 2].imshow(e[1])
+    axs[1, 1].imshow(images[0])
+    axs[1, 2].imshow(e[0])
     plt.show()
-
-    print('AUTOMATICALLY GENERATING RULE EXPLANATIONS.')
-    X, y = gen_tabular_data(explanations=None)
-    print('\n', X[1:3], y[1:3])
-    X, y, ex = gen_tabular_data()
-    print('\n', X[1:3], y[1:3], ex[1:3])
-    X, y, ex, model = gen_tabular_data(returnModel=True)
-    print('\n', X[1:3], y[1:3], ex[1:3], model)
-
-    print('\nONE CAN ALSO EXTRACT THE ORIGINAL RULE EXPLANATIONS FROM THE MODEL:')
-    explan = model.explain(X[1:3])
-    for e in explan:
-        print(type(e), e)

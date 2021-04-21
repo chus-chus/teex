@@ -2,17 +2,19 @@
 
 import numpy as np
 
-from evaluation.featureImportance import recall, precision, f_score
+from evaluation.featureImportance import feature_importance_scores
 from transparentModels.decisionRule import DecisionRule, Statement
 
 
 from utils.rule import rule_to_feature_importance
 
+# todo filter kwargs in *_scores functions
 
-def complete_rule_quality(gt: DecisionRule, rule: DecisionRule, eps: float = 0.01) -> float:
+
+def complete_rule_quality(gt: DecisionRule, rule: DecisionRule, eps: float = 0.1) -> float:
     # todo sphinx doc
-    """ Computes the complete rule quality between two decision rules. All 'Statements' in both rules must be binary
-    (have upper and lower bounds). The metric is defined as the proportion of lower and upper bounds in a rule
+    """ Computes the complete rule quality (crq) between two decision rules. All 'Statements' in both rules must be
+    binary (have upper and lower bounds). The metric is defined as the proportion of lower and upper bounds in a rule
     explanation whose that are eps-close to the respective lower and upper bounds (same feature) in the ground truth
     rule explanation amongst those that are != inf. Mathematically:
 
@@ -41,34 +43,34 @@ def complete_rule_quality(gt: DecisionRule, rule: DecisionRule, eps: float = 0.0
     return epsCloseBounds / nBounded if nBounded != 0 else 0
 
 
-def rule_scores(gt: DecisionRule, rule: DecisionRule, allFeatures, metrics=None, beta=1, **kwargs) -> float:
+def rule_scores(gt: DecisionRule, rule: DecisionRule, allFeatures, metrics=None, **kwargs) -> float:
     """ Fscore, precision and recall scores for Decision Rules (interpreted as binary feature importance vectors).
 
     :param gt: ground truth decision rule.
     :param rule: approximated decision rule.
     :param allFeatures: (array-like) names of all of the relevant features.
-    :param metrics: (array-like, default = ['fscore']) metris to compute.
-    :param beta: beta value used when computing the fscore.
-    :return: (float / list) specified metric/s.
+    :param metrics: (list, default = ['fscore']) metris to compute. Available: ['fscore', 'prec', 'rec', 'crq',
+                                                 'auc', 'cs']
+    :return: (list) specified metric/s.
     """
-    if metrics is None:
-        metrics = ['fscore']
+    isArrayLike = isinstance(metrics, (list, np.ndarray, tuple))
+    crq = None
+    if metrics is not None:
+        if metrics == 'crq':
+            return complete_rule_quality(gt, rule, **kwargs)
+        elif isArrayLike and 'crq' in metrics:
+            crq = complete_rule_quality(gt, rule, **kwargs)
+            crqIndex = metrics.index('crq')
+            del metrics[metrics.index('crq')]
 
-    gt = rule_to_feature_importance(gt, allFeatures)
-    rule = rule_to_feature_importance(rule, allFeatures)
+    binaryGt = rule_to_feature_importance(gt, allFeatures)
+    binaryRule = rule_to_feature_importance(rule, allFeatures)
 
-    res = []
-    for metric in metrics:
-        if metric == 'fscore':
-            res.append(f_score(gt, rule, beta=beta, **kwargs))
-        elif metric == 'prec':
-            res.append(precision(gt, rule, **kwargs))
-        elif metric == 'rec':
-            res.append(recall(gt, rule, **kwargs))
-        else:
-            raise ValueError(f"Metric not valid. Use: {['fscore', 'prec', 'rec']}")
-    if len(res) == 1:
-        return res[0]
+    res = feature_importance_scores(binaryGt, binaryRule, metrics=metrics, **kwargs)
+
+    if crq is not None:
+        # noinspection PyUnboundLocalVariable
+        res.insert(crqIndex, crq)
     return res
 
 
@@ -106,3 +108,6 @@ if __name__ == '__main__':
     print('RECALL')
     print(recall)
 
+    print(r1)
+    print(r3)
+    print(rule_scores(r3, r1, features, ['crq', 'prec', 'rec', 'fscore', 'cs']))

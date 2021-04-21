@@ -1,87 +1,53 @@
 """ Module for the evaluation of image importance (real-valued and binary) explanations. """
 
-import cv2
-import numpy as np
-from matplotlib import pyplot as plt
-
-from evaluation.featureImportance import f_score, auc_score, precision, recall
-from utils.image import array_is_binary, binarize_rgb_mask, normalize_array, read_rgb_img
+from evaluation.featureImportance import feature_importance_scores
+from utils.image import array_is_binary, binarize_rgb_mask, normalize_array, read_rgb_img, is_rgb
 
 
-def saliency_map_score(gt: np.array, explanation: np.array, metric: str = 'AUC', binarizeGt: bool = True,
-                       fScoreBeta: float = 1, gtBackground: str = 'white', expBackground: str = 'white',
-                       **kwargs: dict) -> float:
+def saliency_map_scores(gt, explanation, metrics='auc', binarizeGt=True, gtBackground='light', **kwargs) -> float:
     """
     Computes different scores of a saliency map explanation w.r.t. its ground truth explanation (a binary mask).
     The saliency map should not be binary. If it is, use the 'binary_mask_scores' method instead.
 
-    :param gt: ground truth binary mask
-    :param explanation: saliency map explanation (non-salient areas must be 0-valued.)
-    :param metric: Quality metric to compute: {'AUC', 'fscore', 'prec', 'rec'}
-    :param binarizeGt: Should the g.t. mask provided be binarized?
-    :param fScoreBeta: Beta for the fscore in case of it being computed.
-    :param gtBackground: Color of the background of the g.t. mask ('black' for 0, 'white' for 255)
-    :param expBackground: Color of the background of the explanation ('black' for 0, 'white' for 255)
-    :param kwargs: Extra arguments for 'pixel_importance_mask_quality'
-    :return: desired metric
+    :param gt: (ndarray) ground truth RGB or grayscale mask
+    :param explanation: (ndarray) grayscale (1 channel) saliency map explanation (non-salient areas must be 0-valued.)
+    :param metrics: (str / array-like) Quality metric/s to compute: {'auc', 'fscore', 'prec', 'rec', 'cs'}
+    :param binarizeGt: (bool) Should the g.t. mask provided be binarized? (should be True if mask is RGB)
+    :param gtBackground: (str) Color of the background of the g.t. mask ('dark' for low values, 'light' for high values)
+                               Ignored if gt is grayscale.
+    :return: (list) metric/s
     """
     if not array_is_binary(gt) and not binarizeGt:
         raise ValueError('Ground truth is not binary: binarize before calling.')
     elif binarizeGt:
-        gt = binarize_rgb_mask(gt, bgColor=gtBackground)
+        if is_rgb(gt):
+            gt = binarize_rgb_mask(gt, bgColor=gtBackground)
+        else:
+            gt[gt != 0] = 1
 
-    if metric == 'AUC':
-        # saliency map's background has to be 0
-        explanation = normalize_array(explanation)
-        return auc_score(gt.flatten(), explanation.flatten())
-    elif metric in ['fscore', 'prec', 'rec']:
-        explanation = binarize_rgb_mask(explanation, bgColor=expBackground)
-        return binary_mask_scores(gt, explanation, metric=metric, beta=fScoreBeta, **kwargs)
-    else:
-        metrics = ['AUC', 'fscore', 'prec', 'rec']
-        raise ValueError(f'Metric not available. Use {metrics}')
+    explanation = normalize_array(explanation)
+    return feature_importance_scores(gt.flatten(), explanation.flatten(), metrics=metrics, binarizeExp=True, **kwargs)
 
 
-def binary_mask_scores(gt: np.array, explanation: np.array, metrics=None, beta: float = 1, **kwargs: dict) \
-        -> float:
+def binary_mask_scores(gt, explanation, metrics=None, **kwargs) -> float:
     """
     Computes metrics for the evaluation of image binary pixel importance explanations.
 
-    :param gt: array, ground truth pixel importance n x m binary mask.
-    :param explanation: array, image pixel importance n x m binary explanation.
-    :param metrics: 'fscore', 'prec' or 'rec'.
-    :param beta: beta value for the fscore.
-    :param kwargs: extra parameters for sklearn.metrics functions.
-    :return: (float / list) the specified similarity metric/s.
+    :param gt: (ndarray), ground truth pixel importance n x m binary mask.
+    :param explanation: (ndarray), image pixel importance n x m binary explanation.
+    :param metrics: (str / array-like) 'fscore', 'prec', 'rec', 'auc', 'cs'
+    :return: (list) the specified similarity metric/s.
     """
 
-    if metrics is None:
-        metrics = ['fscore']
-
-    gt = gt.flatten()
-    explanation = explanation.flatten()
-
-    ret = []
-    for metric in metrics:
-        if metric == 'fscore':
-            ret.append(f_score(gt, explanation, beta=beta, average='binary', **kwargs))
-        elif metric == 'prec':
-            ret.append(precision(gt, explanation, average='binary', **kwargs))
-        elif metric == 'rec':
-            ret.append(recall(gt, explanation, average='binary', **kwargs))
-        else:
-            raise ValueError(f"Invalid metric. Use {['fscore', 'prec', 'rec']}")
-
-    if len(ret) == 1:
-        return ret[0]
-    return ret
-
-# todo implement in featureImportance evaluation a method for computing the metrics all at one (same as here or in
-#  evaluation/rule) and make those two call the featureImportance method. Saliency map scores calls binary mask scores
-#  if one ones to compute any metric other than AUC and also returns an array of metrics.
+    return feature_importance_scores(gt.flatten(), explanation.flatten(), metrics=metrics, binarizeExp=False, **kwargs)
 
 
 if __name__ == '__main__':
+    import numpy as np
+
+    from cv2 import erode
+    from matplotlib import pyplot as plt
+
     imgpath = '../TAIAOexp_CLI/data/Kahikatea/data/ve_positive/Biospatial_20160702U_1860_01_03.png'
 
     img = read_rgb_img(imgpath)
@@ -94,19 +60,17 @@ if __name__ == '__main__':
     plt.imshow(gtmask)
     plt.show()
 
-    gtmask = binarize_rgb_mask(gtmask, bgColor='white')
+    gtmask = binarize_rgb_mask(gtmask, bgColor='light')
 
     plt.imshow(gtmask)
     plt.show()
 
     # perturb ground truth mask
-    testmask = cv2.erode(gtmask, np.ones((5, 5), np.uint8))
+    testmask = erode(gtmask, np.ones((5, 5), np.uint8))
 
     plt.imshow(testmask)
     plt.show()
 
-    f1Score = binary_mask_scorse(gtmask, testmask, metric='fscore', beta=1)
-    precision = binary_mask_scores(gtmask, testmask, metric='prec')
-    recall = binary_mask_scores(gtmask, testmask, metric='rec')
+    f1Score, prec, rec, auc, cs = binary_mask_scores(gtmask, testmask, metrics=['fscore', 'prec', 'rec', 'auc', 'cs'])
 
-    print(f'F1Score: {f1Score}, Precision: {precision}, Recall: {recall}')
+    print(f'F1Score: {f1Score}, Precision: {prec}, Recall: {rec}, AUC: {auc}, CS: {cs}')

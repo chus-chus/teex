@@ -1,29 +1,29 @@
 # TAIAOexp
 
-A python package for explanation experimentation. It provides:
+A python package for explanation experimentation. It provides methods for:
 
-* Transparent models that provide ground truth explanations. The models are trained with synthetic data and provide
-  different types of explanations:
+* Generation of synthetic data with available ground truth explanations:
 
-|**Type of training data**|**Type of g.t. explanations**|
+|**Type of synthetic data**|**Type of g.t. explanations**|
 |----------------|-----------------------------|
 |Tabular [1]     |Feature Importance           |
 |Tabular [1]     |Decision Rules               |
 |Images [1]      |Pixel Importance             |
 
+* Transparent models able to provide ground truth explanations. They provide feature importance, decision rules and 
+  pixel importance explanations.  
+  
+
 * Explanation quality metrics. Given a generated explanation and a ground-truth, multiple scores are provided:
 
 |**Type of g.t. explanations**|**Quality Metric**       |
 |-----------------------------|-------------------------|
-|Feature Importance           |Cosine Similarity [1]    |
-|Decision Rules               |Precision [1]            |
-|Decision Rules               |Recall [1]               |
-|Decision Rules               |Fß-Score [1]             |
-|Decision Rules               |Complete Rule Quality [1]|
-|Pixel Importance / SM        |Precision                |
-|Pixel Importance / SM        |Recall                   |
-|Pixel Importance / SM        |Fß-Score                 |
-|Saliency maps (SM)           |AUC (ROC)                |
+|Feature Importance, Decision Rules, Pixel Importance / SM               |Cosine Similarity [1]    |
+|Feature Importance, Decision Rules, Pixel Importance / SM               |Precision [1]            |
+|Feature Importance, Decision Rules, Pixel Importance / SM               |Recall [1]               |
+|Feature Importance, Decision Rules, Pixel Importance / SM               |Fß-Score [1]             |
+|Feature Importance, Decision Rules, Pixel Importance / SM               |AUC (ROC)                |
+|Decision Rules                                                          |Complete Rule Quality [1]|
 
 * Utility functions
 

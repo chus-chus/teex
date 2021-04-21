@@ -89,8 +89,8 @@ class ImageClassifier(BaseClassifier):
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-    from syntheticData.dataGen import gen_image_data
-    from evaluation.image import binary_mask_score
+    from syntheticData.image import gen_image_data
+    from evaluation.image import binary_mask_scores
 
     mod = ImageClassifier()
     imgs, explanations, pat = gen_image_data(nSamples=4, patternProp=0.5)
@@ -119,5 +119,5 @@ if __name__ == '__main__':
     print(mod.predict(imgs))
     print(mod.predict_proba(imgs))
 
-    print(binary_mask_score(e[0], e[0]))
-    print(binary_mask_score(e[2], e[2]))
+    print(binary_mask_scores(e[0], e[0]))
+    print(binary_mask_scores(e[2], e[2]))

@@ -265,7 +265,7 @@ class RuleClassifier(BaseClassifier):
 
 if __name__ == '__main__':
 
-    from syntheticData.dataGen import gen_tabular_data
+    from syntheticData.tabular import gen_tabular_data
 
     # c = Statement('f', binary=True)
     # r = DecisionRule([c], result=Statement('a', op='=', val=5))

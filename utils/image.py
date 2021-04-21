@@ -6,33 +6,46 @@ from cv2 import COLOR_RGB2GRAY, cvtColor, COLOR_BGR2RGB, imread, findContours, d
     CHAIN_APPROX_SIMPLE, threshold
 
 
-def binarize_rgb_mask(img: np.array, bgColor: str = 'white') -> np.array:
+def rgb_to_grayscale(img):
+    """ Transforms a 3 channel RGB image into a grayscale image (1 channel) """
+    return cvtColor(img.astype('float32'), COLOR_RGB2GRAY)
+
+
+def binarize_rgb_mask(img, bgColor='light') -> np.array:
     """
-    Binarizes a RGB binary mask, letting the background (negative class) be 0.
-    :param img: array, RGB mask to binarize.
-    :param bgColor: Color of the negative class of the image to binarize: {'white', 'black'}
-    :return: a binary mask.
+    Binarizes a RGB binary mask, letting the background (negative class) be 0. Use this function when the
+    image to binarize has a very defined background.
+
+    :param img: (ndarray), RGB mask to binarize.
+    :param bgColor: (str) Intensity of the negative class of the image to binarize: {'light', 'dark'}
+    :return: (ndarray) a binary mask.
     """
-    imgmod = cvtColor(img, COLOR_RGB2GRAY)
-    if bgColor == 'white':
-        # assign non-white the positive class
-        imgmod[imgmod < 255] = 1
-        imgmod[imgmod == 255] = 0
-    elif bgColor == 'black':
-        # assign non-black pixels the positive class
-        imgmod[imgmod > 0] = 1
-        imgmod[imgmod == 0] = 0
+    imgmod = rgb_to_grayscale(img)
+    maxVal = np.max(imgmod)
+    minVal = np.min(imgmod)
+    if bgColor == 'light':
+        # assign darker pixels the positive class
+        imgmod[imgmod < maxVal] = 1
+        imgmod[imgmod == maxVal] = 0
+    elif bgColor == 'dark':
+        # assign lighter pixels the positive class
+        imgmod[imgmod > minVal] = 1
+        imgmod[imgmod == minVal] = 0
+    else:
+        raise ValueError(f"bgColor should ve {['light', 'dark']}")
     return imgmod
 
 
-def binarize_rgb_img(img: np.array, fillHoles: bool = True) -> np.array:
+def binarize_rgb_img(img, fillHoles=True) -> np.array:
     """
-    Binarizes a RGB image with automatic OTSU thresholding, minimizing intra-class variance.
-    :param img: array, RGB image to binarize.
-    :param fillHoles: Should holes created from the binarization be filled?
-    :return: a grayscale binarized mask.
+    Binarizes a RGB image with automatic OTSU thresholding, minimizing intra-class variance. Use this function when the
+    image to binarize does not have a very defined background.
+
+    :param img: ndarray, RGB image to binarize.
+    :param fillHoles: (bool, default True)Should holes created from the binarization be filled?
+    :return: (ndarray) a grayscale binarized mask.
     """
-    imgmod = cvtColor(img, COLOR_RGB2GRAY)
+    imgmod = rgb_to_grayscale(img)
     _, imgmod = threshold(imgmod, 0, 255, THRESH_OTSU)
     if fillHoles:
         contours, _ = findContours(imgmod, RETR_CCOMP, CHAIN_APPROX_SIMPLE)
@@ -60,7 +73,7 @@ def normalize_binary_mask(mask: np.array) -> np.array:
     if not array_is_binary(mask):
         raise Exception('Array is not binary.')
     else:
-        return mask / np.max(mask)
+        return normalize_array(mask)
 
 
 def array_is_binary(array: np.array) -> bool:
@@ -84,3 +97,8 @@ def normalize_array(array: np.array) -> np.array:
     """
     arrayMin = np.min(array)
     return (array - arrayMin) / (np.max(array) - arrayMin)
+
+
+def is_rgb(img):
+    """ img (ndarray) """
+    return True if len(img.shape) == 3 and img.shape[2] == 3 else False
