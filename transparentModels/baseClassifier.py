@@ -4,12 +4,10 @@ import abc
 class BaseClassifier(object):
     def __init__(self):
         self.featureNames = None
-        self.classNames = None
-        self.classValues = None
 
     @abc.abstractmethod
-    def fit(self, data, target):
-        """ Fits the model to the data """
+    def fit(self, *args, **kwargs):
+        """ Fits the model. """
         pass
 
     @abc.abstractmethod

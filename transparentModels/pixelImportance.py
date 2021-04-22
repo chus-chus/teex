@@ -19,7 +19,7 @@ class ImageClassifier(BaseClassifier):
         self.pattW = None
         self._binaryPattern = None
 
-    def fit(self, pattern, **kwargs):
+    def fit(self, pattern):
         self.pattern = pattern
         self.pattH = pattern.shape[0]
         self.pattW = pattern.shape[1]
