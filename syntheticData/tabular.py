@@ -29,6 +29,10 @@ def gen_tabular_data(nSamples: int = 1000, nClasses: int = 2, nFeatures: int = 3
     else:
         nInformative = nFeatures
         nRedundant = 0
+
+    if nClasses != 2 and explanations == 'linear':
+        raise ValueError('Linear explanations can only be generated with two classes.')
+
     data, targets = make_classification(n_samples=nSamples, n_classes=nClasses, n_features=nFeatures,
                                         n_informative=nInformative, n_redundant=nRedundant, random_state=randomState)
     # todo add randomness
