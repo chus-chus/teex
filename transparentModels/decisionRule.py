@@ -265,16 +265,17 @@ class RuleClassifier(BaseClassifier):
 
 if __name__ == '__main__':
 
-    from syntheticData.tabular import gen_tabular_data
+    from sklearn.datasets import make_classification
 
     # c = Statement('f', binary=True)
     # r = DecisionRule([c], result=Statement('a', op='=', val=5))
 
-    print('MANUALLY GENERATING EXPLANATIONS')
     ruleModel = RuleClassifier()
-    X, y = gen_tabular_data(nFeatures=2, explanations=None)
-    ruleModel.fit(X, y, featureNames=['alpha', 'beta'])
+    X, y = make_classification(n_samples=50, n_classes=2, n_features=3, n_informative=3, n_redundant=0, n_repeated=0,
+                               random_state=8)
 
+    ruleModel.fit(X, y)
+    print('MANUALLY GENERATING EXPLANATIONS')
     print('Only one observation:')
     exp = ruleModel.explain(X[1].reshape(1, -1))
     print(exp[0])

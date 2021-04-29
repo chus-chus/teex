@@ -1,20 +1,22 @@
 import numpy as np
 
-from transparentModels.baseClassifier import BaseClassifier
-
 from sympy import diff, Symbol, re
 from sympy.parsing.sympy_parser import parse_expr
 from scipy.spatial.distance import cdist
 from sklearn.preprocessing import MinMaxScaler
 from math import isnan
 
+from transparentModels.baseClassifier import BaseClassifier
+from utils.tabular import generate_feature_names
+
 
 class LinearClassifier(BaseClassifier):
     """ Transparent, linear classifier with feature importances as explanations. This class also generates labeled
     data according to the generated random linear expression. """
 
-    def __init__(self):
+    def __init__(self, randomState=888):
         super().__init__()
+        self.randomState = randomState
         # SymPy expression
         self.expression = None
         self.derivatives = None
@@ -27,29 +29,28 @@ class LinearClassifier(BaseClassifier):
         self._scalerNeg = MinMaxScaler(feature_range=[0., 0.5])
         self._scalerPos = MinMaxScaler(feature_range=[0.5, 1.])
 
-    def fit(self, nFeatures=None, featureNames=None, nSamples=100, randomState=888):
+    def fit(self, nFeatures=None, featureNames=None, nSamples=100):
         """ Generates a random linear expression and random data labeled by the linear expression as a binary
         dataset.
 
         :param nFeatures: (int) number of features in the data.
         :param featureNames: (array-like) names of the features in the data.
         :param nSamples: (int) number of samples for the generated data.
-        :param randomState: (optional, int) random state for the generation of the linear expression.
         :return: (ndarray, ndarray) data of shape (n, m) and their respective labels of shape (n)
         """
         if featureNames is None and nFeatures is None:
             raise ValueError('The number of features or feature names should be provided.')
         elif featureNames is None:
-            self.featureNames = [i for i in range(nFeatures)]
+            self.featureNames = generate_feature_names(nFeatures)
         elif nFeatures is None:
             self.featureNames = featureNames
         elif len(featureNames) != nFeatures:
             raise ValueError("Provide all of the features' names.")
 
-        self.expression = self._generate_expression(randomState)
+        self.expression = self._generate_expression()
         self.derivatives = self._differentiate_expression(self.expression)
 
-        self.X, self.y = self._generate_data(nSamples=nSamples, randomState=randomState)
+        self.X, self.y = self._generate_data(nSamples=nSamples)
 
         self.classIndices = {dataClass: np.argwhere(self.y == dataClass).squeeze() for dataClass in np.unique(self.y)}
 
@@ -127,7 +128,7 @@ class LinearClassifier(BaseClassifier):
             explanations.append(exp)
         return np.array(explanations, dtype=np.float32)
 
-    def _generate_expression(self, randomState):
+    def _generate_expression(self):
         """ Generate a random linear expressiion following the procedure described in ["Evaluating local explanation
          methods on ground truth", Riccardo Guidotti 2020. """
 
@@ -135,7 +136,7 @@ class LinearClassifier(BaseClassifier):
                     'tan({f})', 'sinh({f})', 'cosh({f})', 'tanh({f})', 'asin({f})', 'acos({f})', 'atan({f})']
         binaryOps = ['{f1} + {f2}', '{f1} - {f2}', '{f1} * {f2}', '{f1} / {f2}', '{f1} ** {f2}']
 
-        rng = np.random.default_rng(randomState)
+        rng = np.random.default_rng(self.randomState)
         features = set(self.featureNames)
         expr = []
         for feature in features:
@@ -169,10 +170,10 @@ class LinearClassifier(BaseClassifier):
             grad.append(value)
         return grad
 
-    def _generate_data(self, nSamples, randomState):
+    def _generate_data(self, nSamples):
         """ Generates two ndarrays of containing artificial data and its labels of shape nSamples * nFeatures and 
         nFeatures, respectively. """
-        rng = np.random.default_rng(randomState)
+        rng = np.random.default_rng(self.randomState)
         data = np.array([rng.normal(scale=3, size=nSamples) for _ in range(len(self.featureNames))]).T
         labels = []
         for obs in data:
@@ -186,9 +187,9 @@ class LinearClassifier(BaseClassifier):
 
 
 if __name__ == '__main__':
-    m = LinearClassifier()
+    m = LinearClassifier(randomState=1)
     feats = ['a', 'b', 'c', 'd']
-    X, y = m.fit(featureNames=feats, randomState=1, nSamples=100)
+    X, y = m.fit(featureNames=feats, nSamples=100)
 
     exps = m.explain(X[0].reshape(1, -1), [y[0]])
 
