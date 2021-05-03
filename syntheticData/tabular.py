@@ -8,15 +8,16 @@ from utils.rule import rule_to_feature_importance
 from utils.tabular import generate_feature_names
 
 
-def gen_tabular_data(nSamples: int = 1000, nFeatures: int = 3, randomState: int = 888, method='rule',
+def gen_tabular_data(nSamples: int = 1000, nFeatures: int = 3, randomState: int = 888, expType='fi',
                      returnModel=False, featureNames=None):
-    """ Generate synthetic classification tabular data with ground truth explanations as feature importance vectors.
+    """ Generate synthetic classification tabular data with ground truth explanations. Available ground truth
+    explanations are feature importance vectors and decision rules.
 
     :param nSamples: (int) number of samples in the data.
     :param nFeatures: (int) total number of features.
     :param randomState: (int) random seed.
-    :param method: (str, ['rule', 'linear']) how the explanations are generated. If None, no explanations are
-                   computed. Available: 'rule' (vectors will be binary), 'linear' (vectors will be real-valued)
+    :param expType: (str, ['fi', 'rule']) type of explanations generated. If None, no explanations are
+                   computed. Available: 'fi' (feature importance vectors), 'rule' (DecisionRule objects)
     :param returnModel: (bool) should the model used for the generation of the explanations be returned?
     :param featureNames: (array-like) names of the generated features.
     :return: (ndarrays) X, y, explanations, featureNames (if they were not specified),
@@ -28,20 +29,22 @@ def gen_tabular_data(nSamples: int = 1000, nFeatures: int = 3, randomState: int 
         retFNames = True
         featureNames = generate_feature_names(nFeatures)
 
-    if method == 'rule':
+    if expType == 'rule':
+        # generate explanations with rules and binarize
         data, targets = make_classification(n_samples=nSamples, n_classes=2, n_features=nFeatures,
                                             n_informative=nFeatures, n_redundant=0, n_repeated=0,
                                             random_state=randomState)
         # todo add randomness
         classifier = RuleClassifier(random_state=randomState)
         classifier.fit(data, targets, featureNames=featureNames)
-        explanations = rule_to_feature_importance(classifier.explain(data), classifier.featureNames)
-    elif method == 'linear':
+        explanations = classifier.explain(data)
+    elif expType == 'fi':
+        # generate explanations as gradient vectors around a decision boundary
         classifier = LinearClassifier(randomState=randomState)
         data, targets = classifier.fit(nSamples=nSamples, featureNames=featureNames)
         explanations = classifier.explain(data, newLabels=targets)
     else:
-        raise ValueError(f"Explanation method not valid. Use {['rule', 'linear']}")
+        raise ValueError(f"Explanation method not valid. Use {['fi', 'rule']}")
 
     if returnModel:
         if retFNames:
@@ -62,7 +65,7 @@ if __name__ == '__main__':
     # print('\n', X[1:3], y[1:3])
     # X, y, ex = gen_tabular_data()
     # print('\n', X[1:3], y[1:3], ex[1:3])
-    X, y, ex, fNames, model = gen_tabular_data(returnModel=True, nSamples=50, method='rule')
+    X, y, ex, fNames, model = gen_tabular_data(nSamples=50, expType='rule', returnModel=True)
     print('Observation: ', X[1], y[1], 'Names: ', fNames)
     print('\nRule: ', model.explain(X[1].reshape(1, -1))[0], 'Feature importance: ', ex[1])
 
@@ -71,7 +74,7 @@ if __name__ == '__main__':
     # for e in explan:
     #     print(e)
 
-    X, y, ex, fNames, model = gen_tabular_data(returnModel=True, nSamples=50, method='linear')
+    X, y, ex, fNames, model = gen_tabular_data(nSamples=50, expType='linear', returnModel=True)
     print('Observation: ', X[1], y[1], 'Names: ', fNames)
     print('\nFeature importance: ', ex[1])
 

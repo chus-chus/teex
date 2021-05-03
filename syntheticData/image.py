@@ -13,20 +13,20 @@ def gen_image_data(nSamples=1000, imageH=32, imageW=32, patternH=16, patternW=16
      importance vectors where each pixel represents a feature). The images belong to one class if they contain a certain
      generated pattern and to the other if not. The images are composed of homogeneous cells.
 
-     :param nSamples: number of images to generate.
-     :param imageH: height in pixels of the images.
-     :param imageW: width in pixels of the images.
-     :param patternH: height in pixels of the pattern.
-     :param patternW: width in pixels of the pattern.
-     :param cellH: height in pixels of each cell.
-     :param cellW: width in pixels of each cell.
+     :param nSamples: (int) number of images to generate.
+     :param imageH: (int) height in pixels of the images.
+     :param imageW: (int) width in pixels of the images.
+     :param patternH: (int) height in pixels of the pattern.
+     :param patternW: (int) width in pixels of the pattern.
+     :param cellH: (int) height in pixels of each cell.
+     :param cellW: (int) width in pixels of each cell.
      :param patternProp: (float, [0, 1]) percentage of appearance of the pattern in the dataset.
      :param fillPct: (float, [0, 1]) percentage of cells filled (not black) in each image.
      :param colorDev: (float, [0, 0.5]) maximum value summed to 0 valued channels and minimum value substracted to 1
                       valued channels of filled cells. If 0, each cell will be completely red, green or blue.
                       If > 0, colors may be a mix of the three channels (one ~1, the other two ~0).
-     :param randomState: random seed.
-     :param returnModel: should a transparent image classifier trained with the data be returned?
+     :param randomState: (int) random seed.
+     :param returnModel: (bool) should a transparent image classifier trained with the data be returned?
      :return: images (list), explanations (list), pattern (ndarray), (model (ImageClassifier) if returnModel is True)"""
 
     if imageH % patternH != 0 or imageW % patternW != 0 or imageH % cellH != 0 or imageW % cellW != 0:
