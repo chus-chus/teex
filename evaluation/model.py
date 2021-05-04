@@ -5,6 +5,8 @@ import sys
 import numpy as np
 
 from sklearn.model_selection import train_test_split
+
+from explanation.featureImportance import lime_torch_attributions, torch_tab_attributions
 from syntheticData.tabular import gen_tabular_data
 
 
@@ -91,9 +93,9 @@ def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMeth
 
     model = trainFunction(model, XTrain, yTrain)
 
-    # expTrain = gen_explanations(model, XTrain, method=expMethod)
-    # expVal = gen_explanations(model, XVal, method=expMethod)
-    # expTest = gen_explanations(model, XTest, method=expMethod)
+    expTrain = torch_tab_attributions(model, torch.FloatTensor(XTrain), torch.LongTensor(yTrain), method=expMethod)
+    expVal = torch_tab_attributions(model, torch.FloatTensor(XVal), torch.LongTensor(yVal), method=expMethod)
+    expTest = torch_tab_attributions(model, torch.FloatTensor(XTest), torch.LongTensor(yTest), method=expMethod)
 
     return
 
@@ -173,6 +175,6 @@ if __name__ == '__main__':
                 optimizer.step()
         return model
 
-    eval_torch_tab(Net(), train_nn, 1000, nFeat, (0.8, 0.1, 0.1), 'lime', 'rule')
+    eval_torch_tab(Net(), train_nn, 1000, nFeat, (0.8, 0.1, 0.1), 'shap', 'rule')
 
     eval_sk_tabular(DecisionTreeClassifier(), 1000, 5, (0.7, 0.15, 0.15), 'lime', 'rule')

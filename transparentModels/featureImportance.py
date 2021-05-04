@@ -174,7 +174,7 @@ class LinearClassifier(BaseClassifier):
         """ Generates two ndarrays of containing artificial data and its labels of shape nSamples * nFeatures and 
         nFeatures, respectively. """
         rng = np.random.default_rng(self.randomState)
-        data = np.array([rng.normal(scale=3, size=nSamples) for _ in range(len(self.featureNames))]).T
+        data = np.array([rng.normal(scale=1, size=nSamples) for _ in range(len(self.featureNames))]).T
         labels = []
         for obs in data:
             labels.append(1 if self._evaluate_expression({f: v for f, v in zip(self.featureNames, obs)}) > 0 else 0)
