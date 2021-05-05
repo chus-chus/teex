@@ -7,6 +7,8 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 from explanation.featureImportance import lime_torch_attributions, torch_tab_attributions
+from explanation.images import torch_pixel_attributions
+from syntheticData.image import gen_image_data
 from syntheticData.tabular import gen_tabular_data
 
 
@@ -19,11 +21,16 @@ def _init_sk_model(classname, modelParams):
 
 
 def _gen_split_data(dataType, nSamples, nFeatures, randomState, expType, dataSplit):
+    """ Returns train val test split synthetic image or tabular data """
 
     if dataType == 'image':
-        pass
+        # todo further parameters to gen_image_data
+        # in the case of images, the binary g.t. masks are the explanations
+        X, y, _ = gen_image_data(nSamples=nSamples, randomState=randomState)
     elif dataType == 'tab':
         X, y, gtExp, featureNames = gen_tabular_data(nSamples, nFeatures, randomState, expType)
+    else:
+        raise ValueError('DataType not valid.')
 
     if not isinstance(dataSplit, (np.ndarray, list, tuple)):
         raise ValueError('dataSplit should be a list-like object.')
@@ -37,11 +44,17 @@ def _gen_split_data(dataType, nSamples, nFeatures, randomState, expType, dataSpl
 
     trainSize = round(len(y) * dataSplit[0])
     valSize = round(len(y) * dataSplit[1])
-    XTrain, XTest, yTrain, yTest, gtExpTrain, gtExpTest = train_test_split(X, y, gtExp, train_size=trainSize,
-                                                                           random_state=randomState)
-    XTrain, XVal, yTrain, yVal, gtExpTrain, gtExpVal = train_test_split(XTrain, yTrain, gtExpTrain, test_size=valSize,
-                                                                        random_state=randomState)
-    return XTrain, XVal, XTest, yTrain, yVal, yTest, gtExpTrain, gtExpVal, gtExpTest
+
+    if dataType == 'image':
+        XTrain, XTest, yTrain, yTest = train_test_split(X, y, train_size=trainSize, random_state=randomState)
+        XTrain, XVal, yTrain, yVal = train_test_split(XTrain, yTrain, test_size=valSize, random_state=randomState)
+        return XTrain, XVal, XTest, yTrain, yVal, yTest
+    elif dataType == 'tab':
+        XTrain, XTest, yTrain, yTest, gtExpTrain, gtExpTest = train_test_split(X, y, gtExp, train_size=trainSize,
+                                                                               random_state=randomState)
+        XTrain, XVal, yTrain, yVal, gtExpTrain, gtExpVal = train_test_split(XTrain, yTrain, gtExpTrain, test_size=valSize,
+                                                                            random_state=randomState)
+        return XTrain, XVal, XTest, yTrain, yVal, yTest, gtExpTrain, gtExpVal, gtExpTest, featureNames
 
 
 # todo should feature importances be normalised for the linear method?
@@ -91,11 +104,22 @@ def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMeth
     XTrain, XVal, XTest, yTrain, yVal, yTest, \
         gtExpTrain, gtExpVal, gtExpTest = _gen_split_data('tab', nSamples, nFeatures, randomState, expType, dataSplit)
 
+    XTrain = torch.FloatTensor(XTrain)
+    XVal = torch.FloatTensor(XVal)
+    XTest = torch.FloatTensor(XTest)
+    gtExpTrain = torch.FloatTensor(gtExpTrain)
+    gtExpVal = torch.FloatTensor(gtExpVal)
+    gtExpTest = torch.FloatTensor(gtExpTest)
+
+    yTrain = torch.LongTensor(yTrain)
+    yVal = torch.LongTensor(yVal)
+    yTest = torch.LongTensor(yTest)
+
     model = trainFunction(model, XTrain, yTrain)
 
-    expTrain = torch_tab_attributions(model, torch.FloatTensor(XTrain), torch.LongTensor(yTrain), method=expMethod)
-    expVal = torch_tab_attributions(model, torch.FloatTensor(XVal), torch.LongTensor(yVal), method=expMethod)
-    expTest = torch_tab_attributions(model, torch.FloatTensor(XTest), torch.LongTensor(yTest), method=expMethod)
+    expTrain = torch_tab_attributions(model, XTrain, yTrain, method=expMethod)
+    expVal = torch_tab_attributions(model, XVal, yVal, method=expMethod)
+    expTest = torch_tab_attributions(model, XTest, yTest, method=expMethod)
 
     return
 
@@ -118,12 +142,20 @@ def eval_torch_image(model, trainFunction, nSamples, nFeatures, dataSplit, expMe
                              'fi' (feature importance vect.), 'rule' (DecisionRule objects)
     :param randomState: (int) random seed.
     """
-    XTrain, XVal, XTest, yTrain, yVal, yTest, \
-        gtExpTrain, gtExpVal, gtExpTest = _gen_split_data('image', nSamples, nFeatures, randomState, expType, dataSplit)
+    XTrain, XVal, XTest, yTrain, yVal, yTest = _gen_split_data('image', nSamples, nFeatures, randomState, expType,
+                                                               dataSplit)
 
-    model.fit(XTrain, yTrain)
+    XTrain = torch.FloatTensor(XTrain).reshape(-1, 3, 32, 32)
+    XVal = torch.FloatTensor(XVal).reshape(-1, 3, 32, 32)
+    XTest = torch.FloatTensor(XTest).reshape(-1, 3, 32, 32)
 
-    # expTrain = gen_explanations(model, XTrain, method=expMethod)
+    yTrain = torch.LongTensor(yTrain.astype(int)).reshape(-1, 1, 32, 32)
+    yVal = torch.LongTensor(yVal.astype(int)).reshape(-1, 1, 32, 32)
+    yTest = torch.LongTensor(yTest.astype(int)).reshape(-1, 1, 32, 32)
+
+    model = trainFunction(model, XTrain, yTrain)
+
+    expTrain = torch_pixel_attributions(model, XTrain, method=expMethod)
     # expVal = gen_explanations(model, XVal, method=expMethod)
     # expTest = gen_explanations(model, XTest, method=expMethod)
 
@@ -140,11 +172,11 @@ if __name__ == '__main__':
 
     nFeat = 5
 
-    class Net(nn.Module):
+    class TabNet(nn.Module):
         """ Basic FC NN """
 
         def __init__(self):
-            super(Net, self).__init__()
+            super(TabNet, self).__init__()
             self.fc1 = nn.Linear(nFeat, 25)  # 5*5 from image dimension
             self.fc2 = nn.Linear(25, 15)
             self.fc3 = nn.Linear(15, 2)
@@ -156,17 +188,16 @@ if __name__ == '__main__':
             return x
 
     # sample training function for class Net
-    def train_nn(model, X, y):
+    def train_tabnet(model, X, y):
+        """ X: FloatTensor, y: LongTensor """
         batchSize = 20
         nEpochs = 10
         criterion = nn.CrossEntropyLoss()
         optimizer = optim.SGD(model.parameters(), lr=1e-3)
-        X = torch.FloatTensor(X)
-        y = torch.LongTensor(y)
         for epoch in range(nEpochs):
             for batch in range(int(len(X) / batchSize)):
-                XBatch = X[batch:batch+batchSize]
-                yBatch = y[batch:batch+batchSize]
+                XBatch = X[batch:batch + batchSize]
+                yBatch = y[batch:batch + batchSize]
                 out = model(XBatch)
                 loss = criterion(out, yBatch)
 
@@ -175,6 +206,83 @@ if __name__ == '__main__':
                 optimizer.step()
         return model
 
-    eval_torch_tab(Net(), train_nn, 1000, nFeat, (0.8, 0.1, 0.1), 'shap', 'rule')
 
-    eval_sk_tabular(DecisionTreeClassifier(), 1000, 5, (0.7, 0.15, 0.15), 'lime', 'rule')
+    class ImNet(nn.Module):
+        # https://medium.com/analytics-vidhya/creating-a-very-simple-u-net-model-with-pytorch-for-semantic-segmentation-of-satellite-images-223aa216e705
+        def __init__(self, in_channels, out_channels):
+            super().__init__()
+
+            self.conv1 = self.contract_block(in_channels, 32, 7, 3)
+            self.conv2 = self.contract_block(32, 64, 3, 1)
+            self.conv3 = self.contract_block(64, 128, 3, 1)
+
+            self.upconv3 = self.expand_block(128, 64, 3, 1)
+            self.upconv2 = self.expand_block(64 * 2, 32, 3, 1)
+            self.upconv1 = self.expand_block(32 * 2, out_channels, 3, 1)
+
+        def forward(self, x):
+            # downsampling part
+            conv1 = self.conv1(x)
+            conv2 = self.conv2(conv1)
+            conv3 = self.conv3(conv2)
+
+            upconv3 = self.upconv3(conv3)
+
+            upconv2 = self.upconv2(torch.cat([upconv3, conv2], 1))
+            upconv1 = self.upconv1(torch.cat([upconv2, conv1], 1))
+
+            return upconv1
+
+        @staticmethod
+        def contract_block(in_channels, out_channels, kernel_size, padding):
+            contract = nn.Sequential(
+                torch.nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, stride=1, padding=padding),
+                torch.nn.BatchNorm2d(out_channels),
+                torch.nn.ReLU(),
+                torch.nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, stride=1, padding=padding),
+                torch.nn.BatchNorm2d(out_channels),
+                torch.nn.ReLU(),
+                torch.nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+            )
+
+            return contract
+
+        @staticmethod
+        def expand_block(in_channels, out_channels, kernel_size, padding):
+            expand = nn.Sequential(torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride=1, padding=padding),
+                                   torch.nn.BatchNorm2d(out_channels),
+                                   torch.nn.ReLU(),
+                                   torch.nn.Conv2d(out_channels, out_channels, kernel_size, stride=1, padding=padding),
+                                   torch.nn.BatchNorm2d(out_channels),
+                                   torch.nn.ReLU(),
+                                   torch.nn.ConvTranspose2d(out_channels, out_channels, kernel_size=3, stride=2,
+                                                            padding=1, output_padding=1)
+                                   )
+            return expand
+
+    # sample training function for class Net
+    def train_imnet(model, X, y):
+        # todo y FloatTensor
+        """ X: FloatTensor, y: FloatTensor """
+        batchSize = 20
+        nEpochs = 10
+        criterion = nn.BCELoss()
+        optimizer = optim.SGD(model.parameters(), lr=1e-3)
+        for epoch in range(nEpochs):
+            for batch in range(int(len(X) / batchSize)):
+                XBatch = X[batch:batch + batchSize]
+                yBatch = y[batch:batch + batchSize]
+                out = F.softmax(model(XBatch), dim=1)
+                loss = criterion(out, yBatch)
+
+                model.zero_grad()
+                loss.backward()
+                optimizer.step()
+        return model
+
+
+    eval_torch_image(ImNet(3, 1), train_tabnet, 50, nFeat, (0.8, 0.1, 0.1), 'shap', 'rule')
+
+    # eval_torch_tab(Net(), train_tabnet, 500, nFeat, (0.8, 0.1, 0.1), 'shap', 'rule')
+
+    # eval_sk_tabular(DecisionTreeClassifier(), 1000, 5, (0.7, 0.15, 0.15), 'lime', 'rule')

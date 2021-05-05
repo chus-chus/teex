@@ -29,7 +29,7 @@ def lime_torch_attributions(net, data, labelsToExplain):
     :param net: (object) PyTorch trained model.
     :param data: (Tensor) tabular data observations to get the attributions for.
     :param labelsToExplain: (Tensor) class labels the attributions will be computed w.r.t.
-    :return: (Tensor) observation feature attributions
+    :return: (ndarray) observation feature attributions
     """
     rbf_kernel = get_exp_kernel_similarity_function('euclidean', kernel_width=0.75 * sqrt(len(data[0])))
 
@@ -47,7 +47,7 @@ def lime_torch_attributions(net, data, labelsToExplain):
     for obs, label in zip(data, labelsToExplain):
         attr = torch.cat((attr, limeAttr.attribute(obs.reshape(1, -1), target=label)))
 
-    return attr
+    return attr.detach().numpy()
 
 
 def kshap_torch_attributions(net, data, labelsToExplain):
@@ -56,7 +56,7 @@ def kshap_torch_attributions(net, data, labelsToExplain):
     :param net: (object) PyTorch trained model.
     :param data: (Tensor) tabular data observations to get the attributions for.
     :param labelsToExplain: (Tensor) class labels the attributions will be computed w.r.t.
-    :return: (Tensor) observation feature attributions
+    :return: (ndarray) observation feature attributions
     """
     shapAttr = KernelShap(net)
 
@@ -68,7 +68,7 @@ def kshap_torch_attributions(net, data, labelsToExplain):
         attr = torch.cat((attr, shapAttr.attribute(obs.reshape(1, -1), baselines=torch.zeros(len(data[0])),
                                                    target=label)))
 
-    return torch.FloatTensor(attr)
+    return attr.detach().numpy()
 
 
 def torch_tab_attributions(model, data, labelsToExplain, method='lime', randomState=888):
@@ -78,8 +78,9 @@ def torch_tab_attributions(model, data, labelsToExplain, method='lime', randomSt
     :param labelsToExplain: (Tensor) class labels the attributions will be computed w.r.t.
     :param method: (str) attribution method: 'lime', 'shap'.
     :param randomState: (int) random seed.
-    :return: (Tensor) observation feature attributions
+    :return: (ndarray) normalized [-1, 1] observation feature attributions
     """
+    # todo normalize
     torch.manual_seed(randomState)
     if method == 'lime':
         return lime_torch_attributions(model, data, labelsToExplain)

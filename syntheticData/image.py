@@ -27,7 +27,8 @@ def gen_image_data(nSamples=1000, imageH=32, imageW=32, patternH=16, patternW=16
                       If > 0, colors may be a mix of the three channels (one ~1, the other two ~0).
      :param randomState: (int) random seed.
      :param returnModel: (bool) should a transparent image classifier trained with the data be returned?
-     :return: images (list), explanations (list), pattern (ndarray), (model (ImageClassifier) if returnModel is True)"""
+     :return: images (ndarray), explanations (ndarray), pattern (ndarray), (model (ImageClassifier)
+              if returnModel True)"""
 
     if imageH % patternH != 0 or imageW % patternW != 0 or imageH % cellH != 0 or imageW % cellW != 0:
         raise ValueError('Image height and widht not multiple of cell or pattern dimensions.')
@@ -52,10 +53,11 @@ def gen_image_data(nSamples=1000, imageH=32, imageW=32, patternH=16, patternW=16
                                              rng=rng, colorDev=colorDev, pattern=pattern, binaryPattern=binaryPattern)
         imgs.append((image, explanation))
     for _ in range(nSamples - nWithPattern):
-        # todo should explanations be a blank image for images without the pattern?
         image = _generate_image(imageH=imageH, imageW=imageW, cellH=cellH, cellW=cellW, fillPct=fillPct,
                                 rng=rng, colorDev=colorDev, pattern=None)
-        imgs.append((image, None))
+        # blank explanation
+        explanation = np.zeros((imageH, imageW))
+        imgs.append((image, explanation))
 
     random.shuffle(imgs)
     imgs, exps = zip(*imgs)
@@ -63,9 +65,9 @@ def gen_image_data(nSamples=1000, imageH=32, imageW=32, patternH=16, patternW=16
     if returnModel:
         mod = ImageClassifier()
         mod.fit(pattern)
-        return imgs, exps, pattern, mod
+        return np.array(imgs, dtype=np.float32), np.array(exps, dtype=int), pattern, mod
     else:
-        return imgs, exps, pattern
+        return np.array(imgs, dtype=np.float32), np.array(exps, dtype=int), pattern
 
 
 def _generate_image(imageH, imageW, cellH, cellW, fillPct, rng, colorDev, pattern=None, binaryPattern=None):
