@@ -8,6 +8,7 @@ from captum.attr import KernelShap, IntegratedGradients, GradientShap, Occlusion
 from captum.attr._core.lime import get_exp_kernel_similarity_function, LimeBase, Lime
 
 from explanation.featureImportance import _lime_perturb_func, _lime_identity
+from utils.image import normalize_array
 
 
 def get_image_explainer(model, layer=None, method='guidedGradCAM', model_name=None, **kwargs):
@@ -62,33 +63,40 @@ def get_image_explainer(model, layer=None, method='guidedGradCAM', model_name=No
     return explainer
 
 
-def get_image_attributions(explainer, inputImg, target=None, method=None, randomSeed=888):
-    """ Returns attribution scores for the specified image and explainer. """
+def get_image_attributions(explainer, inputImg, target=None, method=None, randomSeed=888, **kwargs):
+    """ Returns attribution scores for the specified image and explainer. extra kwargs are sent to the .attribute
+        of each explainer. The input image is assumed to be of shape (c x h x w) """
+
     if method == 'integratedGradient':
-        attributions = explainer.attribute(inputImg, target=target, n_steps=200)
+        attributions = explainer.attribute(inputImg, target=target, n_steps=200, **kwargs)
     elif method == 'gradientShap':
         torch.manual_seed(randomSeed)
         np.random.seed(randomSeed)
-        # Defining baseline distribution of images
-        # rand_img_dist = torch.cat([inputImg * 0, inputImg * 1])
-
         attributions = explainer.attribute(inputImg,
                                            n_samples=50,
                                            stdevs=0.0001,
-                                           baselines=0,
-                                           target=target)
-    elif method == 'kernelShap':
-        attributions = explainer.attribute(inputImg,
-                                           baselines=0,
-                                           target=target)
-    elif method == 'occlusion':
-        attributions = explainer.attribute(inputImg,
-                                           strides=(3, 8, 8),
+                                           baselines=torch.zeros(inputImg.shape),
                                            target=target,
-                                           sliding_window_shapes=(3, 15, 15),
-                                           baselines=0)
-    elif method in {'lime', 'kernelShap', 'guidedBackProp', 'deepLift', 'guidedGradCAM'}:
-        attributions = explainer.attribute(inputImg, target)
+                                           **kwargs)
+    elif method == 'kernelShap':
+        # todo not working, why is the reshape needed here but not in the others?
+        attributions = explainer.attribute(inputImg.reshape(1, 3, 32, 32),
+                                           baselines=0,
+                                           target=target,
+                                           **kwargs)
+    elif method == 'occlusion':
+        assert 'sliding_window_shapes' in kwargs, 'the sliding_window_shapes param. should be specified according' \
+                                                  'to the documentation of captum.attr.Occlusion.attribute'
+        attributions = explainer.attribute(inputImg,
+                                           strides=1,
+                                           target=target,
+                                           baselines=0,
+                                           **kwargs)
+    elif method == 'lime':
+        # todo why is the reshape needed here but not in the others? Why does it always return 0?
+        attributions = explainer.attribute(inputImg.reshape(1, 3, 32, 32), target=target, **kwargs)
+    elif method in {'guidedBackProp', 'deepLift', 'guidedGradCAM'}:
+        attributions = explainer.attribute(inputImg, target=target, **kwargs)
     else:
         explainers = ['lime', 'integratedGradient', 'gradientShap', 'kernelShap', 'occlusion', 'guidedBackProp',
                       'deepLift', 'guidedGradCAM']
@@ -138,25 +146,34 @@ def kshap_image_attributions(net, data, labelsToExplain):
     return attr.detach().numpy()
 
 
-def torch_pixel_attributions(model, data, labelsToExplain, method='lime', randomState=888):
-    """ Get model attributions as feature importance vectors for torch models working on tabular data.
+def torch_pixel_attributions(model, data, labelsToExplain, method='lime', randomState=888, **kwargs):
+    """ Get model attributions as feature importance vectors for torch models working on tabular data. Note that the
+    input images must be alredy be able to be forwarded to the model without any further transformations.
+
     :param model: (object) trained Pytorch model.
     :param data: (Tensor) data for which to get attributions.
     :param labelsToExplain: (Tensor) class labels the attributions will be computed w.r.t.
     :param method: (str) attribution method: 'lime', 'shap'.
     :param randomState: (int) random seed.
-    :return: (ndarray) normalized [-1, 1] observation feature attributions
+    :param kwargs: extra keyword arguments for the .attribute method of the explainer.
+    :return: (ndarray) normalized [0, 1] observation feature attributions
     """
-    # todo normalize
+
     torch.manual_seed(randomState)
 
     explainer = get_image_explainer(model, method=method)
-    att = get_image_attributions(explainer, inputImg=data[0].reshape(1, 3, 32, 32), target=labelsToExplain[0],
-                                 method=method)
 
-    if method == 'lime':
-        return lime_image_attributions(model, data, labelsToExplain)
-    elif method == 'shap':
-        return kshap_image_attributions(model, data, labelsToExplain)
-    else:
-        pass
+    attributions = []
+    for image, target in zip(data, labelsToExplain):
+        attr = get_image_attributions(explainer, inputImg=image, target=target, method=method, **kwargs)
+        attr = attr.squeeze()
+        if len(attr.shape) == 3:
+            attr = attr.squeeze().reshape(attr.shape[1], attr.shape[2], attr.shape[0])
+            # mean pool channel attributions
+            attr = attr.mean(dim=2)
+        elif len(attr.shape) != 2:
+            raise ValueError(f'Attribution shape {attr.shape} is not valid.')
+
+        attributions.append(normalize_array(attr.detach().numpy()))
+
+    return attributions

@@ -27,7 +27,7 @@ def gen_image_data(nSamples=1000, imageH=32, imageW=32, patternH=16, patternW=16
                       If > 0, colors may be a mix of the three channels (one ~1, the other two ~0).
      :param randomState: (int) random seed.
      :param returnModel: (bool) should a transparent image classifier trained with the data be returned?
-     :return: images (ndarray), explanations (ndarray), pattern (ndarray), (model (ImageClassifier)
+     :return: images (ndarray), y (2D ndarray), explanations (ndarray), pattern (ndarray), (model (ImageClassifier)
               if returnModel True)"""
 
     if imageH % patternH != 0 or imageW % patternW != 0 or imageH % cellH != 0 or imageW % cellW != 0:
@@ -47,27 +47,27 @@ def gen_image_data(nSamples=1000, imageH=32, imageW=32, patternH=16, patternW=16
     # was part of the pattern it will have at least some intensity). Squeeze it so it has shape patH x patW.
     binaryPattern = np.squeeze(np.where(np.delete(pattern, (0, 1), 2) != 0, 1, 0))
 
-    imgs = []
+    data = []
     for _ in range(nWithPattern):
         image, explanation = _generate_image(imageH=imageH, imageW=imageW, cellH=cellH, cellW=cellW, fillPct=fillPct,
                                              rng=rng, colorDev=colorDev, pattern=pattern, binaryPattern=binaryPattern)
-        imgs.append((image, explanation))
+        data.append((image, explanation, 1))
     for _ in range(nSamples - nWithPattern):
         image = _generate_image(imageH=imageH, imageW=imageW, cellH=cellH, cellW=cellW, fillPct=fillPct,
                                 rng=rng, colorDev=colorDev, pattern=None)
         # blank explanation
         explanation = np.zeros((imageH, imageW))
-        imgs.append((image, explanation))
+        data.append((image, explanation, 0))
 
-    random.shuffle(imgs)
-    imgs, exps = zip(*imgs)
+    random.shuffle(data)
+    imgs, exps, y = zip(*data)
 
     if returnModel:
         mod = ImageClassifier()
         mod.fit(pattern)
-        return np.array(imgs, dtype=np.float32), np.array(exps, dtype=int), pattern, mod
+        return np.array(imgs, dtype=np.float32), np.array(y, dtype=int), np.array(exps, dtype=int), pattern, mod
     else:
-        return np.array(imgs, dtype=np.float32), np.array(exps, dtype=int), pattern
+        return np.array(imgs, dtype=np.float32), np.array(y, dtype=int), np.array(exps, dtype=int), pattern
 
 
 def _generate_image(imageH, imageW, cellH, cellW, fillPct, rng, colorDev, pattern=None, binaryPattern=None):

@@ -6,12 +6,14 @@ import numpy as np
 
 from sklearn.model_selection import train_test_split
 
+from evaluation.image import saliency_map_scores
 from explanation.featureImportance import lime_torch_attributions, torch_tab_attributions
 from explanation.images import torch_pixel_attributions
 from syntheticData.image import gen_image_data
 from syntheticData.tabular import gen_tabular_data
 
 # todo merge functions eval_torch_tab, eval_torch_image and their dependencies
+from utils.image import normalize_array
 
 
 def _init_sk_model(classname, modelParams):
@@ -22,14 +24,15 @@ def _init_sk_model(classname, modelParams):
     return model(**modelParams)
 
 
-def _gen_split_data(dataType, nSamples, nFeatures, randomState, expType, dataSplit):
-    """ Returns train val test split synthetic image or tabular data """
+def _gen_split_data(dataType, nSamples, nFeatures, randomState, expType, dataSplit, **kwargs):
+    """ Returns train val test split synthetic image or tabular data
+    'kwargs' is passed to gen_image_data or gen_tabular_data, depending on 'dataType'.  """
 
     if dataType == 'image':
         # todo further parameters to gen_image_data
-        X, y, gtExp, _ = gen_image_data(nSamples=nSamples, randomState=randomState)
+        X, y, gtExp, _ = gen_image_data(nSamples=nSamples, randomState=randomState, **kwargs)
     elif dataType == 'tab':
-        X, y, gtExp, featureNames = gen_tabular_data(nSamples, nFeatures, randomState, expType)
+        X, y, gtExp, featureNames = gen_tabular_data(nSamples, nFeatures, randomState, expType, **kwargs)
     else:
         raise ValueError('DataType not valid.')
 
@@ -84,7 +87,7 @@ def eval_sk_tabular(model, nSamples, nFeatures, dataSplit, expMethod, expType, r
     return
 
 
-def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMethod, expType, randomState=888):
+def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMethod, expType, randomState=888, **kwargs):
     """ Trains a PyTorch model with synthetic tabular data. Then, generates explanations and evaluates them with
     the available ground truths for the generated train, validation and test sets.
 
@@ -100,6 +103,7 @@ def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMeth
     :param expType: (string) type of ground truth explanations. Available:
                              'fi' (feature importance vect.), 'rule' (DecisionRule objects)
     :param randomState: (int) random seed.
+    :param kwargs: extra arguments, will be passed to get_tabular_data
     """
     XTrain, XVal, XTest, yTrain, yVal, yTest, \
         gtExpTrain, gtExpVal, gtExpTest, fNames = _gen_split_data(dataType='tab',
@@ -107,7 +111,8 @@ def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMeth
                                                                   expType=expType,
                                                                   dataSplit=dataSplit,
                                                                   nFeatures=nFeatures,
-                                                                  randomState=randomState)
+                                                                  randomState=randomState,
+                                                                  **kwargs)
     XTrain = torch.FloatTensor(XTrain)
     XVal = torch.FloatTensor(XVal)
     XTest = torch.FloatTensor(XTest)
@@ -125,10 +130,12 @@ def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMeth
     return
 
 
-def eval_torch_image(model, trainFunction, nSamples, dataSplit, expMethod, randomState=888):
+def eval_torch_image(model, trainFunction, nSamples, dataSplit, expMethod, imageH=32, imageW=32, patternH=16,
+                     patternW=16, cellH=4, cellW=4, patternProp=0.5, fillPct=0.4, randomState=888, **kwargs):
     """
     Trains a PyTorch model with synthetic image data. Then, generates explanations and evaluates them with
-    the available ground truths for the train, validation and test sets.
+    the available ground truths for the train, validation and test sets. The model must be able to work with batches of
+    shape [-1, 3, imageH, imageW]
 
     :param model: torch model instance.
     :param trainFunction: function to train the torch model with. As parameters, it must accept 'model' (the torch
@@ -139,20 +146,27 @@ def eval_torch_image(model, trainFunction, nSamples, dataSplit, expMethod, rando
                                    to use as train, validation and test, respectively. Must sum 1. i.e. (0.6, 0.2, 0.2)
     # todo update supported methods
     :param expMethod: (string) explanation method to generate the explanations with. Available ['kernelShap', 'lime']
+    :param imageH: (int) height in pixels of the images.
+    :param imageW: (int) width in pixels of the images.
+    :param patternH: (int) height in pixels of the pattern.
+    :param patternW: (int) width in pixels of the pattern.
+    :param cellH: (int) height in pixels of each cell.
+    :param cellW: (int) width in pixels of each cell.
+    :param patternProp: (float, [0, 1]) percentage of appearance of the pattern in the dataset.
+    :param fillPct: (float, [0, 1]) percentage of cells filled (not black) in each image.
+    :param kwargs: extra arguments for the .attribute method of the selected explainer.
     :param randomState: (int) random seed.
     """
-    # todo parametrize image configurations
     expType, nFeatures = None, None
     XTrain, XVal, XTest, yTrain, yVal, yTest, \
-    gtExpTrain, gtExpVal, gtExpTest = _gen_split_data('image', nSamples, nFeatures, randomState, expType, dataSplit)
+        gtExpTrain, gtExpVal, gtExpTest = _gen_split_data('image', nSamples, nFeatures, randomState, expType, dataSplit,
+                                                          imageH=imageH, imageW=imageW, patternH=patternH,
+                                                          patternW=patternW, patternProp=patternProp, cellH=cellH,
+                                                          cellW=cellW, fillPct=fillPct)
 
-    XTrain = torch.FloatTensor(XTrain).reshape(-1, 3, 32, 32)
-    XVal = torch.FloatTensor(XVal).reshape(-1, 3, 32, 32)
-    XTest = torch.FloatTensor(XTest).reshape(-1, 3, 32, 32)
-
-    gtExpTrain = torch.FloatTensor(gtExpTrain).reshape(-1, 1, 32, 32)
-    gtExpVal = torch.FloatTensor(gtExpVal).reshape(-1, 1, 32, 32)
-    gtExpTest = torch.FloatTensor(gtExpTest).reshape(-1, 1, 32, 32)
+    XTrain = torch.FloatTensor(XTrain).reshape(-1, 3, imageH, imageW)
+    XVal = torch.FloatTensor(XVal).reshape(-1, 3, imageH, imageW)
+    XTest = torch.FloatTensor(XTest).reshape(-1, 3, imageH, imageW)
 
     yTrain = torch.LongTensor(yTrain)
     yVal = torch.LongTensor(yVal)
@@ -161,11 +175,21 @@ def eval_torch_image(model, trainFunction, nSamples, dataSplit, expMethod, rando
     model, avgLoss, avgAcc = trainFunction(model, XTrain, yTrain)
 
     print(f'Trained model with avg. training loss of {avgLoss} and avg. training accuracy of {avgAcc}.')
+    print(f'Generating explanations with {expMethod}')
 
-    expTrain = torch_pixel_attributions(model, XTrain, yTrain, method=expMethod)
-    # expVal = gen_explanations(model, XVal, method=expMethod)
-    # expTest = gen_explanations(model, XTest, method=expMethod)
+    expTrain = torch_pixel_attributions(model, XTrain, yTrain, method=expMethod, **kwargs)
+    expVal = torch_pixel_attributions(model, XVal, yVal, method=expMethod, **kwargs)
+    expTest = torch_pixel_attributions(model, XTest, yTest, method=expMethod, **kwargs)
 
+    # evaluate explanations
+    expTrainScores = [saliency_map_scores(gtExpTrain[i], exp, metrics=['auc', 'fscore', 'prec', 'rec', 'cs'],
+                                          binarizeGt=False) for i, exp in enumerate(expTrain)]
+    expValScores = [saliency_map_scores(gtExpVal[i], exp, metrics=['auc', 'fscore', 'prec', 'rec', 'cs'],
+                                          binarizeGt=False) for i, exp in enumerate(expVal)]
+    expTestScores = [saliency_map_scores(gtExpTest[i], exp, metrics=['auc', 'fscore', 'prec', 'rec', 'cs'],
+                                          binarizeGt=False) for i, exp in enumerate(expTest)]
+
+    # todo return mean of evaluations
     return
 
 
@@ -178,16 +202,18 @@ if __name__ == '__main__':
     import torch.nn.functional as F
 
 
-    class TabNet(nn.Module):
+    class FCNN(nn.Module):
         """ Basic FC NN """
 
         def __init__(self, nFeatures):
-            super(TabNet, self).__init__()
+            super(FCNN, self).__init__()
+            self.nFeatures = nFeatures
             self.fc1 = nn.Linear(nFeatures, 25)  # 5*5 from image dimension
             self.fc2 = nn.Linear(25, 15)
             self.fc3 = nn.Linear(15, 2)
 
         def forward(self, x):
+            x = x.reshape(-1, self.nFeatures)
             x = F.relu(self.fc1(x))
             x = F.relu(self.fc2(x))
             x = self.fc3(x)
@@ -291,25 +317,38 @@ if __name__ == '__main__':
 
         return model, avgLoss, avgAcc
 
+    imH = 32
+    imW = 32
+    pattH = 16
+    pattW = 16
+    cH = 4
+    cW = 4
+
     # image Umodel with pixel importance explanations
     nImages = 100
     torch.manual_seed(888)
-    imModel = ImNet(3, 1, 32, 32)
+    imModel = FCNN(imH * imW * 3)
     print('Training image model...')
     eval_torch_image(model=imModel,
                      trainFunction=train_net,
                      nSamples=nImages,
+                     imageH=imH,
+                     imageW=imW,
+                     patternH=pattH,
+                     patternW=pattW,
+                     cellH=cH,
+                     cellW=cW,
                      dataSplit=(0.8, 0.1, 0.1),
-                     expMethod='lime')
+                     expMethod='integratedGradient')
 
     # tabular model with feature importance explanations
     nFeat = 5
     torch.manual_seed(888)
-    tabModel = TabNet(nFeat)
+    tabModel = FCNN(nFeat)
     eval_torch_tab(model=tabModel,
                    trainFunction=train_net,
                    nSamples=500,
                    nFeatures=nFeat,
                    dataSplit=(0.8, 0.1, 0.1),
                    expType='rule',
-                   expMethod='shap')
+                   expMethod='lime')
