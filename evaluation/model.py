@@ -6,6 +6,7 @@ import numpy as np
 
 from sklearn.model_selection import train_test_split
 
+from evaluation.featureImportance import feature_importance_scores
 from evaluation.image import saliency_map_scores
 from explanation.featureImportance import lime_torch_attributions, torch_tab_attributions
 from explanation.images import torch_pixel_attributions
@@ -87,7 +88,8 @@ def eval_sk_tabular(model, nSamples, nFeatures, dataSplit, expMethod, expType, r
     return
 
 
-def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMethod, expType, randomState=888, **kwargs):
+def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMethod, expType, positiveClassLabel=1,
+                   metrics=None, randomState=888, **kwargs):
     """ Trains a PyTorch model with synthetic tabular data. Then, generates explanations and evaluates them with
     the available ground truths for the generated train, validation and test sets.
 
@@ -102,9 +104,12 @@ def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMeth
     :param expMethod: (string) explanation method to generate the explanations with. Available ['shap', 'lime']
     :param expType: (string) type of ground truth explanations. Available:
                              'fi' (feature importance vect.), 'rule' (DecisionRule objects)
+    :param positiveClassLabel: internal representation of the positive class.
+    :param metrics: (array-like, optional) quality metrics to compute. Available ['auc', 'fscore', 'prec', 'rec', 'cs']
     :param randomState: (int) random seed.
     :param kwargs: extra arguments, will be passed to get_tabular_data
     """
+    # todo finalize
     XTrain, XVal, XTest, yTrain, yVal, yTest, \
         gtExpTrain, gtExpVal, gtExpTest, fNames = _gen_split_data(dataType='tab',
                                                                   nSamples=nSamples,
@@ -123,15 +128,27 @@ def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMeth
 
     model, avgLoss, avgAcc = trainFunction(model, XTrain, yTrain)
 
-    expTrain = torch_tab_attributions(model, XTrain, yTrain, method=expMethod)
-    expVal = torch_tab_attributions(model, XVal, yVal, method=expMethod)
-    expTest = torch_tab_attributions(model, XTest, yTest, method=expMethod)
+    expTrain = torch_tab_attributions(model, XTrain[yTrain == positiveClassLabel], yTrain, method=expMethod)
+    expVal = torch_tab_attributions(model, XVal[yVal == positiveClassLabel], yVal, method=expMethod)
+    expTest = torch_tab_attributions(model, XTest[yTest == positiveClassLabel], yTest, method=expMethod)
 
-    return
+    # evaluate explanations
+    if metrics is None:
+        metrics = ['auc', 'fscore', 'prec', 'rec', 'cs']
+
+    expTrainScores = np.array([feature_importance_scores(gtExpTrain[np.where(yTrain == positiveClassLabel)][i], exp,
+                               metrics=metrics, binarizeExp=True) for i, exp in enumerate(expTrain)])
+    expValScores = np.array([feature_importance_scores(gtExpVal[np.where(yVal == positiveClassLabel)][i], exp,
+                             metrics=metrics, binarizeExp=True) for i, exp in enumerate(expVal)])
+    expTestScores = np.array([feature_importance_scores(gtExpTest[np.where(yTest == positiveClassLabel)][i], exp,
+                              metrics=metrics, binarizeExp=True) for i, exp in enumerate(expTest)])
+
+    return np.mean(expTrainScores, axis=0), np.mean(expValScores, axis=0), np.mean(expTestScores, axis=0)
 
 
 def eval_torch_image(model, trainFunction, nSamples, dataSplit, expMethod, imageH=32, imageW=32, patternH=16,
-                     patternW=16, cellH=4, cellW=4, patternProp=0.5, fillPct=0.4, randomState=888, **kwargs):
+                     patternW=16, cellH=4, cellW=4, patternProp=0.5, fillPct=0.4, randomState=888,
+                     metrics=None, positiveClassLabel=1, **kwargs):
     """
     Trains a PyTorch model with synthetic image data. Then, generates explanations and evaluates them with
     the available ground truths for the train, validation and test sets. The model must be able to work with batches of
@@ -154,8 +171,11 @@ def eval_torch_image(model, trainFunction, nSamples, dataSplit, expMethod, image
     :param cellW: (int) width in pixels of each cell.
     :param patternProp: (float, [0, 1]) percentage of appearance of the pattern in the dataset.
     :param fillPct: (float, [0, 1]) percentage of cells filled (not black) in each image.
+    :param metrics: (array-like, optional) quality metrics to compute. Available ['auc', 'fscore', 'prec', 'rec', 'cs']
     :param kwargs: extra arguments for the .attribute method of the selected explainer.
+    :param positiveClassLabel: internal representation of the positive class in the labels set.
     :param randomState: (int) random seed.
+    :return: mean metrics for the explanations of the positive class observations.
     """
     expType, nFeatures = None, None
     XTrain, XVal, XTest, yTrain, yVal, yTest, \
@@ -177,20 +197,24 @@ def eval_torch_image(model, trainFunction, nSamples, dataSplit, expMethod, image
     print(f'Trained model with avg. training loss of {avgLoss} and avg. training accuracy of {avgAcc}.')
     print(f'Generating explanations with {expMethod}')
 
-    expTrain = torch_pixel_attributions(model, XTrain, yTrain, method=expMethod, **kwargs)
-    expVal = torch_pixel_attributions(model, XVal, yVal, method=expMethod, **kwargs)
-    expTest = torch_pixel_attributions(model, XTest, yTest, method=expMethod, **kwargs)
+    # explanations only for the positive class
+    expTrain = torch_pixel_attributions(model, XTrain[yTrain == positiveClassLabel], yTrain, method=expMethod, **kwargs)
+    expVal = torch_pixel_attributions(model, XVal[yVal == positiveClassLabel], yVal, method=expMethod, **kwargs)
+    expTest = torch_pixel_attributions(model, XTest[yTest == positiveClassLabel], yTest, method=expMethod, **kwargs)
 
     # evaluate explanations
-    expTrainScores = [saliency_map_scores(gtExpTrain[i], exp, metrics=['auc', 'fscore', 'prec', 'rec', 'cs'],
-                                          binarizeGt=False) for i, exp in enumerate(expTrain)]
-    expValScores = [saliency_map_scores(gtExpVal[i], exp, metrics=['auc', 'fscore', 'prec', 'rec', 'cs'],
-                                          binarizeGt=False) for i, exp in enumerate(expVal)]
-    expTestScores = [saliency_map_scores(gtExpTest[i], exp, metrics=['auc', 'fscore', 'prec', 'rec', 'cs'],
-                                          binarizeGt=False) for i, exp in enumerate(expTest)]
+    if metrics is None:
+        metrics = ['auc', 'fscore', 'prec', 'rec', 'cs']
 
-    # todo return mean of evaluations
-    return
+    expTrainScores = np.array([saliency_map_scores(gtExpTrain[np.where(yTrain == positiveClassLabel)][i], exp,
+                                                   metrics=metrics, binarizeGt=False)
+                               for i, exp in enumerate(expTrain)])
+    expValScores = np.array([saliency_map_scores(gtExpVal[np.where(yVal == positiveClassLabel)][i], exp,
+                                                 metrics=metrics, binarizeGt=False) for i, exp in enumerate(expVal)])
+    expTestScores = np.array([saliency_map_scores(gtExpTest[np.where(yTest == positiveClassLabel)][i], exp,
+                                                  metrics=metrics, binarizeGt=False) for i, exp in enumerate(expTest)])
+
+    return np.mean(expTrainScores, axis=0), np.mean(expValScores, axis=0), np.mean(expTestScores, axis=0)
 
 
 if __name__ == '__main__':
@@ -325,21 +349,21 @@ if __name__ == '__main__':
     cW = 4
 
     # image Umodel with pixel importance explanations
-    nImages = 100
-    torch.manual_seed(888)
-    imModel = FCNN(imH * imW * 3)
-    print('Training image model...')
-    eval_torch_image(model=imModel,
-                     trainFunction=train_net,
-                     nSamples=nImages,
-                     imageH=imH,
-                     imageW=imW,
-                     patternH=pattH,
-                     patternW=pattW,
-                     cellH=cH,
-                     cellW=cW,
-                     dataSplit=(0.8, 0.1, 0.1),
-                     expMethod='integratedGradient')
+    # nImages = 100
+    # torch.manual_seed(888)
+    # imModel = FCNN(imH * imW * 3)
+    # print('Training image model...')
+    # eval_torch_image(model=imModel,
+    #                  trainFunction=train_net,
+    #                  nSamples=nImages,
+    #                  imageH=imH,
+    #                  imageW=imW,
+    #                  patternH=pattH,
+    #                  patternW=pattW,
+    #                  cellH=cH,
+    #                  cellW=cW,
+    #                  dataSplit=(0.8, 0.1, 0.1),
+    #                  expMethod='integratedGradient')
 
     # tabular model with feature importance explanations
     nFeat = 5

@@ -151,7 +151,7 @@ def torch_pixel_attributions(model, data, labelsToExplain, method='lime', random
     input images must be alredy be able to be forwarded to the model without any further transformations.
 
     :param model: (object) trained Pytorch model.
-    :param data: (Tensor) data for which to get attributions.
+    :param data: (array-like) data for which to get attributions (each image must be a Tensor)
     :param labelsToExplain: (Tensor) class labels the attributions will be computed w.r.t.
     :param method: (str) attribution method: 'lime', 'shap'.
     :param randomState: (int) random seed.
@@ -176,4 +176,4 @@ def torch_pixel_attributions(model, data, labelsToExplain, method='lime', random
 
         attributions.append(normalize_array(attr.detach().numpy()))
 
-    return attributions
+    return np.array(attributions)

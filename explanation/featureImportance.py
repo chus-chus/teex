@@ -29,8 +29,7 @@ def lime_torch_attributions(net, data, labelsToExplain):
     :param net: (object) PyTorch trained model.
     :param data: (Tensor) tabular data observations to get the attributions for.
     :param labelsToExplain: (Tensor) class labels the attributions will be computed w.r.t.
-    :return: (ndarray) observation feature attributions
-    """
+    :return: (ndarray) observation feature attributions """
     rbf_kernel = get_exp_kernel_similarity_function('euclidean', kernel_width=0.75 * sqrt(len(data[0])))
 
     limeAttr = LimeBase(net,
@@ -71,6 +70,14 @@ def kshap_torch_attributions(net, data, labelsToExplain):
     return attr.detach().numpy()
 
 
+def get_tabular_attributions(explainer, inputObs, target, method, param):
+    pass
+
+
+def get_tabular_explainer(model, method):
+    pass
+
+
 def torch_tab_attributions(model, data, labelsToExplain, method='lime', randomState=888):
     """ Get model attributions as feature importance vectors for torch models working on tabular data.
     :param model: (object) trained Pytorch model.
@@ -80,11 +87,20 @@ def torch_tab_attributions(model, data, labelsToExplain, method='lime', randomSt
     :param randomState: (int) random seed.
     :return: (ndarray) normalized [-1, 1] observation feature attributions
     """
-    # todo normalize
-    torch.manual_seed(randomState)
-    if method == 'lime':
-        return lime_torch_attributions(model, data, labelsToExplain)
-    elif method == 'shap':
-        return kshap_torch_attributions(model, data, labelsToExplain)
-    else:
-        pass
+
+    explainer = get_tabular_explainer(model, method=method)
+
+    attributions = []
+    for observation, target in zip(data, labelsToExplain):
+        attr = get_tabular_attributions(explainer, inputObs=image, target=target, method=method, **kwargs)
+        attr = attr.squeeze()
+        if len(attr.shape) == 3:
+            attr = attr.squeeze().reshape(attr.shape[1], attr.shape[2], attr.shape[0])
+            # mean pool channel attributions
+            attr = attr.mean(dim=2)
+        elif len(attr.shape) != 2:
+            raise ValueError(f'Attribution shape {attr.shape} is not valid.')
+
+        attributions.append(normalize_array(attr.detach().numpy()))
+
+    return np.array(attributions)    # todo normalize

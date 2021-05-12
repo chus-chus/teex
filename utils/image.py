@@ -1,9 +1,37 @@
 """ Image utils """
+import os
 
+import cv2
 import numpy as np
 
 from cv2 import COLOR_RGB2GRAY, cvtColor, COLOR_BGR2RGB, imread, findContours, drawContours, THRESH_OTSU, RETR_CCOMP, \
     CHAIN_APPROX_SIMPLE, threshold
+
+from utils.pathChecking import check_dir
+
+
+def list_images(pathName, returnType='list'):
+    """ Returns {filename: image, ...} """
+    check_dir(pathName)
+    if returnType == 'list':
+        images = []
+    elif returnType == 'dict':
+        images = {}
+    else:
+        raise ValueError('returnType not supported.')
+    for filename in os.scandir(pathName):
+        if filename.is_file():
+            # todo non RGB
+            if returnType == 'list':
+                images.append(cv2.cvtColor(cv2.imread(filename.path), cv2.COLOR_BGR2RGB).astype('float32'))
+            elif returnType == 'dict':
+                images[filename.name] = cv2.cvtColor(cv2.imread(filename.path), cv2.COLOR_BGR2RGB).astype('float32')
+        else:
+            raise Exception('Some images could not be read.')
+    if returnType == 'list':
+        return images
+    elif returnType == 'dict':
+        return images
 
 
 def rgb_to_grayscale(img):
@@ -78,15 +106,12 @@ def normalize_binary_mask(mask: np.array) -> np.array:
 
 def array_is_binary(array: np.array) -> bool:
     """
-    Checks wether an array only contains two unique values.
-    :param array: Input array-like.
+    Checks wether an array contains two or 1 unique values.
+    :param array: ndarray
     :return: Bool. True if array is binary.
     """
-    arrayLength = len(np.unique(array))
-    if arrayLength < 2 or arrayLength > 2:
-        return False
-    else:
-        return True
+    uniqueVals = len(np.unique(array))
+    return True if uniqueVals == 2 or uniqueVals == 1 else False
 
 
 def normalize_array(array: np.array) -> np.array:
