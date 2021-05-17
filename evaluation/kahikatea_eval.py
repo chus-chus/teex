@@ -9,9 +9,8 @@ from utils.image import list_images, binarize_rgb_mask
 
 if __name__ == '__main__':
     def transform_img_kahikatea(image):
-        transform = transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
+        transformKahikatea = transforms.Compose([
+            transforms.Resize((224, 224)),
             transforms.ToTensor()
         ])
 
@@ -22,7 +21,7 @@ if __name__ == '__main__':
 
         image = Image.fromarray(np.uint8(image)).convert('RGB')
 
-        transformedImg = transform(image)
+        transformedImg = transformKahikatea(image)
 
         inputImg = transform_normalize(transformedImg).unsqueeze(0)
         return inputImg, transformedImg
@@ -43,7 +42,7 @@ if __name__ == '__main__':
     # prediction labels and transform to tensors individually
     targets = torch.LongTensor([1 for _ in range(len(posKahikatea))])
 
-    nImagesToEval = 10
+    nImagesToEval = 1
 
     # apply image transformations for input to the models
     print('transforming images...')
@@ -52,7 +51,6 @@ if __name__ == '__main__':
         inputImg, _ = transform_img_kahikatea(im)
         posKahikateaTransformed.append(torch.FloatTensor(inputImg))
 
-    # todo alvin: why do we have this repeated pattern?
     # evaluate the model explanations for the prediction of positive class
     print('computing attributions...')
     attrs = torch_pixel_attributions(model, posKahikateaTransformed, targets[:nImagesToEval], method='integratedGradient')

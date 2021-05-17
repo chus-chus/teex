@@ -168,12 +168,14 @@ def torch_pixel_attributions(model, data, labelsToExplain, method='lime', random
         attr = get_image_attributions(explainer, inputImg=image, target=target, method=method, **kwargs)
         attr = attr.squeeze()
         if len(attr.shape) == 3:
-            attr = attr.squeeze().reshape(attr.shape[1], attr.shape[2], attr.shape[0])
+            attr = np.transpose(attr.squeeze().cpu().detach().numpy(), (1, 2, 0))
             # mean pool channel attributions
-            attr = attr.mean(dim=2)
+            attr = np.mean(attr, axis=2)
+            # attr = attr.mean(dim=2)
         elif len(attr.shape) != 2:
             raise ValueError(f'Attribution shape {attr.shape} is not valid.')
 
-        attributions.append(normalize_array(attr.detach().numpy()))
+        # viz._normalize_image_attr(tmp, 'absolute_value', 10)
+        attributions.append(normalize_array(attr))
 
     return np.array(attributions)

@@ -349,21 +349,21 @@ if __name__ == '__main__':
     cW = 4
 
     # image Umodel with pixel importance explanations
-    # nImages = 100
-    # torch.manual_seed(888)
-    # imModel = FCNN(imH * imW * 3)
+    nImages = 100
+    torch.manual_seed(888)
+    imModel = FCNN(imH * imW * 3)
     # print('Training image model...')
-    # eval_torch_image(model=imModel,
-    #                  trainFunction=train_net,
-    #                  nSamples=nImages,
-    #                  imageH=imH,
-    #                  imageW=imW,
-    #                  patternH=pattH,
-    #                  patternW=pattW,
-    #                  cellH=cH,
-    #                  cellW=cW,
-    #                  dataSplit=(0.8, 0.1, 0.1),
-    #                  expMethod='integratedGradient')
+    eval_torch_image(model=imModel,
+                     trainFunction=train_net,
+                     nSamples=nImages,
+                     imageH=imH,
+                     imageW=imW,
+                     patternH=pattH,
+                     patternW=pattW,
+                     cellH=cH,
+                     cellW=cW,
+                     dataSplit=(0.8, 0.1, 0.1),
+                     expMethod='integratedGradient')
 
     # tabular model with feature importance explanations
     nFeat = 5
