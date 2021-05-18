@@ -7,7 +7,11 @@ from scipy.spatial.distance import cdist
 
 
 # noinspection PyUnboundLocalVariable
+from utils.image import normalize_array
+
+
 def feature_importance_scores(gt, u, metrics=None, binarizeExp=False, **kwargs):
+    # todo move auc to classification score
     """ Computes fscore, precision, recall or / and cosine similarity between two feature importance vectors.
 
     :param gt: (array-like) ground truth feature importance vector.
@@ -16,6 +20,7 @@ def feature_importance_scores(gt, u, metrics=None, binarizeExp=False, **kwargs):
     :param binarizeExp: (bool) should the vectors be binarized for computing fscore, precision and recall?
     :return: (list) computed metrics.
     """
+
     if metrics is None:
         metrics = ['fscore']
     elif isinstance(metrics, str):
@@ -45,7 +50,7 @@ def feature_importance_scores(gt, u, metrics=None, binarizeExp=False, **kwargs):
         elif metric == 'cs':
             ret.append(cosine_similarity(gt, u, **kwargs))
         elif metric == 'auc':
-            ret.append(auc_score(gt, u, **kwargs))
+            ret.append(auc_score(binaryGt, u, **kwargs))
         else:
             raise ValueError(f"Invalid metric. Use {['fscore', 'prec', 'rec', 'cs', 'auc']}")
 

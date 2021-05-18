@@ -105,11 +105,11 @@ def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMeth
     :param expType: (string) type of ground truth explanations. Available:
                              'fi' (feature importance vect.), 'rule' (DecisionRule objects)
     :param positiveClassLabel: internal representation of the positive class.
-    :param metrics: (array-like, optional) quality metrics to compute. Available ['auc', 'fscore', 'prec', 'rec', 'cs']
+    :param metrics: (array-like, optional) quality metrics to compute. Available ['fscore', 'prec', 'rec', 'cs']
     :param randomState: (int) random seed.
     :param kwargs: extra arguments, will be passed to get_tabular_data
     """
-    # todo finalize
+    # todo support for rules
     XTrain, XVal, XTest, yTrain, yVal, yTest, \
         gtExpTrain, gtExpVal, gtExpTest, fNames = _gen_split_data(dataType='tab',
                                                                   nSamples=nSamples,
@@ -126,6 +126,7 @@ def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMeth
     yVal = torch.LongTensor(yVal)
     yTest = torch.LongTensor(yTest)
 
+    # todo add metrics for test, remove validation?
     model, avgLoss, avgAcc = trainFunction(model, XTrain, yTrain)
 
     expTrain = torch_tab_attributions(model, XTrain[yTrain == positiveClassLabel], yTrain, method=expMethod)
@@ -134,7 +135,7 @@ def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMeth
 
     # evaluate explanations
     if metrics is None:
-        metrics = ['auc', 'fscore', 'prec', 'rec', 'cs']
+        metrics = ['fscore', 'prec', 'rec', 'cs']
 
     expTrainScores = np.array([feature_importance_scores(gtExpTrain[np.where(yTrain == positiveClassLabel)][i], exp,
                                metrics=metrics, binarizeExp=True) for i, exp in enumerate(expTrain)])
@@ -349,21 +350,21 @@ if __name__ == '__main__':
     cW = 4
 
     # image Umodel with pixel importance explanations
-    nImages = 100
-    torch.manual_seed(888)
-    imModel = FCNN(imH * imW * 3)
-    # print('Training image model...')
-    eval_torch_image(model=imModel,
-                     trainFunction=train_net,
-                     nSamples=nImages,
-                     imageH=imH,
-                     imageW=imW,
-                     patternH=pattH,
-                     patternW=pattW,
-                     cellH=cH,
-                     cellW=cW,
-                     dataSplit=(0.8, 0.1, 0.1),
-                     expMethod='integratedGradient')
+    # nImages = 100
+    # torch.manual_seed(888)
+    # imModel = FCNN(imH * imW * 3)
+    # # print('Training image model...')
+    # eval_torch_image(model=imModel,
+    #                  trainFunction=train_net,
+    #                  nSamples=nImages,
+    #                  imageH=imH,
+    #                  imageW=imW,
+    #                  patternH=pattH,
+    #                  patternW=pattW,
+    #                  cellH=cH,
+    #                  cellW=cW,
+    #                  dataSplit=(0.8, 0.1, 0.1),
+    #                  expMethod='integratedGradient')
 
     # tabular model with feature importance explanations
     nFeat = 5
@@ -371,8 +372,9 @@ if __name__ == '__main__':
     tabModel = FCNN(nFeat)
     eval_torch_tab(model=tabModel,
                    trainFunction=train_net,
-                   nSamples=500,
+                   nSamples=200,
                    nFeatures=nFeat,
                    dataSplit=(0.8, 0.1, 0.1),
-                   expType='rule',
-                   expMethod='lime')
+                   expType='fi',
+                   expMethod='gradientShap')
+    # todo individual instance evaluation

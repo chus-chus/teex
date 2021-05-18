@@ -9,6 +9,9 @@ from captum.attr import LimeBase, KernelShap
 from captum._utils.models.linear_model import SkLearnLinearModel
 from captum.attr._core.lime import get_exp_kernel_similarity_function
 
+from explanation.images import get_explainer, get_attributions
+from utils.image import normalize_array
+
 
 def _lime_perturb_func(originalInput, **kwargs):
     """ Perturb the original input to find neighbour samples. Note that the implementation is quite specific to the
@@ -74,10 +77,6 @@ def get_tabular_attributions(explainer, inputObs, target, method, param):
     pass
 
 
-def get_tabular_explainer(model, method):
-    pass
-
-
 def torch_tab_attributions(model, data, labelsToExplain, method='lime', randomState=888):
     """ Get model attributions as feature importance vectors for torch models working on tabular data.
     :param model: (object) trained Pytorch model.
@@ -88,19 +87,12 @@ def torch_tab_attributions(model, data, labelsToExplain, method='lime', randomSt
     :return: (ndarray) normalized [-1, 1] observation feature attributions
     """
 
-    explainer = get_tabular_explainer(model, method=method)
+    explainer = get_explainer(model, method=method)
 
     attributions = []
     for observation, target in zip(data, labelsToExplain):
-        attr = get_tabular_attributions(explainer, inputObs=image, target=target, method=method, **kwargs)
-        attr = attr.squeeze()
-        if len(attr.shape) == 3:
-            attr = attr.squeeze().reshape(attr.shape[1], attr.shape[2], attr.shape[0])
-            # mean pool channel attributions
-            attr = attr.mean(dim=2)
-        elif len(attr.shape) != 2:
-            raise ValueError(f'Attribution shape {attr.shape} is not valid.')
-
+        attr = get_attributions(explainer, obs=observation, target=target, method=method)
+        # todo normalization -1, 1
         attributions.append(normalize_array(attr.detach().numpy()))
 
-    return np.array(attributions)    # todo normalize
+    return np.array(attributions)

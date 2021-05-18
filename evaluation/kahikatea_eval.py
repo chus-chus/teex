@@ -1,31 +1,34 @@
 import numpy as np
 import torch
 from PIL import Image
+from matplotlib import pyplot as plt
 from torchvision.transforms import transforms
 
 from evaluation.image import saliency_map_scores
 from explanation.images import torch_pixel_attributions
 from utils.image import list_images, binarize_rgb_mask
 
-if __name__ == '__main__':
-    def transform_img_kahikatea(image):
-        transformKahikatea = transforms.Compose([
-            transforms.Resize((224, 224)),
-            transforms.ToTensor()
-        ])
 
-        transform_normalize = transforms.Normalize(
-            mean=[0.485, 0.456, 0.406],
-            std=[0.229, 0.224, 0.225]
-        )
+def transform_img_kahikatea(image):
+    transformKahikatea = transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor()
+    ])
 
-        image = Image.fromarray(np.uint8(image)).convert('RGB')
+    transform_normalize = transforms.Normalize(
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]
+    )
 
-        transformedImg = transformKahikatea(image)
+    image = Image.fromarray(np.uint8(image)).convert('RGB')
 
-        inputImg = transform_normalize(transformedImg).unsqueeze(0)
-        return inputImg, transformedImg
+    transformedImg = transformKahikatea(image)
 
+    inputImg = transform_normalize(transformedImg).unsqueeze(0)
+    return inputImg, transformedImg
+
+
+def eval_kahikatea():
     # read kahikatea
     pathName = '/Users/chusantonanzas/GDrive/U/4t/TFG/TAIAOexp_CLI/data/Kahikatea/data/ve_positive'
     posKahikatea = list_images(pathName, returnType='list')
@@ -43,17 +46,21 @@ if __name__ == '__main__':
     targets = torch.LongTensor([1 for _ in range(len(posKahikatea))])
 
     nImagesToEval = 1
+    imSlack = 3
 
     # apply image transformations for input to the models
     print('transforming images...')
     posKahikateaTransformed = []
-    for im in posKahikatea[:nImagesToEval]:
-        inputImg, _ = transform_img_kahikatea(im)
+    for im in posKahikatea[imSlack:imSlack + nImagesToEval]:
+        inputImg, transf = transform_img_kahikatea(im)
+        plt.imshow(transf.permute(1, 2, 0))
+        plt.show()
         posKahikateaTransformed.append(torch.FloatTensor(inputImg))
 
     # evaluate the model explanations for the prediction of positive class
     print('computing attributions...')
-    attrs = torch_pixel_attributions(model, posKahikateaTransformed, targets[:nImagesToEval], method='integratedGradient')
+    attrs = torch_pixel_attributions(model, posKahikateaTransformed, targets[imSlack:imSlack + nImagesToEval],
+                                     method='integratedGradient')
 
     # reshape the gt explanations so that they have the same shape as the explanations (which belong to transformed)
     # input images.
@@ -63,9 +70,14 @@ if __name__ == '__main__':
         transforms.CenterCrop(224),
         transforms.ToTensor()
     ])
-    for exp in explanations[:nImagesToEval]:
+    for exp in explanations[imSlack:imSlack+nImagesToEval]:
         transformedExp = transform(Image.fromarray(np.uint8(exp))).ceil().detach().numpy()
+        plt.imshow(transformedExp.squeeze())
+        plt.show()
         transformedExps.append(transformedExp)
+
+    plt.imshow(attrs.squeeze())
+    plt.show()
 
     # and evaluate the attributions
     metrics = ['auc', 'fscore', 'prec', 'rec', 'cs']
@@ -77,4 +89,9 @@ if __name__ == '__main__':
 
     for i, metric in enumerate(metrics):
         print(f'Mean {metric}: {scores[i]}')
+
+
+if __name__ == '__main__':
+    eval_kahikatea()
+
 

@@ -4,14 +4,13 @@ import numpy as np
 import torch
 from captum._utils.models import SkLearnLinearModel
 from captum.attr import KernelShap, IntegratedGradients, GradientShap, Occlusion, GuidedBackprop, DeepLift, \
-    GuidedGradCam
-from captum.attr._core.lime import get_exp_kernel_similarity_function, LimeBase, Lime
+    GuidedGradCam, Lime
+from captum.attr import LimeBase
 
-from explanation.featureImportance import _lime_perturb_func, _lime_identity
 from utils.image import normalize_array
 
 
-def get_image_explainer(model, layer=None, method='guidedGradCAM', model_name=None, **kwargs):
+def get_explainer(model, layer=None, method='guidedGradCAM', model_name=None, **kwargs):
     """ Gets a captum explainer based on the provided PyTorch model.
     :param model: (callable) PyTorch classification model
     :param layer: (object) Model layer to use guidedGradCAM on. Predefined layer numbers are automatically defined if model_name
@@ -63,40 +62,42 @@ def get_image_explainer(model, layer=None, method='guidedGradCAM', model_name=No
     return explainer
 
 
-def get_image_attributions(explainer, inputImg, target=None, method=None, randomSeed=888, **kwargs):
-    """ Returns attribution scores for the specified image and explainer. extra kwargs are sent to the .attribute
-        of each explainer. The input image is assumed to be of shape (c x h x w) """
+def get_attributions(explainer, obs, target=None, method=None, randomSeed=888, **kwargs):
+    """ Returns attribution scores for an observation and explainer. The shape of the observation,
+        be it image or tabular, must be accepted by the model which the explainer was initialized on top of.
+        Extra kwargs are sent to the .attribute of each Captum explainer."""
 
     if method == 'integratedGradient':
-        attributions = explainer.attribute(inputImg, target=target, n_steps=200, **kwargs)
+        attributions = explainer.attribute(obs, target=target, n_steps=200, **kwargs)
     elif method == 'gradientShap':
         torch.manual_seed(randomSeed)
         np.random.seed(randomSeed)
-        attributions = explainer.attribute(inputImg,
+        attributions = explainer.attribute(obs,
                                            n_samples=50,
                                            stdevs=0.0001,
-                                           baselines=torch.zeros(inputImg.shape),
+                                           baselines=torch.zeros(obs.shape),
                                            target=target,
                                            **kwargs)
     elif method == 'kernelShap':
+        # todo reshape should not be needed.
         # todo not working, why is the reshape needed here but not in the others?
-        attributions = explainer.attribute(inputImg.reshape(1, 3, 32, 32),
+        attributions = explainer.attribute(obs.reshape(1, 3, 32, 32),
                                            baselines=0,
                                            target=target,
                                            **kwargs)
     elif method == 'occlusion':
         assert 'sliding_window_shapes' in kwargs, 'the sliding_window_shapes param. should be specified according' \
                                                   'to the documentation of captum.attr.Occlusion.attribute'
-        attributions = explainer.attribute(inputImg,
+        attributions = explainer.attribute(obs,
                                            strides=1,
                                            target=target,
                                            baselines=0,
                                            **kwargs)
     elif method == 'lime':
         # todo why is the reshape needed here but not in the others? Why does it always return 0?
-        attributions = explainer.attribute(inputImg.reshape(1, 3, 32, 32), target=target, **kwargs)
+        attributions = explainer.attribute(obs.reshape(1, 3, 32, 32), target=target, **kwargs)
     elif method in {'guidedBackProp', 'deepLift', 'guidedGradCAM'}:
-        attributions = explainer.attribute(inputImg, target=target, **kwargs)
+        attributions = explainer.attribute(obs, target=target, **kwargs)
     else:
         explainers = ['lime', 'integratedGradient', 'gradientShap', 'kernelShap', 'occlusion', 'guidedBackProp',
                       'deepLift', 'guidedGradCAM']
@@ -161,11 +162,11 @@ def torch_pixel_attributions(model, data, labelsToExplain, method='lime', random
 
     torch.manual_seed(randomState)
 
-    explainer = get_image_explainer(model, method=method)
+    explainer = get_explainer(model, method=method)
 
     attributions = []
     for image, target in zip(data, labelsToExplain):
-        attr = get_image_attributions(explainer, inputImg=image, target=target, method=method, **kwargs)
+        attr = get_attributions(explainer, obs=image, target=target, method=method, **kwargs)
         attr = attr.squeeze()
         if len(attr.shape) == 3:
             attr = np.transpose(attr.squeeze().cpu().detach().numpy(), (1, 2, 0))

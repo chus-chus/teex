@@ -121,7 +121,7 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
     fig, axs = plt.subplots(2, 3)
-    images, e, p = gen_image_data(nSamples=1, patternProp=1, randomState=3)
+    images, y, e, p = gen_image_data(nSamples=1, patternProp=1, randomState=3)
     axs[0, 0].imshow(p)
     axs[0, 0].set_title('Pattern')
     axs[0, 1].imshow(images[0])
@@ -129,7 +129,7 @@ if __name__ == '__main__':
     axs[0, 2].imshow(e[0])
     axs[0, 2].set_title('Explanation')
 
-    images, e, p = gen_image_data(nSamples=1, patternProp=1, randomState=4)
+    images, y, e, p = gen_image_data(nSamples=1, patternProp=1, randomState=4)
     axs[1, 0].imshow(p)
     axs[1, 1].imshow(images[0])
     axs[1, 2].imshow(e[0])
