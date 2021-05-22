@@ -91,7 +91,6 @@ def _generate_image(imageH, imageW, cellH, cellW, fillPct, rng, colorDev, patter
         img[cellRow:(cellRow+cellH), cellCol:(cellCol+cellW)] = _generate_rgb(rng, colorDev=colorDev)
 
     if pattern is not None:
-        # todo add random rotations to the pattern?
         # choose where the pattern goes (upper left corner) and overwrite the image
         patternRow = rng.choice(np.arange(0, imageH - pattern.shape[0], cellH))
         patternCol = rng.choice(np.arange(0, imageW - pattern.shape[1], cellW))

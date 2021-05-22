@@ -25,12 +25,11 @@ def _init_sk_model(classname, modelParams):
     return model(**modelParams)
 
 
-def _gen_split_data(dataType, nSamples, nFeatures, randomState, expType, dataSplit, **kwargs):
+def gen_split_data(dataType, nSamples, nFeatures, randomState, expType, dataSplit, **kwargs):
     """ Returns train val test split synthetic image or tabular data
     'kwargs' is passed to gen_image_data or gen_tabular_data, depending on 'dataType'.  """
 
     if dataType == 'image':
-        # todo further parameters to gen_image_data
         X, y, gtExp, _ = gen_image_data(nSamples=nSamples, randomState=randomState, **kwargs)
     elif dataType == 'tab':
         X, y, gtExp, featureNames = gen_tabular_data(nSamples, nFeatures, randomState, expType, **kwargs)
@@ -76,8 +75,7 @@ def eval_sk_tabular(model, nSamples, nFeatures, dataSplit, expMethod, expType, r
     :param randomState: (int) random seed.
     """
     XTrain, XVal, XTest, yTrain, yVal, yTest, \
-    gtExpTrain, gtExpVal, gtExpTest, _ = _gen_split_data('tab', nSamples, randomState, expType,
-                                                         dataSplit, nFeatures)
+    gtExpTrain, gtExpVal, gtExpTest, _ = gen_split_data('tab', nSamples, randomState, expType, dataSplit, nFeatures)
 
     model.fit(XTrain, yTrain)
 
@@ -109,15 +107,10 @@ def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMeth
     :param randomState: (int) random seed.
     :param kwargs: extra arguments, will be passed to get_tabular_data
     """
-    # todo support for rules
     XTrain, XVal, XTest, yTrain, yVal, yTest, \
-        gtExpTrain, gtExpVal, gtExpTest, fNames = _gen_split_data(dataType='tab',
-                                                                  nSamples=nSamples,
-                                                                  expType=expType,
-                                                                  dataSplit=dataSplit,
-                                                                  nFeatures=nFeatures,
-                                                                  randomState=randomState,
-                                                                  **kwargs)
+        gtExpTrain, gtExpVal, gtExpTest, fNames = gen_split_data(dataType='tab', nSamples=nSamples, nFeatures=nFeatures,
+                                                                 randomState=randomState, expType=expType,
+                                                                 dataSplit=dataSplit, **kwargs)
     XTrain = torch.FloatTensor(XTrain)
     XVal = torch.FloatTensor(XVal)
     XTest = torch.FloatTensor(XTest)
@@ -180,10 +173,10 @@ def eval_torch_image(model, trainFunction, nSamples, dataSplit, expMethod, image
     """
     expType, nFeatures = None, None
     XTrain, XVal, XTest, yTrain, yVal, yTest, \
-        gtExpTrain, gtExpVal, gtExpTest = _gen_split_data('image', nSamples, nFeatures, randomState, expType, dataSplit,
-                                                          imageH=imageH, imageW=imageW, patternH=patternH,
-                                                          patternW=patternW, patternProp=patternProp, cellH=cellH,
-                                                          cellW=cellW, fillPct=fillPct)
+        gtExpTrain, gtExpVal, gtExpTest = gen_split_data('image', nSamples, nFeatures, randomState, expType, dataSplit,
+                                                         imageH=imageH, imageW=imageW, patternH=patternH,
+                                                         patternW=patternW, patternProp=patternProp, cellH=cellH,
+                                                         cellW=cellW, fillPct=fillPct)
 
     XTrain = torch.FloatTensor(XTrain).reshape(-1, 3, imageH, imageW)
     XVal = torch.FloatTensor(XVal).reshape(-1, 3, imageH, imageW)
@@ -219,8 +212,6 @@ def eval_torch_image(model, trainFunction, nSamples, dataSplit, expMethod, image
 
 
 if __name__ == '__main__':
-    from sklearn.tree import DecisionTreeClassifier
-
     import torch
     import torch.nn as nn
     import torch.optim as optim
