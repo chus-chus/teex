@@ -60,14 +60,14 @@ def gen_image_data(nSamples=1000, imageH=32, imageW=32, patternH=16, patternW=16
         data.append((image, explanation, 0))
 
     random.shuffle(data)
-    imgs, exps, y = zip(*data)
+    imgs, exps, labels = zip(*data)
 
     if returnModel:
         mod = ImageClassifier()
-        mod.fit(pattern)
-        return np.array(imgs, dtype=np.float32), np.array(y, dtype=int), np.array(exps, dtype=int), pattern, mod
+        mod.fit(pattern, cellH=cellH, cellW=cellW)
+        return np.array(imgs, dtype=np.float32), np.array(labels, dtype=int), np.array(exps, dtype=int), pattern, mod
     else:
-        return np.array(imgs, dtype=np.float32), np.array(y, dtype=int), np.array(exps, dtype=int), pattern
+        return np.array(imgs, dtype=np.float32), np.array(labels, dtype=int), np.array(exps, dtype=int), pattern
 
 
 def _generate_image(imageH, imageW, cellH, cellW, fillPct, rng, colorDev, pattern=None, binaryPattern=None):
@@ -120,7 +120,7 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
     fig, axs = plt.subplots(2, 3)
-    images, y, e, p = gen_image_data(nSamples=1, patternProp=1, randomState=3)
+    images, _, e, p = gen_image_data(nSamples=1, patternProp=1, randomState=3)
     axs[0, 0].imshow(p)
     axs[0, 0].set_title('Pattern')
     axs[0, 1].imshow(images[0])

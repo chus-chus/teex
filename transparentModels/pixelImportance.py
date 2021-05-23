@@ -9,7 +9,7 @@ class ImageClassifier(BaseClassifier):
     the pattern, 0 otherwise. To be trained only a pattern needs to be fed.
 
     IMPORTANT NOTE ON GENERATING G.T. EXPLANATIONS: the ground truth explanations are automatically generated with
-    the 'dataGen.gen_image_data' method, so using this class to generate explanations is not recommended,
+    the 'dataGen.gen_image_data' method, so using this class to generate g.t. explanations is not recommended,
     as it is much less efficient. """
 
     def __init__(self):
@@ -17,17 +17,24 @@ class ImageClassifier(BaseClassifier):
         self.pattern = None
         self.pattH = None
         self.pattW = None
+        self.cellH = None
+        self.cellW = None
         self._binaryPattern = None
+        self._patternMask = None
+        self._maskedPattern = None
 
-    def fit(self, pattern):
-        self.pattern = pattern
-        self.pattH = pattern.shape[0]
-        self.pattW = pattern.shape[1]
+    def fit(self, pattern, cellH=1, cellW=1):
+        self.pattern = pattern.astype(np.float32)
+        self.pattH, self.pattW = pattern.shape[0], pattern.shape[1]
+        self.cellH, self.cellW = cellH, cellW
         self._binaryPattern = np.squeeze(np.where(np.delete(pattern, (0, 1), 2) != 0, 1, 0))
+        self._patternMask = self._binaryPattern.astype(bool).reshape(self.pattH, self.pattW, 1)
+        self._patternMask = np.concatenate((self._patternMask, self._patternMask, self._patternMask), axis=2)
+        self._maskedPattern = self.pattern[self._patternMask]
 
     def predict(self, obs):
         """ Predicts the class for each observation.
-            :param obs: array of n images as ndarrays.
+            :param obs: array of n images as ndarrays of np.float32 type.
             :return: array of n predicted labels. """
         ret = []
         for image in obs:
@@ -62,20 +69,14 @@ class ImageClassifier(BaseClassifier):
 
     def _has_pattern(self, image, retIndices=False):
         """ Searches for the pattern in the image and returns whether it contains it or not and its upper left indices
-        if specified. """
+        if specified. The pattern is contained within an image if the distribution and color of the cells != 0 coincide.
+        """
 
         hasPat = False
         indices = (0, 0)
-        for row in range(len(image[0]) - self.pattH):
-            for col in range(len(image[1]) - self.pattW):
-                hasPatRow = False
-                # instead of checking all of the pattern at once, check by rows for efficiency
-                # not expading another loop for code simplicity
-                for pattRow in range(self.pattH):
-                    hasPatRow = (image[row+pattRow, col:(col+self.pattW)] == self.pattern[pattRow]).all()
-                    if not hasPatRow:
-                        break
-                if hasPatRow:
+        for row in range(0, len(image[0]) - self.pattH, self.cellH):
+            for col in range(0, len(image[1]) - self.pattW, self.cellW):
+                if (image[row:(row+self.pattH), col:(col+self.pattW)][self._patternMask] == self._maskedPattern).all():
                     hasPat = True
                     indices = (row, col)
                     break
@@ -92,8 +93,24 @@ if __name__ == '__main__':
     from syntheticData.image import gen_image_data
     from evaluation.image import binary_mask_scores
 
+    nSamples = 100
+    randomState = 8
+    imageH, imageW = 32, 32
+    patternH, patternW = 16, 16
+    cellHeight, cellWidth = 4, 4
+    patternProp = 0.5
+    fillPct = 0.4
+    colorDev = 0.1
+
+    X, y, _, _, model = gen_image_data(nSamples=100, imageH=imageH, imageW=imageW,
+                                       patternH=patternH, patternW=patternW,
+                                       cellH=cellHeight, cellW=cellWidth, patternProp=patternProp,
+                                       fillPct=fillPct, colorDev=0.5, randomState=7, returnModel=True)
+
+    print(model.predict(X[:5]), y[:5])
+
     mod = ImageClassifier()
-    imgs, explanations, pat = gen_image_data(nSamples=4, patternProp=0.5)
+    imgs, y, explanations, pat = gen_image_data(nSamples=4, patternProp=0.5)
 
     # the model now recognizes the pattern 'pat'
     mod.fit(pat)
