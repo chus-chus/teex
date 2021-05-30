@@ -219,7 +219,138 @@ if __name__ == '__main__':
     import torch.optim as optim
     import torch.nn.functional as F
 
+    import torch
+    import torch.nn as nn
+    import torch.optim as optim
+    import torch.nn.functional as F
 
+    from sklearn.model_selection import train_test_split
+    from sklearn.metrics import accuracy_score
+
+
+    class FCNN(nn.Module):
+        """ Basic NN for image classification. """
+
+        def __init__(self, imH, imW, cellH):
+            super(FCNN, self).__init__()
+            self.conv1 = nn.Conv2d(3, 3, kernel_size=cellH, stride=1)
+            self.H1, self.W1 = imH - 3, imW - 3
+            self.conv2 = nn.Conv2d(3, 1, kernel_size=cellH, stride=1)
+            self.H2, self.W2 = self.H1 - 3, self.W1 - 3
+            self.fc1 = nn.Linear(self.H2 * self.W2, 100)
+            self.fc2 = nn.Linear(100, 20)
+            self.fc3 = nn.Linear(20, 2)
+
+        def forward(self, x):
+            if len(x.shape) == 3:
+                # single instance, add the batch dimension
+                print(x.shape)
+                x = x.view(-1, x.shape[2], x.shape[1], x.shape[0])
+
+            x = F.relu(self.conv1(x))
+            x = F.relu(self.conv2(x))
+            x = F.relu(self.fc1(x.view(x.shape[0], -1)))
+            x = F.relu(self.fc2(x))
+            x = self.fc3(x)
+            return x
+
+
+    # sample training function for binary classification
+    def train_net(model, X, y, XVal, yVal, randomState=888):
+        """ X: FloatTensor, y: LongTensor """
+        torch.manual_seed(randomState)
+        batchSize = 50
+        nEpochs = 100
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.Adam(model.parameters(), lr=1e-3)
+
+        bestValAcc = -np.inf
+        for epoch in range(nEpochs):
+            model.train()
+            for batch in range(int(len(X) / batchSize)):
+                XBatch = X[batch:batch + batchSize]
+                yBatch = y[batch:batch + batchSize]
+                model.zero_grad()
+                out = model(XBatch)
+                loss = criterion(out, yBatch)
+                loss.backward()
+                optimizer.step()
+            model.eval()
+            avgLoss = 0
+            avgAcc = 0
+            for batch in range(int(len(X) / batchSize)):
+                XBatch = X[batch:batch + batchSize]
+                yBatch = y[batch:batch + batchSize]
+                out = model(XBatch)
+                loss = criterion(out, yBatch)
+                avgLoss += loss.item()
+                preds = F.softmax(out, dim=-1).argmax(dim=1)
+                acc = accuracy_score(yBatch, preds.detach().numpy())
+                avgAcc += acc
+
+            avgValLoss = 0
+            avgValAcc = 0
+            for batch in range(int(len(XVal) / batchSize)):
+                XBatch = XVal[batch:batch + batchSize]
+                yBatch = yVal[batch:batch + batchSize]
+                out = model(XBatch)
+                loss = criterion(out, yBatch)
+                avgValLoss += loss.item()
+                preds = F.softmax(out, dim=-1).argmax(dim=1)
+                acc = accuracy_score(yBatch, preds.detach().numpy())
+                avgValAcc += acc
+
+            avgValAcc /= int(len(XVal) / batchSize)
+            avgLoss /= int(len(X) / batchSize)
+            avgAcc /= int(len(X) / batchSize)
+
+            # early stoppage
+            if avgValAcc >= bestValAcc:
+                bestValAcc = avgValAcc
+            else:
+                break
+
+        return model, avgLoss, avgAcc
+
+    nSamples = 100
+    randomState = 8
+    imageH, imageW = 32, 32
+    patternH, patternW = 16, 16
+    cellH, cellW = 4, 4
+    patternProp = 0.5
+    fillPct = 0.4
+    colorDev = 0.1
+
+    X, y, exps, pat = gen_image_data(nSamples=1000, imageH=imageH, imageW=imageW,
+                                     patternH=patternH, patternW=patternW,
+                                     cellH=cellH, cellW=cellW, patternProp=patternProp,
+                                     fillPct=fillPct, colorDev=0.5, randomState=7)
+
+    XTrain, XTest, yTrain, yTest, expsTrain, expsTest = train_test_split(X, y, exps, train_size=0.8, random_state=7)
+    XTrain, XVal, yTrain, yVal, expsTrain, expsVal = train_test_split(XTrain, yTrain, expsTrain, train_size=0.6,
+                                                                      random_state=7)
+
+    XTrain = torch.FloatTensor(XTrain).permute(0, 3, 2, 1)
+    yTrain = torch.LongTensor(yTrain)
+    XVal = torch.FloatTensor(XVal).permute(0, 3, 2, 1)
+    yVal = torch.LongTensor(yVal)
+    XTest = torch.FloatTensor(XTest).permute(0, 3, 2, 1)
+
+    nFeatures = len(XTrain[0].flatten())
+    model, trLoss, trAcc = train_net(FCNN(imageH, imageW, cellH), XTrain, yTrain, XVal, yVal, randomState=7)
+
+    print(f'Tr. loss: {round(trLoss, 3)}, Tr. accuracy: {round(trAcc, 3)}')
+    print(
+        f'Validation accuracy: {round(accuracy_score(yVal, F.softmax(model(torch.FloatTensor(XVal)), dim=-1).argmax(dim=1).detach().numpy()), 3)}')
+    print(
+        f'Test accuracy: {round(accuracy_score(yTest, F.softmax(model(torch.FloatTensor(XTest)), dim=-1).argmax(dim=1).detach().numpy()), 3)}')
+
+    from explanation.images import torch_pixel_attributions
+
+    expMethod = 'integratedGradient'
+    genExpsTrain = torch_pixel_attributions(model, XTrain[yTrain == 1], yTrain[yTrain == 1], method=expMethod)
+
+    # ----------------------------------------------------------------------------------------------------
     class FCNN(nn.Module):
         """ Basic FC NN """
 
