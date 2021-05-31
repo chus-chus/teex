@@ -7,8 +7,9 @@ import numpy as np
 from numpy import ndarray
 from sklearn.tree import DecisionTreeClassifier
 
+from evaluation.featureImportance import feature_importance_scores
 from transparentModels.baseClassifier import BaseClassifier
-from utils import generate_feature_names
+from utils import _generate_feature_names
 
 _VALID_OPERATORS = {'=', '!=', '>', '<', '>=', '<='}
 # operators for statements of shape: value1 <opLower> feature <opUpper> value2
@@ -97,6 +98,7 @@ class DecisionRule(object):
     are added to it with the upsert method (see .upsert_condition method).
     """
 
+    # todo add renaming of features
     def __init__(self, statements=None, result=None):
         """
         :param statements: (list-like) Statement objects.
@@ -287,18 +289,20 @@ class TransparentRuleClassifier(BaseClassifier):
 # ===================================
 
 
-def gen_rule_seneca(nSamples: int = 1000, nFeatures: int = 3, returnModel=False, featureNames=None,
-                    randomState: int = 888):
+def create_rule_data(method: str = 'seneca', nSamples: int = 1000, nFeatures: int = 3, returnModel=False,
+                     featureNames=None, randomState: int = 888):
     """ Generate synthetic binary classification tabular data with ground truth decision rule explanations. The returned
-    decision rule explanations are instances of the :code:`DecisionRule` class, generated with the
-    :class:`rule.TransparentRuleClassifier` class. The method was presented in [Evaluating local explanation methods on
-    ground truth, Riccardo Guidotti, 2021].
+    decision rule g.t. explanations are instances of the :code:`DecisionRule` class.
 
+    :param method: (str) method to use for the generation of the ground truth explanations. Available:
+        - 'seneca': g.t. explanations generated with the :class:`rule.TransparentRuleClassifier` class. The method was
+        presented in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021].
     :param nSamples: (int) number of samples to be generated.
     :param nFeatures: (int) total number of features in the generated data.
     :param returnModel: (bool) should the :code:`rule.TransparentRuleClassifier` model used for the generation of the
-    explanations be returned?
-    :param featureNames: (array-like) names of the generated features.
+    explanations be returned? Only used for the 'seneca' method.
+    :param featureNames: (array-like) names of the generated features. If not provided, a list with the generated
+    feature names will be returned by the function (necessary because the g.t. decision rules use them).
     :param randomState: (int) random state seed.
     :return:
         - X (ndarray) of shape (n_obs, n_features) Generated data
@@ -307,36 +311,42 @@ def gen_rule_seneca(nSamples: int = 1000, nFeatures: int = 3, returnModel=False,
         - model (:class:`rule.TransparentRuleClassifier`) Model instance used to generate the data (returned if
         :code:`returnModel` is True) """
 
+    methods = ['seneca']
+
+    if method not in methods:
+        raise ValueError(f'Method not available. Use one in {methods}')
+
     retFNames = False
     if featureNames is None:
         retFNames = True
-        featureNames = generate_feature_names(nFeatures)
+        featureNames = _generate_feature_names(nFeatures)
 
     # generate explanations with rules and binarize
     data, targets = make_classification(n_samples=nSamples, n_classes=2, n_features=nFeatures,
                                         n_informative=nFeatures, n_redundant=0, n_repeated=0,
                                         random_state=randomState)
-    classifier = TransparentRuleClassifier(random_state=randomState)
-    classifier.fit(data, targets, featureNames=featureNames)
-    explanations = classifier.explain(data)
 
-    if returnModel:
-        if retFNames:
-            return data, targets, explanations, featureNames, classifier
+    if method == 'seneca':
+        classifier = TransparentRuleClassifier(random_state=randomState)
+        classifier.fit(data, targets, featureNames=featureNames)
+        explanations = classifier.explain(data)
+        if returnModel:
+            if retFNames:
+                return data, targets, explanations, featureNames, classifier
+            else:
+                return data, targets, explanations, classifier
         else:
-            return data, targets, explanations, classifier
-    else:
-        if retFNames:
-            return data, targets, explanations, featureNames
-        else:
-            return data, targets, explanations
+            if retFNames:
+                return data, targets, explanations, featureNames
+            else:
+                return data, targets, explanations
 
 # ===================================
 #       EXPLANATION EVALUATION
 # ===================================
 
 
-def complete_rule_quality(gt: DecisionRule, rule: DecisionRule, eps: float = 0.1) -> float:
+def complete_rule_quality(gts: DecisionRule, rules: DecisionRule, eps: float = 0.1) -> float:
     """ Computes the complete rule quality (crq) between two decision rules. All 'Statements' in both rules must be
     binary (have upper and lower bounds). The metric is defined as the proportion of lower and upper bounds in a rule
     explanation whose that are eps-close to the respective lower and upper bounds (same feature) in the ground truth
@@ -353,66 +363,85 @@ def complete_rule_quality(gt: DecisionRule, rule: DecisionRule, eps: float = 0.1
                                                     0 \text{otherwise}
                                                 \end{cases}
 
-    And where :math:`N_{\not \infty}` is the number of lower and upper bounds that are different from :math:`\infty` in
+    Where :math:`N_{\not \infty}` is the number of lower and upper bounds that are different from :math:`\infty` in
     both :math:`e` and :math:`\tilde e`. More about this metric can be found in [Evaluating local explanation methods
     on ground truth, Riccardo Guidotti, 2021].
 
-    :param gt: (DecisionRule) ground truth rule w.r.t. which to compute the quality
-    :param rule: (DecisionRule) rule to compute the quality for
-    :param eps: (float) maximum difference for the bounds to be taken into account in the metric, with precision
-                up to 3 decimal places.
-    :return: (float) Complete rule quality """
+    :param gts: (DecisionRule or array-like of DecisionRules) ground truth rule w.r.t. which to compute the quality
+    :param rules: (DecisionRule or array-like of DecisionRules) rule to compute the quality for
+    :param eps: (float) threshold :math:`\varepsilon` for the bounds to be taken into account in the metric, with
+    precision up to 3 decimal places.
+    :return: (float or ndarray of shape (n_samples,)) Complete rule quality. """
 
-    nBounded = 0
-    epsCloseBounds = 0
-    for feature in rule.get_features():
-        if feature in gt:
-            if not gt[feature].binary or not rule[feature].binary:
-                raise ValueError('Statements must be binary.')
-            # compare upper bounds
-            if gt[feature].upperBound != np.inf and rule[feature].upperBound != np.inf:
-                nBounded += 1
-                if round(abs(gt[feature].upperBound - rule[feature].upperBound), 3) <= eps:
-                    epsCloseBounds += 1
-            # compare lower bounds
-            if gt[feature].lowerBound != -np.inf and rule[feature].lowerBound != -np.inf:
-                nBounded += 1
-                if round(abs(gt[feature].lowerBound - rule[feature].lowerBound), 3) <= eps:
-                    epsCloseBounds += 1
-    return epsCloseBounds / nBounded if nBounded != 0 else 0
+    if isinstance(gts, DecisionRule) and isinstance(rules, DecisionRule):
+        gts, rules = [gts], [rules]
+    if not isinstance(gts, (list, np.ndarray, tuple)) or not isinstance(rules, (list, np.ndarray, tuple)):
+        raise ValueError('Rules format not supported.')
+
+    res = []
+    for gt, rule in zip(gts, rules):
+        nBounded = 0
+        epsCloseBounds = 0
+        for feature in rule.get_features():
+            if feature in gt:
+                if not gt[feature].binary or not rule[feature].binary:
+                    raise ValueError('Statements must be binary.')
+                # compare upper bounds
+                if gt[feature].upperBound != np.inf and rule[feature].upperBound != np.inf:
+                    nBounded += 1
+                    if round(abs(gt[feature].upperBound - rule[feature].upperBound), 3) <= eps:
+                        epsCloseBounds += 1
+                # compare lower bounds
+                if gt[feature].lowerBound != -np.inf and rule[feature].lowerBound != -np.inf:
+                    nBounded += 1
+                    if round(abs(gt[feature].lowerBound - rule[feature].lowerBound), 3) <= eps:
+                        epsCloseBounds += 1
+        res.append(epsCloseBounds / nBounded if nBounded != 0 else 0)
+
+    return res[0] if len(res) == 1 else np.array(res).astype(np.float32)
 
 
-def rule_scores(gt: DecisionRule, rule: DecisionRule, allFeatures, metrics=None, **kwargs) -> float:
-    """ Quality cores for :class:`rule.DecisionRule` objects. Available scores are :code:`FScore`, :code:`Precision`,
-    :code:``
+def rule_scores(gts: DecisionRule, rules: DecisionRule, allFeatures, metrics=None, average=True, **kwargs) -> float:
+    """ Quality metrics for :class:`rule.DecisionRule` objects.
 
-    # todo complete
+    :param gts: (DecisionRule or array-like of DecisionRules) ground truth decision rule/s.
+    :param rules: (DecisionRule or array-like of DecisionRules) approximated decision rule/s.
+    :param allFeatures: (array-like) names of all of the relevant features (i.e. :code:`create_rule_data.featureNames`)
+    :param metrics: (array-like of str, default :code:`['fscore']`) metris to compute. Available:
+        - 'fscore': Computes the F1 Score between the ground truths and the predicted vectors.
+        - 'prec': Computes the Precision Score between the ground truths and the predicted vectors.
+        - 'rec': Computes the Recall Score between the ground truths and the predicted vectors.
+        - 'crq': Computes the Complete Rule Quality of :code:`rule` w.r.t. :code:`gt`.
+        - 'auc': Computes the ROC AUC Score between the two rules.
+        - 'cs': Computes the Cosine Similarity between the two rules.
+    Note that for 'fscore', 'prec', 'rec', 'auc' and 'cs' the rules are transformed to binary vectors where there is one
+    entry per possible feature and that entry contains a 1 if the feature is present in the rule, otherwise 0.
+    :param average: (bool, default :code:`True`) Used only if :code:`gt` and :code:`rule` are array-like. Should the
+    computed metrics be averaged across samples?
+    :return: (ndarray of shape (n_metrics,) or (n_metrics, n_samples)) specified metric/s. """
 
-    :param gt: ground truth decision rule.
-    :param rule: approximated decision rule.
-    :param allFeatures: (array-like) names of all of the relevant features.
-    :param metrics: (list, default = ['fscore']) metris to compute. Available: ['fscore', 'prec', 'rec', 'crq',
-                                                 'auc', 'cs']
-    :return: (list) specified metric/s.
-    """
     isArrayLike = isinstance(metrics, (list, np.ndarray, tuple))
-    crq = None
+    crq, crqIndex = None, None
     if metrics is not None:
         if metrics == 'crq':
-            return complete_rule_quality(gt, rule, **kwargs)
+            return complete_rule_quality(gts, rules, **kwargs)
         elif isArrayLike and 'crq' in metrics:
-            crq = complete_rule_quality(gt, rule, **kwargs)
+            crq = complete_rule_quality(gts, rules, **kwargs)
             crqIndex = metrics.index('crq')
             del metrics[metrics.index('crq')]
 
-    binaryGt = rule_to_feature_importance(gt, allFeatures)
-    binaryRule = rule_to_feature_importance(rule, allFeatures)
+    binaryGts = rule_to_feature_importance(gts, allFeatures)
+    binaryRules = rule_to_feature_importance(rules, allFeatures)
 
-    res = feature_importance_scores(binaryGt, binaryRule, metrics=metrics, **kwargs)
+    res = feature_importance_scores(binaryGts, binaryRules, metrics=metrics, average=average)
 
     if crq is not None:
-        # noinspection PyUnboundLocalVariable
-        res.insert(crqIndex, crq)
+        if isinstance(crq, np.ndarray):
+            # multiple observations, insert as a column
+            res = np.insert(res, crqIndex, crq, axis=1)
+        elif isinstance(crq, float):
+            # one observation
+            res = np.insert(res, crqIndex, crq, axis=0)
     return res
 
 
@@ -421,7 +450,7 @@ def rule_scores(gt: DecisionRule, rule: DecisionRule, allFeatures, metrics=None,
 # ===================================
 
 def rule_to_feature_importance(rules, allFeatures) -> list:
-    """  Converts one or more :class:`rule.DecisionRule` objects to a feature importance vectors. For each feature in
+    """  Converts one or more :class:`rule.DecisionRule` objects to feature importance vector/s. For each feature in
     *allFeatures*, the feature importance representation contains a 1 if there is a :class:'rule.Statement' with
     that particular feature in the decision rule and 0 otherwise.
 
@@ -429,15 +458,18 @@ def rule_to_feature_importance(rules, allFeatures) -> list:
     feature importance vectors.
     :param allFeatures: (array-like of str) List with m features (same as the rule features) whose order the returned
     array will follow. The features must match the ones used in the decision rules.
-    :return: binary array (list if > 1 rule) of length m where a 1 indicates that the feature appears in the rule
-    """
+    :return: (binary ndarray of shape (n_features,) or shape (n_features, n_rules)). """
+
     if isinstance(rules, (list, ndarray, tuple)):
         res = []
         for rule in rules:
             res.append([1 if feature in rule else 0 for feature in allFeatures])
-    else:
+    elif isinstance(rules, DecisionRule):
         res = [1 if feature in rules else 0 for feature in allFeatures]
-    return res
+    else:
+        raise ValueError('The rule is not a DecisionRule object nor array-like.')
+
+    return np.array(res).astype(np.float32)
 
 
 if __name__ == '__main__':

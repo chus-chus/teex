@@ -26,7 +26,7 @@ def saliency_map_scores(gt, explanation, metrics='auc', binarizeGt=True, gtBackg
             gt[gt != 0] = 1
 
     explanation = normalize_array(explanation)
-    return feature_importance_scores(gt.flatten(), explanation.flatten(), metrics=metrics, binarizeExp=True, **kwargs)
+    return feature_importance_scores(gt.flatten(), explanation.flatten(), metrics=metrics, binarizeExps=True, **kwargs)
 
 
 def binary_mask_scores(gt, explanation, metrics=None, **kwargs) -> float:
@@ -39,7 +39,7 @@ def binary_mask_scores(gt, explanation, metrics=None, **kwargs) -> float:
     :return: (list) the specified similarity metric/s.
     """
 
-    return feature_importance_scores(gt.flatten(), explanation.flatten(), metrics=metrics, binarizeExp=False, **kwargs)
+    return feature_importance_scores(gt.flatten(), explanation.flatten(), metrics=metrics, binarizeExps=False, **kwargs)
 
 
 if __name__ == '__main__':

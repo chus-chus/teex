@@ -133,11 +133,11 @@ def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMeth
         metrics = ['fscore', 'prec', 'rec', 'cs']
 
     expTrainScores = np.array([feature_importance_scores(gtExpTrain[np.where(yTrain == positiveClassLabel)][i], exp,
-                               metrics=metrics, binarizeExp=True) for i, exp in enumerate(expTrain)])
+                                                         metrics=metrics, binarizeExps=True) for i, exp in enumerate(expTrain)])
     expValScores = np.array([feature_importance_scores(gtExpVal[np.where(yVal == positiveClassLabel)][i], exp,
-                             metrics=metrics, binarizeExp=True) for i, exp in enumerate(expVal)])
+                                                       metrics=metrics, binarizeExps=True) for i, exp in enumerate(expVal)])
     expTestScores = np.array([feature_importance_scores(gtExpTest[np.where(yTest == positiveClassLabel)][i], exp,
-                              metrics=metrics, binarizeExp=True) for i, exp in enumerate(expTest)])
+                                                        metrics=metrics, binarizeExps=True) for i, exp in enumerate(expTest)])
 
     return np.mean(expTrainScores, axis=0), np.mean(expValScores, axis=0), np.mean(expTestScores, axis=0)
 
