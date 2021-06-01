@@ -7,25 +7,26 @@ from scipy.spatial.distance import cdist
 
 
 # noinspection PyUnboundLocalVariable
-from utils.image import normalize_array
+from _utils.image import normalize_array
 
-_AVAILABLE_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc'}
+_AVAILABLE_FEATURE_IMPORTANCE_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc'}
 
 
-def _binarize_vectors(v):
+def _binarize_vectors(v, threshold):
     """ Binarize 1 or more array-like object/s of floats to have values :math:`\in \{0, 1\}`.
     :param v: (1d array-like or 2d array-like of shape (n_features, n_samples)).
     :return: (1d ndarray of shape (n_features,) or 2d ndarray of shape (n_features, n_samples)). """
 
+    assert 0 < threshold < 1, 'threshold should be a value between 0 and 1.'
     if isinstance(v, np.ndarray):
-        return (v > 0.5).astype(np.int32)
+        return (v > threshold).astype(np.int32)
     elif isinstance(v, (list, tuple)):
-        return (np.array(v) > 0.5).astype(np.int32)
+        return (np.array(v) > threshold).astype(np.int32)
     else:
         raise ValueError('Format not supported.')
 
 
-def feature_importance_scores(gts, preds, metrics=None, average=True):
+def feature_importance_scores(gts, preds, metrics=None, average=True, binThreshold=0.5):
     # todo move auc to classification score
     """ Computes quality metrics between one or more feature importance vectors.
 
@@ -42,7 +43,9 @@ def feature_importance_scores(gts, preds, metrics=None, average=True):
     The vectors are automatically binarized for computing recall, precision and fscore.
     :param average: (bool) (bool, default :code:`True`) Used only if :code:`gt` and :code:`rule` contain multiple
     observations. Should the computed metrics be averaged across all the samples?
-    :return: (ndarray of shape (n_metrics,) or (n_samples, n_metrics)) specified metric/s. """
+    :param binThreshold: (float in [0, 1]) features with a value bigger than this will be set 1 and 0 otherwise when
+    binarizing for the computation of 'fscore', 'prec', 'rec' and 'cs'.
+    :return: (ndarray of shape (n_metrics,) or (n_samples, n_metrics)) specified metric/s in the original order. """
 
     if metrics is None:
         metrics = ['fscore']
@@ -50,14 +53,14 @@ def feature_importance_scores(gts, preds, metrics=None, average=True):
         metrics = [metrics]
 
     for metric in metrics:
-        if metric not in _AVAILABLE_METRICS:
-            raise ValueError(f"'{metric}' metric not valid. Use {_AVAILABLE_METRICS}")
+        if metric not in _AVAILABLE_FEATURE_IMPORTANCE_METRICS:
+            raise ValueError(f"'{metric}' metric not valid. Use {_AVAILABLE_FEATURE_IMPORTANCE_METRICS}")
 
     if not isinstance(gts, np.ndarray) or not isinstance(preds, np.ndarray):
         raise ValueError('Ground truths and predictions must be np.ndarrays.')
 
-    binaryGts = _binarize_vectors(gts)
-    binaryPreds = _binarize_vectors(preds)
+    binaryGts = _binarize_vectors(gts, threshold=binThreshold)
+    binaryPreds = _binarize_vectors(preds, threshold=binThreshold)
 
     if len(binaryPreds.shape) == 1:
         binaryGts, binaryPreds, gts, preds = [binaryGts], [binaryPreds], [gts], [preds]

@@ -10,7 +10,7 @@ from captum._utils.models.linear_model import SkLearnLinearModel
 from captum.attr._core.lime import get_exp_kernel_similarity_function
 
 from explanation.images import get_explainer, get_attributions
-from utils.image import normalize_array
+from _utils.image import normalize_array
 
 
 def _lime_perturb_func(originalInput, **kwargs):

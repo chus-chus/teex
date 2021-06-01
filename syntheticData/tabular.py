@@ -4,8 +4,8 @@ from sklearn.datasets import make_classification
 
 from transparentModels.decisionRule import RuleClassifier
 from transparentModels.featureImportance import LinearClassifier
-from utils.rule import rule_to_feature_importance
-from utils.tabular import generate_feature_names
+from _utils.rule import rule_to_feature_importance
+from _utils.tabular import generate_feature_names
 
 
 def gen_tabular_data(nSamples: int = 1000, nFeatures: int = 3, randomState: int = 888, expType='fi',

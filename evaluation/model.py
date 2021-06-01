@@ -16,7 +16,7 @@ from syntheticData.tabular import gen_tabular_data
 import torch
 
 # todo merge functions eval_torch_tab, eval_torch_image and their dependencies
-from utils.image import normalize_array
+from _utils.image import normalize_array
 
 
 def _init_sk_model(classname, modelParams):

@@ -9,7 +9,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 from evaluation.featureImportance import feature_importance_scores
 from transparentModels.baseClassifier import BaseClassifier
-from utils import _generate_feature_names
+from _utils import _generate_feature_names
 
 _VALID_OPERATORS = {'=', '!=', '>', '<', '>=', '<='}
 # operators for statements of shape: value1 <opLower> feature <opUpper> value2
@@ -305,11 +305,11 @@ def create_rule_data(method: str = 'seneca', nSamples: int = 1000, nFeatures: in
     feature names will be returned by the function (necessary because the g.t. decision rules use them).
     :param randomState: (int) random state seed.
     :return:
-        - X (ndarray) of shape (n_obs, n_features) Generated data
-        - y (ndarray) of shape (n_obs,) Ground truth explanations
-        - featureNames (list) list with the generated feature names (returned if they were not specified)
+        - X (ndarray) of shape (nSamples, nFeatures) Generated data.
+        - y (ndarray) of shape (nSamples,) Ground truth explanations.
+        - featureNames (list) list with the generated feature names (returned if they were not specified).
         - model (:class:`rule.TransparentRuleClassifier`) Model instance used to generate the data (returned if
-        :code:`returnModel` is True) """
+        :code:`returnModel` is True only when :code:`method='seneca'`). """
 
     methods = ['seneca']
 
@@ -416,9 +416,12 @@ def rule_scores(gts: DecisionRule, rules: DecisionRule, allFeatures, metrics=Non
         - 'cs': Computes the Cosine Similarity between the two rules.
     Note that for 'fscore', 'prec', 'rec', 'auc' and 'cs' the rules are transformed to binary vectors where there is one
     entry per possible feature and that entry contains a 1 if the feature is present in the rule, otherwise 0.
-    :param average: (bool, default :code:`True`) Used only if :code:`gt` and :code:`rule` are array-like. Should the
-    computed metrics be averaged across samples?
-    :return: (ndarray of shape (n_metrics,) or (n_metrics, n_samples)) specified metric/s. """
+    :param average: (bool, default :code:`True`) Used only if :code:`gts` and :code:`rule` are array-like. Should the
+    computed metrics be averaged across all of the samples?
+    :return: (ndarray) specified metric/s in the original order. Can be of shape
+        - (n_metrics,) if only one DecisionRule has been provided in both :code:`gts` and :code:`rules` or when both are
+        array-like and :code:`average=True`.
+        - (n_metrics, n_samples) if :code:`gts` and :code:`rules` are array-like and :code:`average=False`. """
 
     isArrayLike = isinstance(metrics, (list, np.ndarray, tuple))
     crq, crqIndex = None, None
@@ -448,6 +451,8 @@ def rule_scores(gts: DecisionRule, rules: DecisionRule, allFeatures, metrics=Non
 # ===================================
 #       UTILS
 # ===================================
+
+# todo parser to DecisionRule from other common representations
 
 def rule_to_feature_importance(rules, allFeatures) -> list:
     """  Converts one or more :class:`rule.DecisionRule` objects to feature importance vector/s. For each feature in

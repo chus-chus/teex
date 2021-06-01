@@ -7,7 +7,7 @@ from captum.attr import KernelShap, IntegratedGradients, GradientShap, Occlusion
     GuidedGradCam, Lime
 from captum.attr import LimeBase
 
-from utils.image import normalize_array
+from _utils.image import normalize_array
 
 
 def get_explainer(model, layer=None, method='guidedGradCAM', model_name=None, **kwargs):

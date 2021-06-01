@@ -7,7 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 from math import isnan
 
 from transparentModels.baseClassifier import BaseClassifier
-from utils.tabular import generate_feature_names
+from _utils.tabular import generate_feature_names
 
 
 class LinearClassifier(BaseClassifier):

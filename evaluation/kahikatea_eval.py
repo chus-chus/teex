@@ -6,7 +6,7 @@ from torchvision.transforms import transforms
 
 from evaluation.image import saliency_map_scores
 from explanation.images import torch_pixel_attributions
-from utils.image import list_images, binarize_rgb_mask
+from _utils.image import list_images, binarize_rgb_mask
 
 
 def transform_img_kahikatea(image):
