@@ -1,4 +1,4 @@
-""" Module for automatic evaluation of explanators on arbitrary models. """
+""" Module for automatic evaluation of explanators on pytorch models. """
 
 import sys
 
@@ -6,17 +6,15 @@ import numpy as np
 
 from sklearn.model_selection import train_test_split
 
-from evaluation.featureImportance import feature_importance_scores
-from evaluation.image import saliency_map_scores
+from featureImportance import feature_importance_scores, gen_fi_data
+from saliencyMap import saliency_map_scores, create_image_data
+
 from explanation.featureImportance import lime_torch_attributions, torch_tab_attributions
 from explanation.images import torch_pixel_attributions
-from syntheticData.image import gen_image_data
-from syntheticData.tabular import gen_tabular_data
 
 import torch
 
 # todo merge functions eval_torch_tab, eval_torch_image and their dependencies
-from _utils.image import normalize_array
 
 
 def _init_sk_model(classname, modelParams):
@@ -61,7 +59,6 @@ def gen_split_data(dataType, nSamples, nFeatures, randomState, expType, dataSpli
         return XTrain, XVal, XTest, yTrain, yVal, yTest, gtExpTrain, gtExpVal, gtExpTest, featureNames
 
 
-# todo normalise explanations for the linear method
 def eval_sk_tabular(model, nSamples, nFeatures, dataSplit, expMethod, expType, randomState=888):
     """ Trains a sklearn model with synthetic data. Then, generates explanations and evaluates them with
     the available ground truths for the generated train, validation and test sets.
@@ -213,7 +210,7 @@ def eval_torch_image(model, trainFunction, nSamples, dataSplit, expMethod, image
     return np.mean(expTrainScores, axis=0), np.mean(expValScores, axis=0), np.mean(expTestScores, axis=0)
 
 
-if __name__ == '__main__':
+def _model_eval_main():
     import torch
     import torch.nn as nn
     import torch.optim as optim
@@ -226,7 +223,6 @@ if __name__ == '__main__':
 
     from sklearn.model_selection import train_test_split
     from sklearn.metrics import accuracy_score
-
 
     class FCNN(nn.Module):
         """ Basic NN for image classification. """
@@ -253,7 +249,6 @@ if __name__ == '__main__':
             x = F.relu(self.fc2(x))
             x = self.fc3(x)
             return x
-
 
     # sample training function for binary classification
     def train_net(model, X, y, XVal, yVal, randomState=888):
@@ -368,7 +363,6 @@ if __name__ == '__main__':
             x = self.fc3(x)
             return x
 
-
     class ImNet(nn.Module):
         # https://medium.com/analytics-vidhya/creating-a-very-simple-u-net-model-with-pytorch-for-semantic-segmentation-of-satellite-images-223aa216e705
         def __init__(self, in_channels, out_channels, imH, imW):
@@ -425,7 +419,6 @@ if __name__ == '__main__':
                                                             padding=1, output_padding=1)
                                    )
             return expand
-
 
     from sklearn.metrics import accuracy_score
 
@@ -502,3 +495,7 @@ if __name__ == '__main__':
                    expType='fi',
                    expMethod='gradientShap')
     # todo individual instance evaluation
+
+
+if __name__ == '__main__':
+    _model_eval_main()

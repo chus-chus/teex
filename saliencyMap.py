@@ -8,17 +8,20 @@ import random
 
 from cv2 import cvtColor, COLOR_RGB2GRAY, imread, COLOR_BGR2RGB
 
-from evaluation.featureImportance import feature_importance_scores
-from transparentModels.baseClassifier import BaseClassifier
+from featureImportance import feature_importance_scores
+# noinspection PyProtectedMember
+from _utils._baseClassifier import _BaseClassifier
 
 _AVAILABLE_SALIENCY_MAP_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc'}
+_AVAILABLE_SALIENCY_MAP_GEN_METHODS = {'seneca'}
+
 
 # ===================================
 #       TRANSPARENT MODEL
 # ===================================
 
 
-class TransparentImageClassifier(BaseClassifier):
+class TransparentImageClassifier(_BaseClassifier):
     """ Transparent, pixel-based classifier with pixel (features) importances as explanations. Predicts the
     class of the images based on whether they contain a certain specified pattern or not. Class 1 if they contain
     the pattern, 0 otherwise. To be trained only a pattern needs to be fed. Follows the sklean API. Presented in
@@ -150,17 +153,15 @@ def gen_image_data(method='seneca', nSamples=1000, imageH=32, imageW=32, pattern
         - model (:class:`rule.TransparentImageClassifier`) Model instance trained to recognize the pattern in the data
         (returned if :code:`returnModel` is True only when :code:`method='seneca'`). """
 
-    methods = ['seneca']
-
-    if method not in methods:
-        raise ValueError(f'Method not available. Use one in {methods}')
+    if method not in _AVAILABLE_SALIENCY_MAP_GEN_METHODS:
+        raise ValueError(f'Method not available. Use one in {_AVAILABLE_SALIENCY_MAP_GEN_METHODS}')
 
     random.seed(randomState)
     rng = np.random.default_rng(randomState)
 
     if method == 'seneca':
         if imageH % patternH != 0 or imageW % patternW != 0 or imageH % cellH != 0 or imageW % cellW != 0:
-            raise ValueError('Image height and widht not multiple of cell or pattern dimensions.')
+            raise ValueError('Image height and width not multiple of cell or pattern dimensions.')
         if imageH < patternH or imageH < cellH or imageW < patternW or imageW < cellW or patternH < cellH or \
                 patternW < cellW:
             raise ValueError('Cells should be smaller than patterns and patterns than image size.')
@@ -170,7 +171,7 @@ def gen_image_data(method='seneca', nSamples=1000, imageH=32, imageW=32, pattern
                                          rng=rng, colorDev=colorDev, pattern=None)
 
         # transform pattern into a 2d array and then set the channel to 1 if the pixel had any intensity at all (if a
-        # cell was part of the pattern it will have at least some intensity). Squeeze it so it has shape patH x patW.
+        # cell was part of the pattern it will have at least some intensity). Squeeze it so it has shape pattH x pattW.
         binaryPattern = np.squeeze(np.where(np.delete(pattern, (0, 1), 2) != 0, 1, 0))
 
         data = []
@@ -309,7 +310,7 @@ def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=.5, gtBackgroundV
         # naive RGB check
         if gts.shape[3] == 3:
             warnings.warn('Binarizing g.t. RGB mask. If it is not RGB, binarize it before calling this function.')
-            gts = _binarize_rgb_mask(gts, bgValue=gtBackgroundVals)
+            gts = binarize_rgb_mask(gts, bgValue=gtBackgroundVals)
             return feature_importance_scores(gts.flatten(), sMaps.flatten(), metrics=metrics, binThreshold=binThreshold)
         else:
             # multiple binary masks provided
@@ -319,7 +320,7 @@ def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=.5, gtBackgroundV
     elif len(gts.shape) == 4:
         warnings.warn(f'Binarizing {gts.shape[0]} g.t. RGB masks.')
         for imIndex in range(gts.shape[0]):
-            gts[imIndex] = _binarize_rgb_mask(gts, bgValue=gtBackgroundVals)
+            gts[imIndex] = binarize_rgb_mask(gts, bgValue=gtBackgroundVals)
         return feature_importance_scores(gts.reshape(gts.shape[0], gts.shape[1]*gts.shape[2]),
                                          sMaps.reshape(sMaps.shape[0], sMaps.shape[1]*sMaps.shape[2]), metrics=metrics,
                                          average=average, binThreshold=binThreshold)
@@ -341,24 +342,26 @@ def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=.5, gtBackgroundV
 #       UTILS
 # ===================================
 
-def _rgb_to_grayscale(img):
-    """ Transforms a 3 channel RGB image into a grayscale image (1 channel) """
+def rgb_to_grayscale(img):
+    """ Transforms a 3 channel RGB image into a grayscale image (1 channel).
+     :param img: (ndarray) of shape (imageH, imageW, 3)
+     :return: (ndarray) of shape (imageH, imageW) """
+
     return cvtColor(img.astype('float32'), COLOR_RGB2GRAY)
 
 
-def _binarize_rgb_mask(img, bgValue='high') -> np.array:
-    """
-    Binarizes a RGB binary mask, letting the background (negative class) be 0. Use this function when the
-    image to binarize has a very defined background.
+def binarize_rgb_mask(img, bgValue='high') -> np.array:
+    """ Binarizes a RGB binary mask, letting the background (negative class) be 0. Use this function when the image to
+    binarize has a very defined background.
 
     :param img: (ndarray) of shape (imageH, imageW, 3), RGB mask to binarize.
     :param bgValue: (str) Intensity of the negative class of the image to binarize: {'light', 'dark'}
-    :return: (ndarray) a binary mask.
-    """
+    :return: (ndarray) a binary mask. """
+
     if bgValue not in {'high', 'low'}:
         raise ValueError(f"bgColor should ve {['high', 'low']}")
 
-    imgmod = _rgb_to_grayscale(img)
+    imgmod = rgb_to_grayscale(img)
     maxVal = np.max(imgmod)
     minVal = np.min(imgmod)
     if bgValue == 'high':
@@ -372,55 +375,17 @@ def _binarize_rgb_mask(img, bgValue='high') -> np.array:
     return imgmod
 
 
-def _read_rgb_img(imgPath: str) -> np.array:
-    """
-    Read RGB image from path.
-    :param imgPath: relative (from w.d.) or absolute path of the file.
-    :return: np.array as RGB image.
-    """
-    return cvtColor(imread(imgPath), COLOR_BGR2RGB)
-
-
-def _normalize_binary_mask(mask: np.array) -> np.array:
-    """
-    Normalizes a binary array (NOT 0 mean, 1 std).
-    :param mask: Binary np.array.
-    :return: np.array with values in {0, 1}.
-    """
-    if not _array_is_binary(mask):
-        raise Exception('Array is not binary.')
-    else:
-        return _normalize_array(mask)
-
-
-def _array_is_binary(array: np.array) -> bool:
-    """
-    Checks wether an array contains two or 1 unique values.
-    :param array: ndarray
-    :return: Bool. True if array is binary.
-    """
-    uniqueVals = len(np.unique(array))
-    return True if uniqueVals == 2 or uniqueVals == 1 else False
-
-
-def _normalize_array(array: np.array) -> np.array:
-    """
-    Normalizes an array via min-max.
-    :param array: np.array to normalize
-    :return: np.array with values in [0, 1]
-    """
-    arrayMin = np.min(array)
-    return (array - arrayMin) / (np.max(array) - arrayMin)
-
-
-def _is_rgb(img):
-    """ img (ndarray) """
-    return True if len(img.shape) == 3 and img.shape[2] == 3 else False
-
 # ===================================
 
-
 def _main():
+    def _read_rgb_img(imgPath: str) -> np.array:
+        """
+        Read RGB image from path.
+        :param imgPath: relative (from w.d.) or absolute path of the file.
+        :return: np.array as RGB image.
+        """
+        return cvtColor(imread(imgPath), COLOR_BGR2RGB)
+
     print('TRANSPARENT MODEL')
     import matplotlib.pyplot as plt
 
@@ -508,7 +473,7 @@ def _main():
     plt.show()
 
     # bgValue is 'high' because background is white
-    gtmask = _binarize_rgb_mask(gtmask, bgValue='high')
+    gtmask = binarize_rgb_mask(gtmask, bgValue='high')
 
     plt.imshow(gtmask)
     plt.show()

@@ -1,15 +1,19 @@
 """ The rule module. Contains all of the methods regarding this datatype: data generation, evaluation of explanations
  and other utils. """
 
-# todo base classifier module (utils?)
-
 import numpy as np
 from numpy import ndarray
 from sklearn.tree import DecisionTreeClassifier
 
-from evaluation.featureImportance import feature_importance_scores
-from transparentModels.baseClassifier import BaseClassifier
-from _utils import _generate_feature_names
+from featureImportance import feature_importance_scores
+
+# noinspection PyProtectedMember
+from _utils._baseClassifier import _BaseClassifier
+# noinspection PyProtectedMember
+from _utils._misc import _generate_feature_names
+
+_AVAILABLE_DECISION_RULE_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc', 'crq'}
+_AVAILABLE_DECISION_RULE_GEN_METHODS = {'seneca'}
 
 _VALID_OPERATORS = {'=', '!=', '>', '<', '>=', '<='}
 # operators for statements of shape: value1 <opLower> feature <opUpper> value2
@@ -191,7 +195,7 @@ class DecisionRule(object):
         self.result = result
 
 
-class TransparentRuleClassifier(BaseClassifier):
+class TransparentRuleClassifier(_BaseClassifier):
     """ Transparent, rule-based classifier with decision rules as explanations. For each prediction, the associated
     ground truth explanation is available with the :code:`.explain` method. Follows the sklean API. Presented in
     [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021]. """
@@ -289,32 +293,32 @@ class TransparentRuleClassifier(BaseClassifier):
 # ===================================
 
 
-def create_rule_data(method: str = 'seneca', nSamples: int = 1000, nFeatures: int = 3, returnModel=False,
+def gen_rule_data(method: str = 'seneca', nSamples: int = 1000, nFeatures: int = 3, returnModel=False,
                      featureNames=None, randomState: int = 888):
     """ Generate synthetic binary classification tabular data with ground truth decision rule explanations. The returned
     decision rule g.t. explanations are instances of the :code:`DecisionRule` class.
 
     :param method: (str) method to use for the generation of the ground truth explanations. Available:
-        - 'seneca': g.t. explanations generated with the :class:`rule.TransparentRuleClassifier` class. The method was
-        presented in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021].
+        - 'seneca': g.t. explanations generated with the :class:`decisionRule.TransparentRuleClassifier` class. The
+        method was presented in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021].
     :param nSamples: (int) number of samples to be generated.
     :param nFeatures: (int) total number of features in the generated data.
-    :param returnModel: (bool) should the :code:`rule.TransparentRuleClassifier` model used for the generation of the
-    explanations be returned? Only used for the 'seneca' method.
+    :param returnModel: (bool) should the :code:`decisionRule.TransparentRuleClassifier` model used for the generation
+    of the explanations be returned? Only used for the 'seneca' method.
     :param featureNames: (array-like) names of the generated features. If not provided, a list with the generated
     feature names will be returned by the function (necessary because the g.t. decision rules use them).
     :param randomState: (int) random state seed.
     :return:
         - X (ndarray) of shape (nSamples, nFeatures) Generated data.
-        - y (ndarray) of shape (nSamples,) Ground truth explanations.
-        - featureNames (list) list with the generated feature names (returned if they were not specified).
-        - model (:class:`rule.TransparentRuleClassifier`) Model instance used to generate the data (returned if
+        - y (ndarray) of shape (nSamples,) Binary data labels.
+        - explanations (list) of :class:`decisionRule.DecisionRule` objects of length (nSamples). Generated ground
+        truth explanations.
+        - featureNames (list) list with the generated feature names (only if they were not specified).
+        - model (:class:`decisionRule.TransparentRuleClassifier`) Model instance used to generate the data (returned if
         :code:`returnModel` is True only when :code:`method='seneca'`). """
 
-    methods = ['seneca']
-
-    if method not in methods:
-        raise ValueError(f'Method not available. Use one in {methods}')
+    if method not in _AVAILABLE_DECISION_RULE_GEN_METHODS:
+        raise ValueError(f'Method not available. Use one in {_AVAILABLE_DECISION_RULE_GEN_METHODS}')
 
     retFNames = False
     if featureNames is None:
@@ -402,7 +406,7 @@ def complete_rule_quality(gts: DecisionRule, rules: DecisionRule, eps: float = 0
 
 
 def rule_scores(gts: DecisionRule, rules: DecisionRule, allFeatures, metrics=None, average=True, **kwargs) -> float:
-    """ Quality metrics for :class:`rule.DecisionRule` objects.
+    """ Quality metrics for :class:`decisionRule.DecisionRule` objects.
 
     :param gts: (DecisionRule or array-like of DecisionRules) ground truth decision rule/s.
     :param rules: (DecisionRule or array-like of DecisionRules) approximated decision rule/s.
@@ -424,6 +428,14 @@ def rule_scores(gts: DecisionRule, rules: DecisionRule, allFeatures, metrics=Non
         - (n_metrics, n_samples) if :code:`gts` and :code:`rules` are array-like and :code:`average=False`. """
 
     isArrayLike = isinstance(metrics, (list, np.ndarray, tuple))
+    if not isArrayLike:
+        if metrics not in _AVAILABLE_DECISION_RULE_METRICS:
+            raise ValueError(f"'{metrics}' metric not valid. Use {_AVAILABLE_DECISION_RULE_METRICS}")
+    else:
+        for metric in metrics:
+            if metric not in _AVAILABLE_DECISION_RULE_METRICS:
+                raise ValueError(f"'{metric}' metric not valid. Use {_AVAILABLE_DECISION_RULE_METRICS}")
+
     crq, crqIndex = None, None
     if metrics is not None:
         if metrics == 'crq':
@@ -455,15 +467,15 @@ def rule_scores(gts: DecisionRule, rules: DecisionRule, allFeatures, metrics=Non
 # todo parser to DecisionRule from other common representations
 
 def rule_to_feature_importance(rules, allFeatures) -> list:
-    """  Converts one or more :class:`rule.DecisionRule` objects to feature importance vector/s. For each feature in
-    *allFeatures*, the feature importance representation contains a 1 if there is a :class:'rule.Statement' with
-    that particular feature in the decision rule and 0 otherwise.
+    """  Converts one or more :class:`decisionRule.DecisionRule` objects to feature importance vector/s. For each
+    feature in *allFeatures*, the feature importance representation contains a 1 if there is a
+    :class:'decisionRule.Statement' with that particular feature in the decision rule and 0 otherwise.
 
-    :param rules: (:class:`rule.DecisionRule` or (1, r) array-like of :class:`rule.DecisionRule`) Rule/s to convert to
-    feature importance vectors.
+    :param rules: (:class:`decisionRule.DecisionRule` or (1, r) array-like of :class:`decisionRule.DecisionRule`) Rule/s
+    to convert to feature importance vectors.
     :param allFeatures: (array-like of str) List with mg features (same as the rule features) whose order the returned
     array will follow. The features must match the ones used in the decision rules.
-    :return: (binary ndarray of shape (n_features,) or shape (n_features, n_rules)). """
+    :return: (binary ndarray of shape (n_features,) or shape (n_rules, n_features)). """
 
     if isinstance(rules, (list, ndarray, tuple)):
         res = []
@@ -479,8 +491,6 @@ def rule_to_feature_importance(rules, allFeatures) -> list:
 
 if __name__ == '__main__':
 
-    # todo add the other demoes
-
     from sklearn.datasets import make_classification
 
     # c = Statement('f', binary=True)
@@ -491,7 +501,7 @@ if __name__ == '__main__':
                                random_state=8)
 
     ruleModel.fit(X, y)
-    print('MANUALLY GENERATING EXPLANATIONS')
+    print('MANUALLY GENERATING EXPLANATIONS WITH SENECA')
     print('Only one observation:')
     exp = ruleModel.explain(X[1].reshape(1, -1))
     print(exp[0])

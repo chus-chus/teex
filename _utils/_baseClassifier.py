@@ -1,7 +1,7 @@
 import abc
 
 
-class BaseClassifier(object):
+class _BaseClassifier(object):
     def __init__(self):
         self.featureNames = None
 
