@@ -6,9 +6,6 @@ import sklearn.metrics as met
 from scipy.spatial.distance import cdist
 
 
-# noinspection PyUnboundLocalVariable
-from _utils.image import normalize_array
-
 _AVAILABLE_FEATURE_IMPORTANCE_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc'}
 
 
@@ -63,11 +60,13 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, binThresho
     binaryPreds = _binarize_vectors(preds, threshold=binThreshold)
 
     if len(binaryPreds.shape) == 1:
-        binaryGts, binaryPreds, gts, preds = [binaryGts], [binaryPreds], [gts], [preds]
+        binaryGts, binaryPreds = binaryGts.reshape(1, -1), binaryPreds.reshape(1, -1)
+        gts, preds = gts.reshape(1, -1), preds.reshape(1, -1)
 
     ret = []
     for binGt, binPred, gt, pred in zip(binaryGts, binaryPreds, gts, preds):
         mets = []
+        # todo what to do when we have only 1 class
         for metric in metrics:
             if metric == 'fscore':
                 mets.append(f_score(binGt, binPred))
@@ -78,13 +77,18 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, binThresho
             elif metric == 'cs':
                 mets.append(cosine_similarity(gt, pred))
             elif metric == 'auc':
-                mets.append(auc_score(binGt, preds))
+                if len(np.unique(binGt)) == 1:
+                    mets.append(np.nan)
+                else:
+                    mets.append(auc_score(binGt, pred))
         ret.append(mets)
 
     ret = np.array(ret).astype(np.float32)
 
-    if average is True and len(binaryPreds.shape) != 1:
+    if average is True and binaryPreds.shape[0] > 1:
         ret = np.mean(ret, axis=0)
+    elif binaryPreds.shape[0] == 1:
+        return ret.squeeze()
 
     return ret
 

@@ -1,12 +1,15 @@
 """ The image module. Contains all of the methods regarding this explanation type: data generation, evaluation of
-explanations and other utils. """
+explanations and related utils. """
+
+import warnings
 
 import numpy as np
 import random
 
+from cv2 import cvtColor, COLOR_RGB2GRAY, imread, COLOR_BGR2RGB
+
 from evaluation.featureImportance import feature_importance_scores
 from transparentModels.baseClassifier import BaseClassifier
-from _utils import _array_is_binary, _is_rgb, _binarize_rgb_mask, _normalize_array, _read_rgb_img
 
 _AVAILABLE_SALIENCY_MAP_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc'}
 
@@ -296,54 +299,128 @@ def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=.5, gtBackgroundV
         if metric not in _AVAILABLE_SALIENCY_MAP_METRICS:
             raise ValueError(f"'{metric}' metric not valid. Use {_AVAILABLE_SALIENCY_MAP_METRICS}")
 
-    # todo treat gts and sMaps depending on their shape
+    if gts.shape != sMaps.shape:
+        raise ValueError("G.t. masks' shape cannot be different from the saliency maps explanations.")
 
     if len(gts.shape) == 2:
-        # 1 binary mask
-        if not _array_is_binary(gts):
-            pass
+        # Single binary g.t. mask
+        return feature_importance_scores(gts.flatten(), sMaps.flatten(), metrics=metrics, binThreshold=binThreshold)
     elif len(gts.shape) == 3:
-        # either a single rgb mask or a multiple binary masks
-        pass
+        # naive RGB check
+        if gts.shape[3] == 3:
+            warnings.warn('Binarizing g.t. RGB mask. If it is not RGB, binarize it before calling this function.')
+            gts = _binarize_rgb_mask(gts, bgValue=gtBackgroundVals)
+            return feature_importance_scores(gts.flatten(), sMaps.flatten(), metrics=metrics, binThreshold=binThreshold)
+        else:
+            # multiple binary masks provided
+            return feature_importance_scores(gts.reshape(gts.shape[0], gts.shape[1] * gts.shape[2]),
+                                             sMaps.reshape(sMaps.shape[0], sMaps.shape[1] * sMaps.shape[2]),
+                                             metrics=metrics, average=average, binThreshold=binThreshold)
     elif len(gts.shape) == 4:
-        # multiple RGB masks
-        pass
+        warnings.warn(f'Binarizing {gts.shape[0]} g.t. RGB masks.')
+        for imIndex in range(gts.shape[0]):
+            gts[imIndex] = _binarize_rgb_mask(gts, bgValue=gtBackgroundVals)
+        return feature_importance_scores(gts.reshape(gts.shape[0], gts.shape[1]*gts.shape[2]),
+                                         sMaps.reshape(sMaps.shape[0], sMaps.shape[1]*sMaps.shape[2]), metrics=metrics,
+                                         average=average, binThreshold=binThreshold)
     else:
         raise ValueError(f'Shape {gts.shape} of ground truth explanations not supported.')
 
-    ##########
-    # if not _array_is_binary(gts) and not binarizeGt:
-    #     raise ValueError('Ground truth is not binary: binarize before calling.')
-    # elif binarizeGt:
-    #     if _is_rgb(gts):
-    #         gts = _binarize_rgb_mask(gts, bgValue=gtBackgroundVals)
-    #     else:
-    #         gts[gts != 0] = 1
 
-    sMaps = _normalize_array(sMaps)
-    return feature_importance_scores(gts.flatten(), sMaps.flatten(), metrics=metrics, average=average,
-                                     binThreshold=binThreshold)
-
-
-def binary_mask_scores(gt, explanation, metrics=None, **kwargs) -> float:
-    # todo revise
-    """ Computes metrics for the evaluation of image binary pixel importance explanations.
-
-    :param gt: (ndarray), ground truth pixel importance n x m binary mask.
-    :param explanation: (ndarray), image pixel importance n x m binary explanation.
-    :param metrics: (str / array-like) 'fscore', 'prec', 'rec', 'auc', 'cs'
-    :return: (list) the specified similarity metric/s. """
-
-    return feature_importance_scores(gt.flatten(), explanation.flatten(), metrics=metrics, **kwargs)
+# def binary_mask_scores(gt, explanation, metrics=None, **kwargs) -> float:
+#     """ Computes metrics for the evaluation of image binary pixel importance explanations.
+#
+#     :param gt: (ndarray), ground truth pixel importance n x m binary mask.
+#     :param explanation: (ndarray), image pixel importance n x m binary explanation.
+#     :param metrics: (str / array-like) 'fscore', 'prec', 'rec', 'auc', 'cs'
+#     :return: (list) the specified similarity metric/s. """
+#
+#     return feature_importance_scores(gt.flatten(), explanation.flatten(), metrics=metrics, **kwargs)
 
 # ===================================
 #       UTILS
 # ===================================
 
-# todo add related utils
+def _rgb_to_grayscale(img):
+    """ Transforms a 3 channel RGB image into a grayscale image (1 channel) """
+    return cvtColor(img.astype('float32'), COLOR_RGB2GRAY)
 
 
-def main():
+def _binarize_rgb_mask(img, bgValue='high') -> np.array:
+    """
+    Binarizes a RGB binary mask, letting the background (negative class) be 0. Use this function when the
+    image to binarize has a very defined background.
+
+    :param img: (ndarray) of shape (imageH, imageW, 3), RGB mask to binarize.
+    :param bgValue: (str) Intensity of the negative class of the image to binarize: {'light', 'dark'}
+    :return: (ndarray) a binary mask.
+    """
+    if bgValue not in {'high', 'low'}:
+        raise ValueError(f"bgColor should ve {['high', 'low']}")
+
+    imgmod = _rgb_to_grayscale(img)
+    maxVal = np.max(imgmod)
+    minVal = np.min(imgmod)
+    if bgValue == 'high':
+        # assign darker pixels the positive class
+        imgmod[imgmod < maxVal] = 1
+        imgmod[imgmod == maxVal] = 0
+    elif bgValue == 'low':
+        # assign lighter pixels the positive class
+        imgmod[imgmod > minVal] = 1
+        imgmod[imgmod == minVal] = 0
+    return imgmod
+
+
+def _read_rgb_img(imgPath: str) -> np.array:
+    """
+    Read RGB image from path.
+    :param imgPath: relative (from w.d.) or absolute path of the file.
+    :return: np.array as RGB image.
+    """
+    return cvtColor(imread(imgPath), COLOR_BGR2RGB)
+
+
+def _normalize_binary_mask(mask: np.array) -> np.array:
+    """
+    Normalizes a binary array (NOT 0 mean, 1 std).
+    :param mask: Binary np.array.
+    :return: np.array with values in {0, 1}.
+    """
+    if not _array_is_binary(mask):
+        raise Exception('Array is not binary.')
+    else:
+        return _normalize_array(mask)
+
+
+def _array_is_binary(array: np.array) -> bool:
+    """
+    Checks wether an array contains two or 1 unique values.
+    :param array: ndarray
+    :return: Bool. True if array is binary.
+    """
+    uniqueVals = len(np.unique(array))
+    return True if uniqueVals == 2 or uniqueVals == 1 else False
+
+
+def _normalize_array(array: np.array) -> np.array:
+    """
+    Normalizes an array via min-max.
+    :param array: np.array to normalize
+    :return: np.array with values in [0, 1]
+    """
+    arrayMin = np.min(array)
+    return (array - arrayMin) / (np.max(array) - arrayMin)
+
+
+def _is_rgb(img):
+    """ img (ndarray) """
+    return True if len(img.shape) == 3 and img.shape[2] == 3 else False
+
+# ===================================
+
+
+def _main():
     print('TRANSPARENT MODEL')
     import matplotlib.pyplot as plt
 
@@ -356,15 +433,15 @@ def main():
     fillPct = 0.4
     colorDev = 0.5
 
-    X, y, _, _, model = gen_image_data(nSamples=nSamples, imageH=imageH, imageW=imageW,
-                                       patternH=patternH, patternW=patternW,
-                                       cellH=cellHeight, cellW=cellWidth, patternProp=patternProp,
-                                       fillPct=fillPct, colorDev=colorDev, randomState=randomState, returnModel=True)
+    X, y, _, _, model = gen_image_data(method='seneca', nSamples=nSamples, imageH=imageH, imageW=imageW,
+                                       patternH=patternH, patternW=patternW, cellH=cellHeight, cellW=cellWidth,
+                                       patternProp=patternProp, fillPct=fillPct, colorDev=colorDev,
+                                       randomState=randomState, returnModel=True)
 
     print(model.predict(X[:5]), y[:5])
 
     mod = TransparentImageClassifier()
-    imgs, _, explanations, pat = gen_image_data(nSamples=4, patternProp=0.5)
+    imgs, _, explanations, pat = gen_image_data(method='seneca', nSamples=4, patternProp=0.5)
 
     # the model now recognizes the pattern 'pat'
     mod.fit(pat)
@@ -390,8 +467,9 @@ def main():
     print(mod.predict(imgs))
     print(mod.predict_proba(imgs))
 
-    print(binary_mask_scores(e[0], e[0]))
-    print(binary_mask_scores(e[2], e[2]))
+    print('Cosine similarity and ROC AUC not defined when the explanation contains all 0s.')
+    print(saliency_map_scores(e[0], e[0], metrics=['fscore', 'cs', 'auc']))
+    print(saliency_map_scores(e[2], e[2]))
 
     print('SYNTHETIC DATA GENERATION')
 
@@ -429,7 +507,8 @@ def main():
     plt.imshow(gtmask)
     plt.show()
 
-    gtmask = _binarize_rgb_mask(gtmask, bgValue='light')
+    # bgValue is 'high' because background is white
+    gtmask = _binarize_rgb_mask(gtmask, bgValue='high')
 
     plt.imshow(gtmask)
     plt.show()
@@ -440,10 +519,10 @@ def main():
     plt.imshow(testmask)
     plt.show()
 
-    f1Score, prec, rec, auc, cs = binary_mask_scores(gtmask, testmask, metrics=['fscore', 'prec', 'rec', 'auc', 'cs'])
+    f1Score, prec, rec, auc, cs = saliency_map_scores(gtmask, testmask, metrics=['fscore', 'prec', 'rec', 'auc', 'cs'])
 
     print(f'F1Score: {f1Score}, Precision: {prec}, Recall: {rec}, AUC: {auc}, CS: {cs}')
 
 
 if __name__ == "__main__":
-    main()
+    _main()
