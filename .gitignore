@@ -4,3 +4,4 @@ data/
 .ipynb_checkpoints/
 *.bat
 Makefile
+__pycache__/

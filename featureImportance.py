@@ -146,7 +146,7 @@ class TransparentLinearClassifier(_BaseClassifier):
         return np.round(np.interp(exps, (np.amin(exps), np.amax(exps)), (-1, +1)), 4)
 
     def _generate_expression(self):
-        """ Generate a random linear expressiion following the procedure described in ["Evaluating local explanation
+        """ Generate a random linear expression following the procedure described in ["Evaluating local explanation
          methods on ground truth", Riccardo Guidotti 2020]. """
 
         unaryOps = ['{f}', '-{f}', '{f} ** 2', '{f} ** 3', 'sqrt({f})', 'log({f})', 'sign({f}', 'sin({f})', 'cos({f})',
