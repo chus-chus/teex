@@ -260,8 +260,16 @@ def gen_fi_data(method: str = 'seneca', nSamples: int = 200, nFeatures: int = 3,
 # ===================================
 
 
-def feature_importance_scores(gts, preds, metrics=None, average=True, binThreshold=0.5):
-    """ Computes quality metrics between one or more feature importance vectors.
+def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdType='abs', binThreshold=0.5):
+    """ Computes quality metrics between one or more feature importance vectors. The values in the vectors must be
+    bounded in [0, 1] or [-1, 1] (to indicate negative importances in the second case).
+
+    For the computation of the precision, recall and FScore, the vectors are binarized to simulate a classification
+    setting depending on the param. :code:`thresholdType`. In the case of ROC AUC, the ground truth feature importance
+    vector will be binarized as in the case of 'precision', 'recall' and 'FScore' and the predicted feature importance
+    vector entries will be considered as prediction scores. If the predicted vectors contain negative values, these will
+    be either mapped to 0 or taken their absolute value (depending on the chosen option in the param.
+    :code:`thresholdType`).
 
     :param gts: (1d np.ndarray or 2d np.ndarray of shape (n_features, n_samples)) ground truth feature importance
     vectors.
@@ -276,9 +284,16 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, binThresho
     The vectors are automatically binarized for computing recall, precision and fscore.
     :param average: (bool) (bool, default :code:`True`) Used only if :code:`gt` and :code:`rule` contain multiple
     observations. Should the computed metrics be averaged across all the samples?
-    :param binThreshold: (float in [0, 1]) features with a value bigger than this will be set 1 and 0 otherwise when
-    binarizing for the computation of 'fscore', 'prec', 'rec' and 'cs'.
-    :return: (ndarray of shape (n_metrics,) or (n_samples, n_metrics)) specified metric/s in the original order. """
+    :param thresholdType: (str) Options for the binarization of the features for the computation of 'fscore', 'prec',
+    'rec' and 'auc'.
+        - 'abs': features with absolute value <= :code:`binThreshold` will be set to 0, 1 otherwise. For the
+        predicted feature importances in the case of 'auc', their absolute value will be taken.
+        - 'thres': features <= :code:`binThreshold` will be set to 0, 1 otherwise. For the predicted feature importances
+        in the case of 'auc', negative values will be cast to 0 and the others left as is.
+    :param binThreshold: (float in [-1, 1]) Threshold for the binarization of the features for the computation of
+    'fscore', 'prec', 'rec' and 'auc'. The binarization depends on both this parameter and :code:`thresholdType`. If
+    :code:`thresholdType = 'abs'`, the value cannot be negative.
+    :return: (ndarray of shape (n_metrics,) or (n_samples, n_metrics)) specified metric/s in the indicated order. """
 
     if metrics is None:
         metrics = ['fscore']
@@ -290,10 +305,20 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, binThresho
             raise ValueError(f"'{metric}' metric not valid. Use {_AVAILABLE_FEATURE_IMPORTANCE_METRICS}")
 
     if not isinstance(gts, np.ndarray) or not isinstance(preds, np.ndarray):
-        raise ValueError('Ground truths and predictions must be np.ndarrays.')
+        raise TypeError('Ground truths and predictions must be np.ndarrays.')
 
-    binaryGts = _binarize_arrays(gts, threshold=binThreshold)
-    binaryPreds = _binarize_arrays(preds, threshold=binThreshold)
+    if (gts > 1).any() or (gts < -1).any():
+        raise ValueError('Some g.t. feature importance vectors are not bounded in [-1, 1].')
+
+    if (preds > 1).any() or (preds < -1).any():
+        raise ValueError('Some predicted feature importance vectors are not bounded in [-1, 1].')
+    elif (gts < 0).any():
+        predsNegative = True
+    else:
+        predsNegative = False
+
+    binaryGts = _binarize_arrays(gts, method=thresholdType, threshold=binThreshold)
+    binaryPreds = _binarize_arrays(preds, method=thresholdType, threshold=binThreshold)
 
     if len(binaryPreds.shape) == 1:
         binaryGts, binaryPreds = binaryGts.reshape(1, -1), binaryPreds.reshape(1, -1)
@@ -302,7 +327,7 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, binThresho
     ret = []
     for binGt, binPred, gt, pred in zip(binaryGts, binaryPreds, gts, preds):
         mets = []
-        # todo define 1 class behaviour
+        # todo define 1 class behaviour gt: [0, 0, 0], exp: [0, 0, 0]
         for metric in metrics:
             if metric == 'fscore':
                 mets.append(f_score(binGt, binPred, zero_division=0))
@@ -316,6 +341,8 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, binThresho
                 if len(np.unique(binGt)) == 1:
                     mets.append(np.nan)
                 else:
+                    if predsNegative is True:
+                        pred = np.abs(pred) if thresholdType == 'abs' else np.where(pred < 0, 0, pred)
                     mets.append(auc_score(binGt, pred))
         ret.append(mets)
 

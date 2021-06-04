@@ -17,12 +17,12 @@ import torch
 # todo merge functions eval_torch_tab, eval_torch_image and their dependencies
 
 
-def _init_sk_model(classname, modelParams):
-    """ Initialise sklearn model from string given the dict of params 'modelParams'. For it to work the model
-    class needs to be imported in the context. """
-
-    model = getattr(sys.modules[__name__], classname)
-    return model(**modelParams)
+# def _init_sk_model(classname, modelParams):
+#     """ Initialise sklearn model from string given the dict of params 'modelParams'. For it to work the model
+#     class needs to be imported in the context. """
+#
+#     model = getattr(sys.modules[__name__], classname)
+#     return model(**modelParams)
 
 
 def gen_split_data(dataType, nSamples, nFeatures, randomState, expType, dataSplit, **kwargs):

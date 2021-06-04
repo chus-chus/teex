@@ -13,7 +13,7 @@ from featureImportance import feature_importance_scores
 from _utils._baseClassifier import _BaseClassifier
 
 _AVAILABLE_SALIENCY_MAP_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc'}
-_AVAILABLE_SALIENCY_MAP_GEN_METHODS = {'seneca'}
+_AVAILABLE_SALIENCY_MAP_GEN_METHODS = {'seneca', 'kahikatea'}
 
 
 # ===================================
@@ -115,15 +115,17 @@ class TransparentImageClassifier(_BaseClassifier):
 def gen_image_data(method='seneca', nSamples=1000, imageH=32, imageW=32, patternH=16, patternW=16, cellH=4,
                    cellW=4, patternProp=0.5, fillPct=0.4, colorDev=0.1, randomState=888, returnModel=False):
     """ Generate synthetic classification image data with ground truth explanations.
-    # todo add kahikatea
 
      :param method: (str) method to use for the generation of the data and g.t. explanations. Available:
-        - **'seneca'**: The g.t. explanations generated are binary ndarray masks of shape (imageH, imageW) that indicate
-        the position of the pattern in an image (zero array if the pattern is not present) and are
-        generated following the procedure presented in [Evaluating local explanation methods on ground truth, Riccardo
-        Guidotti, 2021]. The generated RGB images belong to one class if they contain a certain generated pattern and to
-        the other if not. The images are composed of homogeneous cells of size (cellH, cellW), which in turn compose a
-        certain pattern of shape (patternH, patternW) that is inserted on some of the generated images.
+        - **'seneca'**: Images and g.t. explanations generated following the procedure presented in [Evaluating local
+        explanation methods on ground truth, Riccardo Guidotti, 2021]. The g.t. explanations are binary ndarray masks of
+        shape (imageH, imageW) that indicate the position of the pattern in an image (zero array if the pattern is not
+        present) and are generated  The generated RGB images belong to one class if they contain a certain generated
+        pattern and to the other if not. The images are composed of homogeneous cells of size (cellH, cellW), which in
+        turn compose a certain pattern of shape (patternH, patternW) that is inserted on some of the generated images.
+        # todo kahikatea
+        - **'kahikatea'**: Images and g.t. masks retrieved from []. A binary classificaction problem where the goal
+        is to detect whether Kahikatea trees are present in drone images.
 
      :param nSamples: (int) number of images to generate.
      :param imageH: (int) height in pixels of the images. For :code:`method='seneca'` must be multiple of cellH.
@@ -148,7 +150,7 @@ def gen_image_data(method='seneca', nSamples=1000, imageH=32, imageW=32, pattern
      :return:
         - X (ndarray) of shape (nSamples, imageH, imageW, 3). Generated image data.
         - y (ndarray) of shape (nSamples,). Image labels. 1 if an image contains the pattern and 0 otherwise.
-        - explanations (ndarray) of shape (nSamples, imageH, imageW). Generated ground truth explanations.
+        - explanations (ndarray) of shape (nSamples, imageH, imageW). Ground truth explanations.
         - pattern (ndarray) of shape (patternH, patternW, 3). Only returned if :code:`method='seneca'`.
         - model (:class:`rule.TransparentImageClassifier`) Model instance trained to recognize the pattern in the data
         (returned if :code:`returnModel` is True only when :code:`method='seneca'`). """
@@ -197,6 +199,8 @@ def gen_image_data(method='seneca', nSamples=1000, imageH=32, imageW=32, pattern
                 mod
         else:
             return np.array(imgs, dtype=np.float32), np.array(labels, dtype=int), np.array(exps, dtype=int), pattern
+    elif method == 'kahikatea':
+        raise NotImplementedError
 
 
 def _generate_image_seneca(imageH, imageW, cellH, cellW, fillPct, rng, colorDev, pattern=None, binaryPattern=None):
@@ -267,7 +271,7 @@ def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=.5, gtBackgroundV
         salient class are all either black (all channels set to 0) or white (all channels set to max.).
     If the g.t. masks are RGB they will be binarized (see param :code:`gtBackground` to specify the color of the
     pixels that pertain to the non-salient class).
-    :param sMaps: (ndarray) grayscale saliency map explanation/s (0-1 normalised). Supported shapes are
+    :param sMaps: (ndarray) grayscale saliency map explanation/s ([0, 1] or [-1, 1] normalised). Supported shapes are
         - (imageH, imageW) A single explanation
         - (nSamples, imageH, imageW) Multiple explanations
     :param metrics: (str / array-like of str, default=['auc']) Quality metric/s to compute. Available:
