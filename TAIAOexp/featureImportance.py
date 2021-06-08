@@ -11,11 +11,11 @@ from sklearn.preprocessing import MinMaxScaler
 from math import isnan
 
 # noinspection PyProtectedMember
-from _utils._baseClassifier import _BaseClassifier
+from .._utils._baseClassifier import _BaseClassifier
 # noinspection PyProtectedMember
-from _utils._misc import _generate_feature_names
+from .._utils._misc import _generate_feature_names
 # noinspection PyProtectedMember
-from _utils._arrays import _binarize_arrays
+from .._utils._arrays import _binarize_arrays
 
 _AVAILABLE_FEATURE_IMPORTANCE_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc'}
 _AVAILABLE_FI_GEN_METHODS = {'seneca'}
@@ -239,11 +239,8 @@ def gen_fi_data(method: str = 'seneca', nSamples: int = 200, nFeatures: int = 3,
         featureNames = _generate_feature_names(nFeatures)
 
     if method == 'seneca':
-        # generate explanations as gradient vectors around a decision boundary
-        classifier = TransparentLinearClassifier(randomState=randomState)
-        data, targets = classifier.fit(nSamples=nSamples, featureNames=featureNames)
-        explanations = classifier.explain(data, newLabels=targets)
-
+        data, targets, explanations, classifier = _gen_fi_dataset_seneca(nSamples=nSamples, featureNames=featureNames,
+                                                                         randomState=randomState)
         if returnModel:
             if retFNames:
                 return data, targets, explanations, featureNames, classifier
@@ -254,6 +251,19 @@ def gen_fi_data(method: str = 'seneca', nSamples: int = 200, nFeatures: int = 3,
                 return data, targets, explanations, featureNames
             else:
                 return data, targets, explanations
+
+
+def _gen_fi_dataset_seneca(nSamples=None, featureNames=None, randomState=None):
+    """ g.t. explanations generated with the :class:`featureImportance.TransparentLinearClassifier` class.
+        The method was presented in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021]. """
+
+    # generate explanations as gradient vectors around a decision boundary
+    classifier = TransparentLinearClassifier(randomState=randomState)
+    data, targets = classifier.fit(nSamples=nSamples, featureNames=featureNames)
+    explanations = classifier.explain(data, newLabels=targets)
+
+    return data, targets, explanations, classifier
+
 
 # ===================================
 #       EXPLANATION EVALUATION
@@ -325,10 +335,29 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
         gts, preds = gts.reshape(1, -1), preds.reshape(1, -1)
 
     ret = []
+    nEmptyGts = 0
+    # check if we are computing classification scores. This will reduce computations if ground truth vectors are
+    # completely 0
+    classScores = False
+    for metric in metrics:
+        if metric in ['fscore', 'prec', 'rec', 'auc']:
+            classScores = True
+
     for binGt, binPred, gt, pred in zip(binaryGts, binaryPreds, gts, preds):
         mets = []
-        # todo define 1 class behaviour gt: [0, 0, 0], exp: [0, 0, 0]
+        if (binGt == 0).all():
+            emptyGt = True
+            nEmptyGts += 1
+        else:
+            emptyGt = False
+
+        if classScores and emptyGt:
+            # todo modify binGt (used in fscore, rec, prec and auc)
+            pass
+
         for metric in metrics:
+            # todo standalone function with these conditions
+            # todo define and document 1 class behaviour gt: [0, 0, 0], exp: [0, 0, 0]
             if metric == 'fscore':
                 mets.append(f_score(binGt, binPred, zero_division=0))
             elif metric == 'prec':
@@ -336,6 +365,8 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
             elif metric == 'rec':
                 mets.append(recall(binGt, binPred, zero_division=0))
             elif metric == 'cs':
+                if emptyGt:
+                    gt[0] += 1e-5
                 mets.append(cosine_similarity(gt, pred))
             elif metric == 'auc':
                 if len(np.unique(binGt)) == 1:

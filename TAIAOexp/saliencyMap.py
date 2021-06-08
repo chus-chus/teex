@@ -162,45 +162,60 @@ def gen_image_data(method='seneca', nSamples=1000, imageH=32, imageW=32, pattern
     rng = np.random.default_rng(randomState)
 
     if method == 'seneca':
-        if imageH % patternH != 0 or imageW % patternW != 0 or imageH % cellH != 0 or imageW % cellW != 0:
-            raise ValueError('Image height and width not multiple of cell or pattern dimensions.')
-        if imageH < patternH or imageH < cellH or imageW < patternW or imageW < cellW or patternH < cellH or \
-                patternW < cellW:
-            raise ValueError('Cells should be smaller than patterns and patterns than image size.')
-
-        nWithPattern = round(nSamples * patternProp)
-        pattern = _generate_image_seneca(imageH=patternH, imageW=patternW, cellH=cellH, cellW=cellW, fillPct=fillPct,
-                                         rng=rng, colorDev=colorDev, pattern=None)
-
-        # transform pattern into a 2d array and then set the channel to 1 if the pixel had any intensity at all (if a
-        # cell was part of the pattern it will have at least some intensity). Squeeze it so it has shape pattH x pattW.
-        binaryPattern = np.squeeze(np.where(np.delete(pattern, (0, 1), 2) != 0, 1, 0))
-
-        data = []
-        for _ in range(nWithPattern):
-            image, explanation = _generate_image_seneca(imageH=imageH, imageW=imageW, cellH=cellH, cellW=cellW,
-                                                        fillPct=fillPct, rng=rng, colorDev=colorDev, pattern=pattern,
-                                                        binaryPattern=binaryPattern)
-            data.append((image, explanation, 1))
-        for _ in range(nSamples - nWithPattern):
-            image = _generate_image_seneca(imageH=imageH, imageW=imageW, cellH=cellH, cellW=cellW, fillPct=fillPct,
-                                           rng=rng, colorDev=colorDev, pattern=None)
-            # blank explanation
-            explanation = np.zeros((imageH, imageW))
-            data.append((image, explanation, 0))
-
-        random.shuffle(data)
-        imgs, exps, labels = zip(*data)
-
-        if returnModel:
-            mod = TransparentImageClassifier()
-            mod.fit(pattern, cellH=cellH, cellW=cellW)
-            return np.array(imgs, dtype=np.float32), np.array(labels, dtype=int), np.array(exps, dtype=int), pattern, \
-                mod
+        imgs, labels, exps, pattern, mod = _gen_img_dataset_seneca(nSamples=nSamples, imageH=imageH, imageW=imageW,
+                                                                   patternH=patternH, patternW=patternW, cellH=cellH,
+                                                                   cellW=cellW, patternProp=patternProp, rng=rng,
+                                                                   colorDev=colorDev, fillPct=fillPct)
+        if returnModel is True:
+            return imgs, labels, exps, pattern, mod
         else:
-            return np.array(imgs, dtype=np.float32), np.array(labels, dtype=int), np.array(exps, dtype=int), pattern
+            return imgs, labels, exps, pattern
     elif method == 'kahikatea':
         raise NotImplementedError
+
+
+def _gen_img_dataset_seneca(nSamples=100, imageH=None, imageW=None, patternH=None, patternW=None, cellH=None, cellW=None,
+                            patternProp=None, rng=None, colorDev=None, fillPct=None):
+    """ Images and g.t. explanations generated following the procedure presented in [Evaluating local
+    explanation methods on ground truth, Riccardo Guidotti, 2021]. The g.t. explanations are binary ndarray masks of
+    shape (imageH, imageW) that indicate the position of the pattern in an image (zero array if the pattern is not
+    present) and are generated  The generated RGB images belong to one class if they contain a certain generated
+    pattern and to the other if not. The images are composed of homogeneous cells of size (cellH, cellW), which in
+    turn compose a certain pattern of shape (patternH, patternW) that is inserted on some of the generated images. """
+
+    if imageH % patternH != 0 or imageW % patternW != 0 or imageH % cellH != 0 or imageW % cellW != 0:
+        raise ValueError('Image height and width not multiple of cell or pattern dimensions.')
+    if imageH < patternH or imageH < cellH or imageW < patternW or imageW < cellW or patternH < cellH or \
+            patternW < cellW:
+        raise ValueError('Cells should be smaller than patterns and patterns than image size.')
+
+    nWithPattern = round(nSamples * patternProp)
+    pattern = _generate_image_seneca(imageH=patternH, imageW=patternW, cellH=cellH, cellW=cellW, fillPct=fillPct,
+                                     rng=rng, colorDev=colorDev, pattern=None)
+
+    # transform pattern into a 2d array and then set the channel to 1 if the pixel had any intensity at all (if a
+    # cell was part of the pattern it will have at least some intensity). Squeeze it so it has shape pattH x pattW.
+    binaryPattern = np.squeeze(np.where(np.delete(pattern, (0, 1), 2) != 0, 1, 0))
+
+    data = []
+    for _ in range(nWithPattern):
+        image, explanation = _generate_image_seneca(imageH=imageH, imageW=imageW, cellH=cellH, cellW=cellW,
+                                                    fillPct=fillPct, rng=rng, colorDev=colorDev, pattern=pattern,
+                                                    binaryPattern=binaryPattern)
+        data.append((image, explanation, 1))
+    for _ in range(nSamples - nWithPattern):
+        image = _generate_image_seneca(imageH=imageH, imageW=imageW, cellH=cellH, cellW=cellW, fillPct=fillPct,
+                                       rng=rng, colorDev=colorDev, pattern=None)
+        # blank explanation
+        explanation = np.zeros((imageH, imageW))
+        data.append((image, explanation, 0))
+
+    random.shuffle(data)
+    imgs, exps, labels = zip(*data)
+
+    mod = TransparentImageClassifier()
+    mod.fit(pattern, cellH=cellH, cellW=cellW)
+    return np.array(imgs, dtype=np.float32), np.array(labels, dtype=int), np.array(exps, dtype=int), pattern, mod
 
 
 def _generate_image_seneca(imageH, imageW, cellH, cellW, fillPct, rng, colorDev, pattern=None, binaryPattern=None):

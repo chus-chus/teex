@@ -294,7 +294,8 @@ class TransparentRuleClassifier(_BaseClassifier):
 
 
 def gen_rule_data(method: str = 'seneca', nSamples: int = 1000, nFeatures: int = 3, returnModel=False,
-                     featureNames=None, randomState: int = 888):
+                  featureNames=None, randomState: int = 888):
+
     """ Generate synthetic binary classification tabular data with ground truth decision rule explanations. The returned
     decision rule g.t. explanations are instances of the :code:`DecisionRule` class.
 
@@ -325,15 +326,11 @@ def gen_rule_data(method: str = 'seneca', nSamples: int = 1000, nFeatures: int =
         retFNames = True
         featureNames = _generate_feature_names(nFeatures)
 
-    # generate explanations with rules and binarize
-    data, targets = make_classification(n_samples=nSamples, n_classes=2, n_features=nFeatures,
-                                        n_informative=nFeatures, n_redundant=0, n_repeated=0,
-                                        random_state=randomState)
-
     if method == 'seneca':
-        classifier = TransparentRuleClassifier(random_state=randomState)
-        classifier.fit(data, targets, featureNames=featureNames)
-        explanations = classifier.explain(data)
+        data, targets, explanations, classifier = _gen_rule_dataset_seneca(nSamples=nSamples, nFeatures=nFeatures,
+                                                                           randomState=randomState,
+                                                                           featureNames=featureNames)
+
         if returnModel:
             if retFNames:
                 return data, targets, explanations, featureNames, classifier
@@ -344,6 +341,21 @@ def gen_rule_data(method: str = 'seneca', nSamples: int = 1000, nFeatures: int =
                 return data, targets, explanations, featureNames
             else:
                 return data, targets, explanations
+
+
+def _gen_rule_dataset_seneca(nSamples=None, nFeatures=None, randomState=None, featureNames=None):
+    """ g.t. explanations generated with the :class:`decisionRule.TransparentRuleClassifier` class. The
+        method was presented in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021]. """
+
+    # generate explanations with rules and binarize
+    data, targets = make_classification(n_samples=nSamples, n_classes=2, n_features=nFeatures,
+                                        n_informative=nFeatures, n_redundant=0, n_repeated=0,
+                                        random_state=randomState)
+    classifier = TransparentRuleClassifier(random_state=randomState)
+    classifier.fit(data, targets, featureNames=featureNames)
+    explanations = classifier.explain(data)
+
+    return data, targets, explanations, classifier
 
 # ===================================
 #       EXPLANATION EVALUATION
