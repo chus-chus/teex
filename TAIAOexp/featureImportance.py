@@ -1,5 +1,6 @@
 """ The feature importance module. Contains all of the methods regarding this explanation type: data generation,
 evaluation of explanations and related utils. """
+import warnings
 
 import numpy as np
 import sklearn.metrics as met
@@ -257,7 +258,7 @@ def _gen_fi_dataset_seneca(nSamples=None, featureNames=None, randomState=None):
     """ g.t. explanations generated with the :class:`featureImportance.TransparentLinearClassifier` class.
         The method was presented in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021]. """
 
-    # generate explanations as gradient vectors around a decision boundary
+    # explanations as gradient vectors around a decision boundary
     classifier = TransparentLinearClassifier(randomState=randomState)
     data, targets = classifier.fit(nSamples=nSamples, featureNames=featureNames)
     explanations = classifier.explain(data, newLabels=targets)
@@ -268,6 +269,33 @@ def _gen_fi_dataset_seneca(nSamples=None, featureNames=None, randomState=None):
 # ===================================
 #       EXPLANATION EVALUATION
 # ===================================
+
+
+def _individual_fi_metrics(gt, pred, binGt, binPred, metric, predsNegative, thresholdType):
+    """ Classification and real vector metrics. If metric='auc' and predsNegative=True, 'pred' is modified accordingly
+    (see documentation of featureImportance.feature_importance_scores).
+
+     :param gt: (ndarray) of shape (nFeatures,). Ground truth (real or binary) vector.
+     :param pred: (ndarray) of shape (nFeatures,). Predicted (real or binary) vector.
+     :param binGt: (ndarray) of shape (nFeatures,). Ground truth (binary) vector.
+     :param binPred: (ndarray) of shape (nFeatures,). Predicted (binary) vector.
+     :param metric: (str) in ['fscore', 'prec', 'rec', 'cs', 'auc'] metric to compute.
+     :param predsNegative: (bool) whether 'pred' contains negative values or not.
+     :param thresholdType: (str) in ['abs', 'thres].
+     :return: (float) selected metric. """
+
+    if metric == 'fscore':
+        return f_score(binGt, binPred)
+    elif metric == 'prec':
+        return precision(binGt, binPred)
+    elif metric == 'rec':
+        return recall(binGt, binPred)
+    elif metric == 'cs':
+        return cosine_similarity(gt, pred)
+    elif metric == 'auc':
+        if predsNegative is True:
+            pred = np.abs(pred) if thresholdType == 'abs' else np.where(pred < 0, 0, pred)
+        return auc_score(binGt, pred)
 
 
 def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdType='abs', binThreshold=0.5):
@@ -335,46 +363,38 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
         gts, preds = gts.reshape(1, -1), preds.reshape(1, -1)
 
     ret = []
-    nEmptyGts = 0
     # check if we are computing classification scores. This will reduce computations if ground truth vectors are
     # completely 0
-    classScores = False
+    classScores, realScores = False, False
     for metric in metrics:
         if metric in ['fscore', 'prec', 'rec', 'auc']:
             classScores = True
+        elif metric in ['cs']:
+            realScores = True
 
+    rng = np.random.default_rng(888)
     for binGt, binPred, gt, pred in zip(binaryGts, binaryPreds, gts, preds):
         mets = []
         if (binGt == 0).all():
+            emptyBGt = True
+        else:
+            emptyBGt = False
+
+        if emptyBGt and (gt == 0).all():
             emptyGt = True
-            nEmptyGts += 1
         else:
             emptyGt = False
 
-        if classScores and emptyGt:
-            # todo modify binGt (used in fscore, rec, prec and auc)
-            pass
+        if classScores and emptyBGt:
+            warnings.warn('Binary ground truth does not contain values != 0, so one entry is being flipped to 1 for '
+                          'the metrics to be defined.')
+            binGt[rng.integers(0, len(binGt))] = 1
+        if realScores and emptyGt:
+            warnings.warn('Ground truth does not contain values != 0, so 1e-4 is being added to one random entry.')
+            gt[rng.integers(0, len(gt))] = 1e-4
 
         for metric in metrics:
-            # todo standalone function with these conditions
-            # todo define and document 1 class behaviour gt: [0, 0, 0], exp: [0, 0, 0]
-            if metric == 'fscore':
-                mets.append(f_score(binGt, binPred, zero_division=0))
-            elif metric == 'prec':
-                mets.append(precision(binGt, binPred, zero_division=0))
-            elif metric == 'rec':
-                mets.append(recall(binGt, binPred, zero_division=0))
-            elif metric == 'cs':
-                if emptyGt:
-                    gt[0] += 1e-5
-                mets.append(cosine_similarity(gt, pred))
-            elif metric == 'auc':
-                if len(np.unique(binGt)) == 1:
-                    mets.append(np.nan)
-                else:
-                    if predsNegative is True:
-                        pred = np.abs(pred) if thresholdType == 'abs' else np.where(pred < 0, 0, pred)
-                    mets.append(auc_score(binGt, pred))
+            mets.append(_individual_fi_metrics(gt, pred, binGt, binPred, metric, predsNegative, thresholdType))
         ret.append(mets)
 
     ret = np.array(ret).astype(np.float32)
