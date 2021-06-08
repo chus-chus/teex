@@ -12,11 +12,11 @@ from sklearn.preprocessing import MinMaxScaler
 from math import isnan
 
 # noinspection PyProtectedMember
-from .._utils._baseClassifier import _BaseClassifier
+from _utils._baseClassifier import _BaseClassifier
 # noinspection PyProtectedMember
-from .._utils._misc import _generate_feature_names
+from _utils._misc import _generate_feature_names
 # noinspection PyProtectedMember
-from .._utils._arrays import _binarize_arrays
+from _utils._arrays import _binarize_arrays
 
 _AVAILABLE_FEATURE_IMPORTANCE_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc'}
 _AVAILABLE_FI_GEN_METHODS = {'seneca'}
@@ -333,6 +333,8 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
     :code:`thresholdType = 'abs'`, the value cannot be negative.
     :return: (ndarray of shape (n_metrics,) or (n_samples, n_metrics)) specified metric/s in the indicated order. """
 
+    # todo document how the edges cases are dealt with
+
     if metrics is None:
         metrics = ['fscore']
     elif isinstance(metrics, str):
@@ -390,8 +392,11 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
                           'the metrics to be defined.')
             binGt[rng.integers(0, len(binGt))] = 1
         if realScores and emptyGt:
-            warnings.warn('Ground truth does not contain values != 0, so 1e-4 is being added to one random entry.')
-            gt[rng.integers(0, len(gt))] = 1e-4
+            warnings.warn('Ground truth does not contain values != 0, so 1e-4 is being added to one random entry '
+                          '(in pred as well).')
+            i = rng.integers(0, len(gt))
+            gt[i] += 1e-4
+            pred[i] += 1e-4
 
         for metric in metrics:
             mets.append(_individual_fi_metrics(gt, pred, binGt, binPred, metric, predsNegative, thresholdType))

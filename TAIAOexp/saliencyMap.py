@@ -174,8 +174,8 @@ def gen_image_data(method='seneca', nSamples=1000, imageH=32, imageW=32, pattern
         raise NotImplementedError
 
 
-def _gen_img_dataset_seneca(nSamples=100, imageH=None, imageW=None, patternH=None, patternW=None, cellH=None, cellW=None,
-                            patternProp=None, rng=None, colorDev=None, fillPct=None):
+def _gen_img_dataset_seneca(nSamples=100, imageH=None, imageW=None, patternH=None, patternW=None, cellH=None,
+                            cellW=None, patternProp=None, rng=None, colorDev=None, fillPct=None):
     """ Images and g.t. explanations generated following the procedure presented in [Evaluating local
     explanation methods on ground truth, Riccardo Guidotti, 2021]. The g.t. explanations are binary ndarray masks of
     shape (imageH, imageW) that indicate the position of the pattern in an image (zero array if the pattern is not
