@@ -4,9 +4,9 @@ from PIL import Image
 from matplotlib import pyplot as plt
 from torchvision.transforms import transforms
 
-from evaluation.image import saliency_map_scores
-from explanation.images import torch_pixel_attributions
-from _utils.image import list_images, binarize_rgb_mask
+from TAIAOexp.saliencyMap import saliency_map_scores, binarize_rgb_mask
+from TAIAOexp.utils._explanation.images import torch_pixel_attributions
+from TAIAOexp.utils._paths import _list_images
 
 
 def transform_img_kahikatea(image):
@@ -31,12 +31,12 @@ def transform_img_kahikatea(image):
 def eval_kahikatea():
     # read kahikatea
     pathName = '/Users/chusantonanzas/GDrive/U/4t/TFG/TAIAOexp_CLI/data/Kahikatea/data/ve_positive'
-    posKahikatea = list_images(pathName, returnType='list')
+    posKahikatea = _list_images(pathName, returnType='list')
 
     pathName = '/Users/chusantonanzas/GDrive/U/4t/TFG/TAIAOexp_CLI/data/Kahikatea/expl/ve_positive'
-    explanations = list_images(pathName, returnType='list')
+    explanations = _list_images(pathName, returnType='list')
     # binarize ground truth masks:
-    explanations = [binarize_rgb_mask(exp, bgColor='light') for exp in explanations]
+    explanations = [binarize_rgb_mask(exp, bgValue='light') for exp in explanations]
 
     # load model
     modelPath = '/Users/chusantonanzas/GDrive/U/4t/TFG/TAIAOexp_CLI/torch_models/Kahikatea/alexnet.pth'
@@ -83,7 +83,7 @@ def eval_kahikatea():
     metrics = ['auc', 'fscore', 'prec', 'rec', 'cs']
     scores = []
     for i, att in enumerate(attrs):
-        scores.append(saliency_map_scores(transformedExps[i], att, metrics=metrics, binarizeGt=False))
+        scores.append(saliency_map_scores(transformedExps[i], att, metrics=metrics))
 
     scores = np.mean(np.array(scores), axis=0)
 

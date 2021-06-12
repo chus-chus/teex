@@ -8,9 +8,9 @@ import random
 
 from cv2 import cvtColor, COLOR_RGB2GRAY, imread, COLOR_BGR2RGB
 
-from featureImportance import feature_importance_scores
+from .featureImportance import feature_importance_scores
 # noinspection PyProtectedMember
-from utils._baseClassifier import _BaseClassifier
+from .utils._baseClassifier import _BaseClassifier
 
 _AVAILABLE_SALIENCY_MAP_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc'}
 _AVAILABLE_SALIENCY_MAP_GEN_METHODS = {'seneca', 'kahikatea'}

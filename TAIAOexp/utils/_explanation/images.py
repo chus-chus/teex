@@ -7,8 +7,10 @@ from captum._utils.models import SkLearnLinearModel
 from captum.attr import KernelShap, IntegratedGradients, GradientShap, Occlusion, GuidedBackprop, DeepLift, \
     GuidedGradCam, Lime
 from captum.attr import LimeBase
+from captum.attr._core.lime import get_exp_kernel_similarity_function
 
-from _utils.image import normalize_array
+from .featureImportance import _lime_perturb_func, _lime_identity
+from .._arrays import _minmax_normalize_array
 
 
 def get_explainer(model, layer=None, method='guidedGradCAM', model_name=None, **kwargs):
@@ -180,6 +182,6 @@ def torch_pixel_attributions(model, data, labelsToExplain, method='lime', random
             raise ValueError(f'Attribution shape {attr.shape} is not valid.')
 
         # viz._normalize_image_attr(tmp, 'absolute_value', 10)
-        attributions.append(normalize_array(attr))
+        attributions.append(_minmax_normalize_array(attr))
 
     return np.array(attributions)

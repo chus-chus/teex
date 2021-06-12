@@ -1,16 +1,13 @@
 """ Module for automatic evaluation of explanators on pytorch models. """
 
-import sys
-
 import numpy as np
 
 from sklearn.model_selection import train_test_split
 
-from featureImportance import feature_importance_scores, gen_fi_data
-from saliencyMap import saliency_map_scores, create_image_data
-
-from explanation.featureImportance import lime_torch_attributions, torch_tab_attributions
-from explanation.images import torch_pixel_attributions
+from .utils._explanation.featureImportance import torch_tab_attributions
+from .utils._explanation.images import torch_pixel_attributions
+from .featureImportance import feature_importance_scores, gen_fi_data
+from .saliencyMap import saliency_map_scores, gen_image_data
 
 import torch
 
@@ -32,7 +29,7 @@ def gen_split_data(dataType, nSamples, nFeatures, randomState, expType, dataSpli
     if dataType == 'image':
         X, y, gtExp, _ = gen_image_data(nSamples=nSamples, randomState=randomState, **kwargs)
     elif dataType == 'tab':
-        X, y, gtExp, featureNames = gen_tabular_data(nSamples, nFeatures, randomState, expType, **kwargs)
+        X, y, gtExp, featureNames = gen_fi_data(nSamples, nFeatures, randomState, expType, **kwargs)
     else:
         raise ValueError('DataType not valid.')
 
@@ -130,11 +127,11 @@ def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMeth
         metrics = ['fscore', 'prec', 'rec', 'cs']
 
     expTrainScores = np.array([feature_importance_scores(gtExpTrain[np.where(yTrain == positiveClassLabel)][i], exp,
-                                                         metrics=metrics, binarizeExps=True) for i, exp in enumerate(expTrain)])
+                                                         metrics=metrics) for i, exp in enumerate(expTrain)])
     expValScores = np.array([feature_importance_scores(gtExpVal[np.where(yVal == positiveClassLabel)][i], exp,
-                                                       metrics=metrics, binarizeExps=True) for i, exp in enumerate(expVal)])
+                                                       metrics=metrics) for i, exp in enumerate(expVal)])
     expTestScores = np.array([feature_importance_scores(gtExpTest[np.where(yTest == positiveClassLabel)][i], exp,
-                                                        metrics=metrics, binarizeExps=True) for i, exp in enumerate(expTest)])
+                                                        metrics=metrics) for i, exp in enumerate(expTest)])
 
     return np.mean(expTrainScores, axis=0), np.mean(expValScores, axis=0), np.mean(expTestScores, axis=0)
 
@@ -200,21 +197,17 @@ def eval_torch_image(model, trainFunction, nSamples, dataSplit, expMethod, image
         metrics = ['auc', 'fscore', 'prec', 'rec', 'cs']
 
     expTrainScores = np.array([saliency_map_scores(gtExpTrain[np.where(yTrain == positiveClassLabel)][i], exp,
-                                                   metrics=metrics, binarizeGt=False)
+                                                   metrics=metrics)
                                for i, exp in enumerate(expTrain)])
     expValScores = np.array([saliency_map_scores(gtExpVal[np.where(yVal == positiveClassLabel)][i], exp,
-                                                 metrics=metrics, binarizeGt=False) for i, exp in enumerate(expVal)])
+                                                 metrics=metrics) for i, exp in enumerate(expVal)])
     expTestScores = np.array([saliency_map_scores(gtExpTest[np.where(yTest == positiveClassLabel)][i], exp,
-                                                  metrics=metrics, binarizeGt=False) for i, exp in enumerate(expTest)])
+                                                  metrics=metrics) for i, exp in enumerate(expTest)])
 
     return np.mean(expTrainScores, axis=0), np.mean(expValScores, axis=0), np.mean(expTestScores, axis=0)
 
 
 def _model_eval_main():
-    import torch
-    import torch.nn as nn
-    import torch.optim as optim
-    import torch.nn.functional as F
 
     import torch
     import torch.nn as nn
@@ -339,8 +332,6 @@ def _model_eval_main():
         f'Validation accuracy: {round(accuracy_score(yVal, F.softmax(model(torch.FloatTensor(XVal)), dim=-1).argmax(dim=1).detach().numpy()), 3)}')
     print(
         f'Test accuracy: {round(accuracy_score(yTest, F.softmax(model(torch.FloatTensor(XTest)), dim=-1).argmax(dim=1).detach().numpy()), 3)}')
-
-    from explanation.images import torch_pixel_attributions
 
     expMethod = 'integratedGradient'
     genExpsTrain = torch_pixel_attributions(model, XTrain[yTrain == 1], yTrain[yTrain == 1], method=expMethod)

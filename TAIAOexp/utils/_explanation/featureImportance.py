@@ -9,8 +9,8 @@ from captum.attr import LimeBase, KernelShap
 from captum._utils.models.linear_model import SkLearnLinearModel
 from captum.attr._core.lime import get_exp_kernel_similarity_function
 
-from explanation.images import get_explainer, get_attributions
-from _utils.image import normalize_array
+from .images import get_explainer, get_attributions
+from .._arrays import _minmax_normalize_array
 
 
 def _lime_perturb_func(originalInput, **kwargs):
@@ -93,6 +93,6 @@ def torch_tab_attributions(model, data, labelsToExplain, method='lime', randomSt
     for observation, target in zip(data, labelsToExplain):
         attr = get_attributions(explainer, obs=observation, target=target, method=method)
         # todo normalization -1, 1
-        attributions.append(normalize_array(attr.detach().numpy()))
+        attributions.append(_minmax_normalize_array(attr.detach().numpy()))
 
     return np.array(attributions)
