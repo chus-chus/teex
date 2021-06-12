@@ -1,7 +1,10 @@
 venv/
 torch_models/
-data/
 .ipynb_checkpoints/
 *.bat
 Makefile
 __pycache__/
+_datasets/
+build/
+docs/
+source/

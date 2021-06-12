@@ -1,5 +1,10 @@
 https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
 
+.. code::
+
+    code
+    block!
+
 .. math::
 
         q(e, \tilde e) = \frac{1}{N_{\not\infty}} \sum_{i=1}^{|e|}{\delta_{\varepsilon}(e_i, \tilde e_i)}, \text{where}

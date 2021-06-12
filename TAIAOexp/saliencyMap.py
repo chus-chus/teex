@@ -269,7 +269,7 @@ def _generate_rgb(rng, colorDev):
 # ===================================
 
 
-def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=.5, gtBackgroundVals='light', average=True) -> float:
+def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=0.01, gtBackgroundVals='light', average=True) -> float:
     """ Quality metrics for saliency map explanations, where each pixel is considered as a feature.
     Computes different scores of a saliency map explanation w.r.t. its ground truth explanation (a binary mask).
     The saliency map should not be binary. If it is, use the 'binary_mask_scores' method instead.
@@ -299,7 +299,7 @@ def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=.5, gtBackgroundV
     For 'fscore', 'prec', 'rec' and 'cs', the saliency maps in :code:`sMaps` are binarized (see param
     :code:`binThreshold`).
     :param binThreshold: (float in [0, 1]) pixels of images in :code:`sMaps` with a value bigger than this will be set
-    to 1 and 0 otherwise when binarizing for the computation of 'fscore', 'prec', 'rec' and 'cs'.
+    to 1 and 0 otherwise when binarizing for the computation of 'fscore', 'prec', 'rec' and 'auc'.
     :param gtBackgroundVals: (str) Only used when provided ground truth explanations are RGB. Color of the background
     of the g.t. masks 'low' if pixels in the mask representing the non-salient class are dark, 'high' otherwise).
     :param average: (bool, default :code:`True`) Used only if :code:`gts` and :code:`sMaps` contain multiple
@@ -327,7 +327,7 @@ def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=.5, gtBackgroundV
         return feature_importance_scores(gts.flatten(), sMaps.flatten(), metrics=metrics, binThreshold=binThreshold)
     elif len(gts.shape) == 3:
         # naive RGB check
-        if gts.shape[3] == 3:
+        if gts.shape[2] == 3:
             warnings.warn('Binarizing g.t. RGB mask. If it is not RGB, binarize it before calling this function.')
             gts = binarize_rgb_mask(gts, bgValue=gtBackgroundVals)
             return feature_importance_scores(gts.flatten(), sMaps.flatten(), metrics=metrics, binThreshold=binThreshold)
