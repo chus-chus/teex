@@ -8,9 +8,9 @@ from sklearn.tree import DecisionTreeClassifier
 from .featureImportance import feature_importance_scores
 
 # noinspection PyProtectedMember
-from .utils._baseClassifier import _BaseClassifier
+from TAIAOexp.utils._baseClassifier import _BaseClassifier
 # noinspection PyProtectedMember
-from .utils._misc import _generate_feature_names
+from TAIAOexp.utils._misc import _generate_feature_names
 
 _AVAILABLE_DECISION_RULE_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc', 'crq'}
 _AVAILABLE_DECISION_RULE_GEN_METHODS = {'seneca'}

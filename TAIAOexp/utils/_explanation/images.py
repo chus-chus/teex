@@ -9,8 +9,8 @@ from captum.attr import KernelShap, IntegratedGradients, GradientShap, Occlusion
 from captum.attr import LimeBase
 from captum.attr._core.lime import get_exp_kernel_similarity_function
 
-from .featureImportance import _lime_perturb_func, _lime_identity
-from .._arrays import _minmax_normalize_array
+from TAIAOexp.utils._explanation.featureImportance import _lime_perturb_func, _lime_identity
+from TAIAOexp.utils._arrays import _minmax_normalize_array
 
 
 def get_explainer(model, layer=None, method='guidedGradCAM', model_name=None, **kwargs):

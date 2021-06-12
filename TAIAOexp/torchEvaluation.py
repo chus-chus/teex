@@ -4,10 +4,10 @@ import numpy as np
 
 from sklearn.model_selection import train_test_split
 
-from .utils._explanation.featureImportance import torch_tab_attributions
-from .utils._explanation.images import torch_pixel_attributions
-from .featureImportance import feature_importance_scores, gen_fi_data
-from .saliencyMap import saliency_map_scores, gen_image_data
+from TAIAOexp.utils._explanation.featureImportance import torch_tab_attributions
+from TAIAOexp.utils._explanation.images import torch_pixel_attributions
+from TAIAOexp.featureImportance import feature_importance_scores, gen_fi_data
+from TAIAOexp.saliencyMap import saliency_map_scores, gen_image_data
 
 import torch
 

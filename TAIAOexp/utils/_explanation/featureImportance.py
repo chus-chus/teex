@@ -9,8 +9,9 @@ from captum.attr import LimeBase, KernelShap
 from captum._utils.models.linear_model import SkLearnLinearModel
 from captum.attr._core.lime import get_exp_kernel_similarity_function
 
-from .images import get_explainer, get_attributions
-from .._arrays import _minmax_normalize_array
+from TAIAOexp.utils._explanation.images import get_explainer, get_attributions
+
+from TAIAOexp.utils._arrays import _minmax_normalize_array
 
 
 def _lime_perturb_func(originalInput, **kwargs):

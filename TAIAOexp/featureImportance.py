@@ -12,11 +12,11 @@ from sklearn.preprocessing import MinMaxScaler
 from math import isnan
 
 # noinspection PyProtectedMember
-from .utils._baseClassifier import _BaseClassifier
+from TAIAOexp.utils._baseClassifier import _BaseClassifier
 # noinspection PyProtectedMember
-from .utils._misc import _generate_feature_names
+from TAIAOexp.utils._misc import _generate_feature_names
 # noinspection PyProtectedMember
-from .utils._arrays import _binarize_arrays
+from TAIAOexp.utils._arrays import _binarize_arrays
 
 _AVAILABLE_FEATURE_IMPORTANCE_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc'}
 _AVAILABLE_FI_GEN_METHODS = {'seneca'}
