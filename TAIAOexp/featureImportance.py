@@ -12,14 +12,16 @@ from sklearn.preprocessing import MinMaxScaler
 from math import isnan
 
 # noinspection PyProtectedMember
-from TAIAOexp.utils._baseClassifier import _BaseClassifier
+from TAIAOexp._baseClasses._baseClassifier import _BaseClassifier
 # noinspection PyProtectedMember
 from TAIAOexp.utils._misc import _generate_feature_names
 # noinspection PyProtectedMember
 from TAIAOexp.utils._arrays import _binarize_arrays
+from TAIAOexp.datasets import Newsgroup
 
 _AVAILABLE_FEATURE_IMPORTANCE_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc'}
 _AVAILABLE_FI_GEN_METHODS = {'seneca'}
+_AVAILABLE_FEATURE_IMPORTANCE_DATASETS = {'newsgroup'}
 
 # ===================================
 #       TRANSPARENT MODEL
@@ -208,7 +210,7 @@ class TransparentLinearClassifier(_BaseClassifier):
 #       DATA GENERATION
 # ===================================
 
-def gen_fi_data(method: str = 'seneca', nSamples: int = 200, nFeatures: int = 3, returnModel=False, featureNames=None,
+def gen_data_fi(method: str = 'seneca', nSamples: int = 200, nFeatures: int = 3, returnModel=False, featureNames=None,
                 randomState: int = 888):
     """ Generate synthetic binary classification tabular data with ground truth feature importance explanations.
 
@@ -240,7 +242,7 @@ def gen_fi_data(method: str = 'seneca', nSamples: int = 200, nFeatures: int = 3,
         featureNames = _generate_feature_names(nFeatures)
 
     if method == 'seneca':
-        data, targets, explanations, classifier = _gen_fi_dataset_seneca(nSamples=nSamples, featureNames=featureNames,
+        data, targets, explanations, classifier = _gen_seneca_dataset_fi(nSamples=nSamples, featureNames=featureNames,
                                                                          randomState=randomState)
         if returnModel:
             if retFNames:
@@ -254,7 +256,20 @@ def gen_fi_data(method: str = 'seneca', nSamples: int = 200, nFeatures: int = 3,
                 return data, targets, explanations
 
 
-def _gen_fi_dataset_seneca(nSamples=None, featureNames=None, randomState=None):
+def load_data_fi(name: str = 'newsgroup'):
+    """ Loads (or downloads) and returns a dataset with available ground truth feature importance explanations.
+    :param name: (str) dataset name. Available:
+        - 'newsgroup': Binary classification dataset from [] with g.t. explanations as word importances. # todo further explan.
+    :return: A Dataset object. Read about it in the dataset module. """
+
+    if name not in _AVAILABLE_FEATURE_IMPORTANCE_DATASETS:
+        raise ValueError(f'Dataset not available ({_AVAILABLE_FEATURE_IMPORTANCE_DATASETS})')
+
+    if name == 'newsgroup':
+        return Newsgroup()
+
+
+def _gen_seneca_dataset_fi(nSamples=None, featureNames=None, randomState=None):
     """ g.t. explanations generated with the :class:`featureImportance.TransparentLinearClassifier` class.
         The method was presented in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021]. """
 
@@ -489,7 +504,7 @@ def _main_fi():
     print(m.derivatives)
 
     print('\nCREATING THE ARTIFICIAL DATA AND EXPLANATIONS FROM THE API:')
-    X, y, ex, fNames, model = gen_fi_data(nSamples=50, returnModel=True)
+    X, y, ex, fNames, model = gen_data_fi(nSamples=50, returnModel=True)
     print('Observation: ', X[1], y[1], 'Feature names: ', fNames)
     print('Feature importance: ', ex[1])
 

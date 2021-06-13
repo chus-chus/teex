@@ -4,7 +4,6 @@ torch_models/
 *.bat
 Makefile
 __pycache__/
-_datasets/
 build/
 docs/
 source/

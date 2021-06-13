@@ -6,8 +6,8 @@ from sklearn.model_selection import train_test_split
 
 from TAIAOexp.utils._explanation.featureImportance import torch_tab_attributions
 from TAIAOexp.utils._explanation.images import torch_pixel_attributions
-from TAIAOexp.featureImportance import feature_importance_scores, gen_fi_data
-from TAIAOexp.saliencyMap import saliency_map_scores, gen_image_data
+from TAIAOexp.featureImportance import feature_importance_scores, gen_data_fi
+from TAIAOexp.saliencyMap import saliency_map_scores, gen_data_sm
 
 import torch
 
@@ -27,9 +27,9 @@ def gen_split_data(dataType, nSamples, nFeatures, randomState, expType, dataSpli
     'kwargs' is passed to gen_image_data or gen_tabular_data, depending on 'dataType'.  """
 
     if dataType == 'image':
-        X, y, gtExp, _ = gen_image_data(nSamples=nSamples, randomState=randomState, **kwargs)
+        X, y, gtExp, _ = gen_data_sm(nSamples=nSamples, randomState=randomState, **kwargs)
     elif dataType == 'tab':
-        X, y, gtExp, featureNames = gen_fi_data(nSamples, nFeatures, randomState, expType, **kwargs)
+        X, y, gtExp, featureNames = gen_data_fi(nSamples, nFeatures, randomState, expType, **kwargs)
     else:
         raise ValueError('DataType not valid.')
 
@@ -309,10 +309,9 @@ def _model_eval_main():
     fillPct = 0.4
     colorDev = 0.1
 
-    X, y, exps, pat = gen_image_data(nSamples=1000, imageH=imageH, imageW=imageW,
-                                     patternH=patternH, patternW=patternW,
-                                     cellH=cellH, cellW=cellW, patternProp=patternProp,
-                                     fillPct=fillPct, colorDev=0.5, randomState=7)
+    X, y, exps, pat = gen_data_sm(nSamples=1000, imageH=imageH, imageW=imageW, patternH=patternH, patternW=patternW,
+                                  cellH=cellH, cellW=cellW, patternProp=patternProp, fillPct=fillPct, colorDev=0.5,
+                                  randomState=7)
 
     XTrain, XTest, yTrain, yTest, expsTrain, expsTest = train_test_split(X, y, exps, train_size=0.8, random_state=7)
     XTrain, XVal, yTrain, yVal, expsTrain, expsVal = train_test_split(XTrain, yTrain, expsTrain, train_size=0.6,

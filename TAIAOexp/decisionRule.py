@@ -8,12 +8,13 @@ from sklearn.tree import DecisionTreeClassifier
 from .featureImportance import feature_importance_scores
 
 # noinspection PyProtectedMember
-from TAIAOexp.utils._baseClassifier import _BaseClassifier
+from TAIAOexp._baseClasses._baseClassifier import _BaseClassifier
 # noinspection PyProtectedMember
 from TAIAOexp.utils._misc import _generate_feature_names
 
 _AVAILABLE_DECISION_RULE_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc', 'crq'}
 _AVAILABLE_DECISION_RULE_GEN_METHODS = {'seneca'}
+_AVAILABLE_DECISION_RULE_DATASETS = {}
 
 _VALID_OPERATORS = {'=', '!=', '>', '<', '>=', '<='}
 # operators for statements of shape: value1 <opLower> feature <opUpper> value2
@@ -293,10 +294,10 @@ class TransparentRuleClassifier(_BaseClassifier):
 # ===================================
 
 
-def gen_rule_data(method: str = 'seneca', nSamples: int = 1000, nFeatures: int = 3, returnModel=False,
+def gen_data_rule(method: str = 'seneca', nSamples: int = 1000, nFeatures: int = 3, returnModel=False,
                   featureNames=None, randomState: int = 888):
 
-    """ Generate synthetic binary classification tabular data with ground truth decision rule explanations. The returned
+    """ Generate synthetic binary classification data with ground truth decision rule explanations. The returned
     decision rule g.t. explanations are instances of the :code:`DecisionRule` class.
 
     :param method: (str) method to use for the generation of the ground truth explanations. Available:
@@ -341,6 +342,21 @@ def gen_rule_data(method: str = 'seneca', nSamples: int = 1000, nFeatures: int =
                 return data, targets, explanations, featureNames
             else:
                 return data, targets, explanations
+
+
+def load_data_rule(name):
+    """ Loads (or downloads) and returns a real image dataset with available ground truth Decision Rule explanations.
+
+    :param name: (str) dataset name. Available:
+        - 'kahikatea': Binary classification dataset from [] with g.t. explanations as binary masks.
+    :return: A Dataset object. Read about it in the dataset module. """
+
+    if name not in _AVAILABLE_DECISION_RULE_METRICS:
+        raise ValueError(f'Dataset not available ({_AVAILABLE_DECISION_RULE_METRICS})')
+
+    if name is None:
+        # todo
+        pass
 
 
 def _gen_rule_dataset_seneca(nSamples=None, nFeatures=None, randomState=None, featureNames=None):

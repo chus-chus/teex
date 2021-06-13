@@ -10,11 +10,12 @@ from cv2 import cvtColor, COLOR_RGB2GRAY, imread, COLOR_BGR2RGB
 
 from TAIAOexp.featureImportance import feature_importance_scores
 # noinspection PyProtectedMember
-from TAIAOexp.utils._baseClassifier import _BaseClassifier
+from TAIAOexp._baseClasses._baseClassifier import _BaseClassifier
+from TAIAOexp.datasets import Kahikatea
 
 _AVAILABLE_SALIENCY_MAP_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc'}
-_AVAILABLE_SALIENCY_MAP_GEN_METHODS = {'seneca', 'kahikatea'}
-
+_AVAILABLE_SALIENCY_MAP_GEN_METHODS = {'seneca'}
+_AVAILABLE_SALIENCY_MAP_DATASETS = {'kahikatea'}
 
 # ===================================
 #       TRANSPARENT MODEL
@@ -28,7 +29,7 @@ class TransparentImageClassifier(_BaseClassifier):
     [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021].
 
     IMPORTANT NOTE ON GENERATING G.T. EXPLANATIONS: the ground truth explanations are automatically generated with
-    the 'dataGen.gen_image_data' method, so using this class to generate g.t. explanations is not recommended,
+    the 'dataGen.gen_synthetic_imgs' method, so using this class to generate g.t. explanations is not recommended,
     as it is much less efficient. """
 
     def __init__(self):
@@ -112,9 +113,9 @@ class TransparentImageClassifier(_BaseClassifier):
 #       DATA GENERATION
 # ===================================
 
-def gen_image_data(method='seneca', nSamples=1000, imageH=32, imageW=32, patternH=16, patternW=16, cellH=4,
-                   cellW=4, patternProp=0.5, fillPct=0.4, colorDev=0.1, randomState=888, returnModel=False):
-    """ Generate synthetic classification image data with ground truth explanations.
+def gen_data_sm(method='seneca', nSamples=1000, imageH=32, imageW=32, patternH=16, patternW=16, cellH=4,
+                cellW=4, patternProp=0.5, fillPct=0.4, colorDev=0.1, randomState=888, returnModel=False):
+    """ Generate synthetic classification image data with saliency map ground truth explanations via different methods.
 
      :param method: (str) method to use for the generation of the data and g.t. explanations. Available:
         - **'seneca'**: Images and g.t. explanations generated following the procedure presented in [Evaluating local
@@ -123,9 +124,6 @@ def gen_image_data(method='seneca', nSamples=1000, imageH=32, imageW=32, pattern
         present) and are generated  The generated RGB images belong to one class if they contain a certain generated
         pattern and to the other if not. The images are composed of homogeneous cells of size (cellH, cellW), which in
         turn compose a certain pattern of shape (patternH, patternW) that is inserted on some of the generated images.
-        # todo kahikatea
-        - **'kahikatea'**: Images and g.t. masks retrieved from []. A binary classificaction problem where the goal
-        is to detect whether Kahikatea trees are present in drone images.
 
      :param nSamples: (int) number of images to generate.
      :param imageH: (int) height in pixels of the images. For :code:`method='seneca'` must be multiple of cellH.
@@ -162,10 +160,10 @@ def gen_image_data(method='seneca', nSamples=1000, imageH=32, imageW=32, pattern
     rng = np.random.default_rng(randomState)
 
     if method == 'seneca':
-        imgs, labels, exps, pattern, mod = _gen_img_dataset_seneca(nSamples=nSamples, imageH=imageH, imageW=imageW,
-                                                                   patternH=patternH, patternW=patternW, cellH=cellH,
-                                                                   cellW=cellW, patternProp=patternProp, rng=rng,
-                                                                   colorDev=colorDev, fillPct=fillPct)
+        imgs, labels, exps, pattern, mod = _gen_seneca_dataset_sm(nSamples=nSamples, imageH=imageH, imageW=imageW,
+                                                                  patternH=patternH, patternW=patternW, cellH=cellH,
+                                                                  cellW=cellW, patternProp=patternProp, rng=rng,
+                                                                  colorDev=colorDev, fillPct=fillPct)
         if returnModel is True:
             return imgs, labels, exps, pattern, mod
         else:
@@ -174,8 +172,23 @@ def gen_image_data(method='seneca', nSamples=1000, imageH=32, imageW=32, pattern
         raise NotImplementedError
 
 
-def _gen_img_dataset_seneca(nSamples=100, imageH=None, imageW=None, patternH=None, patternW=None, cellH=None,
-                            cellW=None, patternProp=None, rng=None, colorDev=None, fillPct=None):
+def load_data_sm(name: str = 'kahikatea'):
+    """ Loads (or downloads) and returns a dataset with available ground truth saliency map explanations. We consider
+    segmentation masks as a special case of saliency maps.
+
+    :param name: (str) dataset name. Available:
+        - 'kahikatea': Binary classification dataset from [] with g.t. explanations as binary segmentation masks.
+    :return: A Dataset object. Read about it in the dataset module. """
+
+    if name not in _AVAILABLE_SALIENCY_MAP_DATASETS:
+        raise ValueError(f'Dataset not available ({_AVAILABLE_SALIENCY_MAP_DATASETS})')
+
+    if name == 'kahikatea':
+        return Kahikatea()
+
+
+def _gen_seneca_dataset_sm(nSamples=100, imageH=None, imageW=None, patternH=None, patternW=None, cellH=None,
+                           cellW=None, patternProp=None, rng=None, colorDev=None, fillPct=None):
     """ Images and g.t. explanations generated following the procedure presented in [Evaluating local
     explanation methods on ground truth, Riccardo Guidotti, 2021]. The g.t. explanations are binary ndarray masks of
     shape (imageH, imageW) that indicate the position of the pattern in an image (zero array if the pattern is not
@@ -417,15 +430,14 @@ def _main():
     fillPct = 0.4
     colorDev = 0.5
 
-    X, y, _, _, model = gen_image_data(method='seneca', nSamples=nSamples, imageH=imageH, imageW=imageW,
-                                       patternH=patternH, patternW=patternW, cellH=cellHeight, cellW=cellWidth,
-                                       patternProp=patternProp, fillPct=fillPct, colorDev=colorDev,
-                                       randomState=randomState, returnModel=True)
+    X, y, _, _, model = gen_data_sm(method='seneca', nSamples=nSamples, imageH=imageH, imageW=imageW, patternH=patternH,
+                                    patternW=patternW, cellH=cellHeight, cellW=cellWidth, patternProp=patternProp,
+                                    fillPct=fillPct, colorDev=colorDev, randomState=randomState, returnModel=True)
 
     print(model.predict(X[:5]), y[:5])
 
     mod = TransparentImageClassifier()
-    imgs, _, explanations, pat = gen_image_data(method='seneca', nSamples=4, patternProp=0.5)
+    imgs, _, explanations, pat = gen_data_sm(method='seneca', nSamples=4, patternProp=0.5)
 
     # the model now recognizes the pattern 'pat'
     mod.fit(pat)
@@ -458,7 +470,7 @@ def _main():
     print('SYNTHETIC DATA GENERATION')
 
     _, axs = plt.subplots(2, 3)
-    images, _, e, p = gen_image_data(nSamples=1, patternProp=1, randomState=3)
+    images, _, e, p = gen_data_sm(nSamples=1, patternProp=1, randomState=3)
     axs[0, 0].imshow(p)
     axs[0, 0].set_title('Pattern')
     axs[0, 1].imshow(images[0])
@@ -466,7 +478,7 @@ def _main():
     axs[0, 2].imshow(e[0])
     axs[0, 2].set_title('Explanation')
 
-    images, y, e, p = gen_image_data(nSamples=1, patternProp=1, randomState=4)
+    images, y, e, p = gen_data_sm(nSamples=1, patternProp=1, randomState=4)
     axs[1, 0].imshow(p)
     axs[1, 1].imshow(images[0])
     axs[1, 2].imshow(e[0])

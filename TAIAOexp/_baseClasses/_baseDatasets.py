@@ -1,14 +1,15 @@
 import abc
+from pathlib import Path
 
 
-class _BinaryClassificationDataset(object):
+class _ClassificationDataset(object):
 
-    """ The base class for binary classification datasets. One must override :code:`__getitem__`, :code:`__len__`,
+    """ The base class for classification datasets. One must override :code:`__getitem__`, :code:`__len__`,
     :code:`_get_class_map`, :code:`_check_integrity`, :code:`_get_class_map`
 
-    :param path: (str) Root directory of the dataset. """
+    :param path: (pathlib.Path) Root directory of the dataset. """
 
-    def __init__(self, path) -> None:
+    def __init__(self, path: Path) -> None:
         self._path = path
         self._isDownloaded = False
         self.classMap = {}

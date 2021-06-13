@@ -2,6 +2,8 @@
 from cv2 import imread, COLOR_BGR2RGB, cvtColor
 from TAIAOexp.utils._paths import _check_dir
 
+from os import scandir
+
 
 def _list_images(pathName, returnType='list'):
     """ Returns {filename: image, ...} """
@@ -12,7 +14,7 @@ def _list_images(pathName, returnType='list'):
         images = {}
     else:
         raise ValueError('returnType not supported.')
-    for filename in os.scandir(pathName):
+    for filename in scandir(pathName):
         if filename.is_file():
             # todo non RGB
             if returnType == 'list':
