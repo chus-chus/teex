@@ -11,7 +11,7 @@ from TAIAOexp._baseClasses._baseDatasets import _ClassificationDataset
 from TAIAOexp._datasets.info.kahikatea import _kahikateaIndexes, _kahikateaLabels, _kahikateaNEntries, \
     _kahikatea_root, _kahikatea_url
 # noinspection PyProtectedMember
-from TAIAOexp._datasets.info.newsgroup import _newgroupRoot, _newsgroupIndexes, _newsgroupLabels, _newsgroupNEntries
+from TAIAOexp._datasets.info.newsgroup import _newsgroupRoot, _newsgroupIndexes, _newsgroupLabels, _newsgroupNEntries
 
 
 class Kahikatea(_ClassificationDataset):
@@ -97,7 +97,7 @@ class Newsgroup(_ClassificationDataset):
     word in :code:`obs`. When a slice is performed, obs, label and exp are lists of the objects described above. """
 
     def __init__(self):
-        super(Newsgroup, self).__init__(path=_newgroupRoot)
+        super(Newsgroup, self).__init__(path=_newsgroupRoot)
 
         if self._check_integrity() is False:
             self._download()

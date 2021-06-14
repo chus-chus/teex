@@ -49,4 +49,4 @@ _newsgroupNEntries = len(_newsgroupAll)
 _newsgroupIndexes = {i: _newsgroupAll[i] for i in range(_newsgroupNEntries)}
 _newsgroupLabels = {i: _newsgroupLabels[i] for i in range(_newsgroupNEntries)}
 
-_newgroupRoot = Path(__file__).parent.parent.absolute() / 'text/newsgroup/'
+_newsgroupRoot = Path(__file__).parent.parent.absolute() / 'text/newsgroup/'
