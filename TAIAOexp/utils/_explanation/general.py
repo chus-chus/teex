@@ -1,7 +1,6 @@
 import numpy as np
 import torch
-from captum.attr import Lime, IntegratedGradients, GradientShap, KernelShap, Occlusion, GuidedBackprop, DeepLift, \
-    GuidedGradCam
+from captum.attr import Lime, IntegratedGradients, GradientShap, KernelShap, Occlusion, GuidedBackprop, DeepLift, GuidedGradCam
 
 
 def get_explainer(model, layer=None, method='guidedGradCAM', model_name=None, **kwargs):

@@ -61,6 +61,7 @@ def _minmax_normalize_array(array: np.array) -> np.array:
     :param array: np.array to normalize
     :return: np.array with values in [0, 1]
     """
+    # todo edge case for den = 0
     arrayMin = np.min(array)
     return (array - arrayMin) / (np.max(array) - arrayMin)
 
