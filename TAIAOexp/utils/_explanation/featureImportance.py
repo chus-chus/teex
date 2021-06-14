@@ -6,7 +6,7 @@ from math import sqrt
 import torch
 
 from captum.attr import LimeBase, KernelShap
-from captum._utils.models.linear_model import SkLearnLinearModel
+#from captum._utils.models.linear_model import SkLearnLinearModel
 from captum.attr._core.lime import get_exp_kernel_similarity_function
 
 from TAIAOexp.utils._explanation.images import get_explainer, get_attributions
