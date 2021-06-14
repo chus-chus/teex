@@ -24,6 +24,7 @@ class Kahikatea(_ClassificationDataset):
         img, label, exp = kDataset[1]
 
     where :code:`img` is a PIL Image, :code:`label` is an int and :code:`exp` is a PIL Image.
+    When a slice is performed, obs, label and exp are lists of the objects described above.
 
     """
 
@@ -93,26 +94,32 @@ class Newsgroup(_ClassificationDataset):
         obs, label, exp = nDataset[1]
 
     where :code:`obs` is a str, :code:`label` is an int and :code:`exp` is a dict. containing a score for each important
-    word in :code:`obs`. """
+    word in :code:`obs`. When a slice is performed, obs, label and exp are lists of the objects described above. """
 
     def __init__(self):
         super(Newsgroup, self).__init__(path=_newgroupRoot)
 
         if self._check_integrity() is False:
             self._download()
+            self._parse_explanations()
 
         self.classMap = self._get_class_map()
-        self._parse_explanations()
 
     def __getitem__(self, item):
         if isinstance(item, slice):
-            indexes = (i for i in range(slice.start, slice.stop, slice.step))
-            pass
+            indexes = list(range(_newsgroupNEntries))[item]
+            obs, label, exp = [], [], []
+            for index in indexes:
+                with open(str(self._path / ('data/' + _newsgroupIndexes[index])), 'r') as t:
+                    obs.append(t.read())
+                label.append(_newsgroupLabels[index])
+                with open(str(self._path / ('exps/' + _newsgroupIndexes[index] + '.json')), 'r') as t:
+                    exp.append(json.load(t)['words'])
         elif isinstance(item, int):
             with open(str(self._path / ('data/' + _newsgroupIndexes[item])), 'r') as t:
-                obs = t.readlines()
+                obs = t.read()
             label = _newsgroupLabels[item]
-            with open(str(self._path / ('exps/' + _newsgroupIndexes[item])), 'r') as t:
+            with open(str(self._path / ('exps/' + _newsgroupIndexes[item] + '.json')), 'r') as t:
                 exp = json.load(t)['words']
         else:
             raise TypeError('Invalid argument type.')
@@ -127,31 +134,43 @@ class Newsgroup(_ClassificationDataset):
                 _check_pathlib_dir(self._path / 'data'))
 
     def _download(self) -> bool:
-        # todo
+        # todo leaves txts in a data folder and json files in an exps folder
         pass
 
     def _get_class_map(self) -> dict:
         return {0: 'electronics', 1: 'medicine'}
 
     def _parse_explanations(self):
-        # todo for each explanation, transform it s.t. it is a dict with words as keys and importances as values.
-        pass
+        """ for each explanation, transform it s.t. it is a dict with words as keys and importances as values. """
+        for file in (self._path / 'exps').iterdir():
+            with open(file, 'r') as f:
+                exp = json.load(f)
+                importances = exp['words']
+                exp['words'] = {word: importance for word, importance in importances}
+            with open(file, 'w') as f:
+                json.dump(exp, f)
 
 
 def _datasets_main():
-    import matplotlib.pyplot as plt
-    kData = Kahikatea()
-    im, label, exp = kData[:3]
+    # import matplotlib.pyplot as plt
+    # kData = Kahikatea()
+    # im, label, exp = kData[:3]
+    #
+    # print('Images: ', im)
+    # print('Labels: ', label)
+    # print('Exps: ', exp)
+    #
+    # plt.imshow(im[0])
+    # plt.show()
+    #
+    # plt.imshow(exp[0])
+    # plt.show()
 
-    print('Images: ', im)
-    print('Labels: ', label)
-    print('Exps: ', exp)
-
-    plt.imshow(im[0])
-    plt.show()
-
-    plt.imshow(exp[0])
-    plt.show()
+    tData = Newsgroup()
+    obs, labels, exp = tData[:10]
+    print(obs[0])
+    print('Class: ', tData.classMap[labels[0]])
+    print(exp[0])
 
 
 if __name__ == '__main__':

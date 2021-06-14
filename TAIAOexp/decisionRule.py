@@ -348,7 +348,7 @@ def load_data_rule(name):
     """ Loads (or downloads) and returns a real image dataset with available ground truth Decision Rule explanations.
 
     :param name: (str) dataset name. Available:
-        - 'kahikatea': Binary classification dataset from [] with g.t. explanations as binary masks.
+        -
     :return: A Dataset object. Read about it in the dataset module. """
 
     if name not in _AVAILABLE_DECISION_RULE_METRICS:
