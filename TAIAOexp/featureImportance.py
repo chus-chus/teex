@@ -311,6 +311,22 @@ def _individual_fi_metrics(gt, pred, binGt, binPred, metric, predsNegative, thre
         if predsNegative is True:
             pred = np.abs(pred) if thresholdType == 'abs' else np.where(pred < 0, 0, pred)
         return auc_score(binGt, pred)
+    
+
+def _check_correct_array_values(binGt, binPred, gt, pred):
+    """ Checks whether the passed arrays contain all 0s. """
+
+    emptyBGt, emptyBPred, emptyGt, emptyPred = False, False, False, False
+    if (binGt == 0).all():
+        emptyBGt = True
+    if (binPred == 0).all():
+        emptyBPred = True
+    if emptyBGt and (gt == 0).all():
+        emptyGt = True
+    if emptyBPred and (pred == 0).all():
+        emptyPred = True
+
+    return emptyBGt, emptyBPred, emptyGt, emptyPred
 
 
 def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdType='abs', binThreshold=0.5):
@@ -349,7 +365,7 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
     :return: (ndarray of shape (n_metrics,) or (n_samples, n_metrics)) specified metric/s in the indicated order. """
 
     # todo document how the edges cases are dealt with
-
+    
     if metrics is None:
         metrics = ['fscore']
     elif isinstance(metrics, str):
@@ -392,29 +408,31 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
     rng = np.random.default_rng(888)
     for binGt, binPred, gt, pred in zip(binaryGts, binaryPreds, gts, preds):
         mets = []
-        if (binGt == 0).all():
-            emptyBGt = True
-        else:
-            emptyBGt = False
+        emptyBGt, emptyBPred, emptyGt, emptyPred = _check_correct_array_values(binGt, binPred, gt, pred)
 
-        if emptyBGt and (gt == 0).all():
-            emptyGt = True
-        else:
-            emptyGt = False
-
-        if classScores and emptyBGt:
-            warnings.warn('Binary ground truth does not contain values != 0, so one entry is being flipped to 1 for '
-                          'the metrics to be defined.')
-            binGt[rng.integers(0, len(binGt))] = 1
-        if realScores and emptyGt:
-            warnings.warn('Ground truth does not contain values != 0, so 1e-4 is being added to one random entry '
-                          '(in pred as well).')
-            i = rng.integers(0, len(gt))
-            gt[i] += 1e-4
-            pred[i] += 1e-4
+        i = rng.integers(0, len(binGt))
+        if classScores:
+            if emptyBGt:
+                warnings.warn('Binary ground truth does not contain values != 0, so one entry is being flipped to 1 '
+                              'for the metrics to be defined.')
+                binGt[i] = 1
+            if emptyBPred:
+                warnings.warn('Binary prediction does not contain values != 0, so one entry is being flipped to 1 for '
+                              'the metrics to be defined.')
+                binPred[i] = 1
+        if realScores:
+            if emptyGt:
+                warnings.warn('Ground truth does not contain values != 0, so 1e-4 is being added to one random entry '
+                              'in both.')
+                gt[i] += 1e-4
+            if emptyPred:
+                warnings.warn('Prediction does not contain values != 0, so 1e-4 is being added to one random entry '
+                              'in both.')
+                pred[i] += 1e-4
 
         for metric in metrics:
             mets.append(_individual_fi_metrics(gt, pred, binGt, binPred, metric, predsNegative, thresholdType))
+
         ret.append(mets)
 
     ret = np.array(ret).astype(np.float32)
