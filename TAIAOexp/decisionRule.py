@@ -1,4 +1,4 @@
-""" The rule module. Contains all of the methods regarding this datatype: data generation, evaluation of explanations
+""" The rule module. Contains all of the methods regarding this datatype: synthetic data generation, evaluation of explanations
  and other utils. """
 
 import numpy as np

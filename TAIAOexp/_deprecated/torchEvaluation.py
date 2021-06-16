@@ -8,6 +8,7 @@ from TAIAOexp.utils._explanation.featureImportance import torch_tab_attributions
 from TAIAOexp.utils._explanation.images import torch_pixel_attributions
 from TAIAOexp.featureImportance import feature_importance_scores, gen_data_fi
 from TAIAOexp.saliencyMap import saliency_map_scores, gen_data_sm
+from TAIAOexp.utils._misc import deprecated
 
 import torch
 
@@ -22,6 +23,7 @@ import torch
 #     return model(**modelParams)
 
 
+@deprecated
 def gen_split_data(dataType, nSamples, nFeatures, randomState, expType, dataSplit, **kwargs):
     """ Returns train val test split synthetic image or tabular data
     'kwargs' is passed to gen_image_data or gen_tabular_data, depending on 'dataType'.  """
@@ -56,6 +58,7 @@ def gen_split_data(dataType, nSamples, nFeatures, randomState, expType, dataSpli
         return XTrain, XVal, XTest, yTrain, yVal, yTest, gtExpTrain, gtExpVal, gtExpTest, featureNames
 
 
+@deprecated
 def eval_sk_tabular(model, nSamples, nFeatures, dataSplit, expMethod, expType, randomState=888):
     """ Trains a sklearn model with synthetic data. Then, generates explanations and evaluates them with
     the available ground truths for the generated train, validation and test sets.
@@ -82,6 +85,7 @@ def eval_sk_tabular(model, nSamples, nFeatures, dataSplit, expMethod, expType, r
     return
 
 
+@deprecated
 def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMethod, expType, positiveClassLabel=1,
                    metrics=None, randomState=888, **kwargs):
     """ Trains a PyTorch model with synthetic tabular data. Then, generates explanations and evaluates them with
@@ -136,6 +140,7 @@ def eval_torch_tab(model, trainFunction, nSamples, nFeatures, dataSplit, expMeth
     return np.mean(expTrainScores, axis=0), np.mean(expValScores, axis=0), np.mean(expTestScores, axis=0)
 
 
+@deprecated
 def eval_torch_image(model, trainFunction, nSamples, dataSplit, expMethod, imageH=32, imageW=32, patternH=16,
                      patternW=16, cellH=4, cellW=4, patternProp=0.5, fillPct=0.4, randomState=888,
                      metrics=None, positiveClassLabel=1, **kwargs):

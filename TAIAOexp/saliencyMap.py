@@ -1,4 +1,4 @@
-""" The image module. Contains all of the methods regarding this explanation type: data generation, evaluation of
+""" The image module. Contains all of the methods regarding this explanation type: synthetic data generation, evaluation of
 explanations and related utils. """
 
 import warnings
@@ -282,10 +282,9 @@ def _generate_rgb(rng, colorDev):
 # ===================================
 
 
-def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=0.01, gtBackgroundVals='light', average=True) -> float:
+def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=0.01, gtBackgroundVals='light', average=True):
     """ Quality metrics for saliency map explanations, where each pixel is considered as a feature.
     Computes different scores of a saliency map explanation w.r.t. its ground truth explanation (a binary mask).
-    The saliency map should not be binary. If it is, use the 'binary_mask_scores' method instead.
 
     # todo support for gts that are not binary
     :param gts: (ndarray) ground truth RGB or binary mask/s. Accepted shapes are
@@ -358,17 +357,6 @@ def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=0.01, gtBackgroun
                                          average=average, binThreshold=binThreshold)
     else:
         raise ValueError(f'Shape {gts.shape} of ground truth explanations not supported.')
-
-
-# def binary_mask_scores(gt, explanation, metrics=None, **kwargs) -> float:
-#     """ Computes metrics for the evaluation of image binary pixel importance explanations.
-#
-#     :param gt: (ndarray), ground truth pixel importance n x m binary mask.
-#     :param explanation: (ndarray), image pixel importance n x m binary explanation.
-#     :param metrics: (str / array-like) 'fscore', 'prec', 'rec', 'auc', 'cs'
-#     :return: (list) the specified similarity metric/s. """
-#
-#     return feature_importance_scores(gt.flatten(), explanation.flatten(), metrics=metrics, **kwargs)
 
 # ===================================
 #       UTILS

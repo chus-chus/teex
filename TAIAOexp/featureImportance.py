@@ -1,5 +1,6 @@
-""" The feature importance module. Contains all of the methods regarding this explanation type: data generation,
+""" The feature importance module. Contains all of the methods regarding this explanation type: synthetic data generation,
 evaluation of explanations and related utils. """
+
 import warnings
 
 import numpy as np
