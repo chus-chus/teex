@@ -282,7 +282,7 @@ def _generate_rgb(rng, colorDev):
 # ===================================
 
 
-def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=0.01, gtBackgroundVals='light', average=True):
+def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=0.01, gtBackgroundVals='high', average=True):
     """ Quality metrics for saliency map explanations, where each pixel is considered as a feature.
     Computes different scores of a saliency map explanation w.r.t. its ground truth explanation (a binary mask).
 
@@ -331,9 +331,6 @@ def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=0.01, gtBackgroun
         if metric not in _AVAILABLE_SALIENCY_MAP_METRICS:
             raise ValueError(f"'{metric}' metric not valid. Use {_AVAILABLE_SALIENCY_MAP_METRICS}")
 
-    if gts.shape != sMaps.shape:
-        raise ValueError("G.t. masks' shape cannot be different from the saliency maps explanations.")
-
     if len(gts.shape) == 2:
         # Single binary g.t. mask
         return feature_importance_scores(gts.flatten(), sMaps.flatten(), metrics=metrics, binThreshold=binThreshold)
@@ -350,8 +347,10 @@ def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=0.01, gtBackgroun
                                              metrics=metrics, average=average, binThreshold=binThreshold)
     elif len(gts.shape) == 4:
         warnings.warn(f'Binarizing {gts.shape[0]} g.t. RGB masks.')
+        newGts = []
         for imIndex in range(gts.shape[0]):
-            gts[imIndex] = binarize_rgb_mask(gts, bgValue=gtBackgroundVals)
+            newGts.append(binarize_rgb_mask(gts[imIndex], bgValue=gtBackgroundVals))
+        gts = np.array(newGts)
         return feature_importance_scores(gts.reshape(gts.shape[0], gts.shape[1]*gts.shape[2]),
                                          sMaps.reshape(sMaps.shape[0], sMaps.shape[1]*sMaps.shape[2]), metrics=metrics,
                                          average=average, binThreshold=binThreshold)
@@ -375,9 +374,9 @@ def binarize_rgb_mask(img, bgValue='high') -> np.array:
     binarize has a very defined background.
 
     :param img: (ndarray) of shape (imageH, imageW, 3), RGB mask to binarize.
-    :param bgValue: (str) Intensity of the negative class of the image to binarize: {'light', 'dark'}
+    :param bgValue: (str) Intensity of the negative class of the image to binarize: {'high', 'low'}
     :return: (ndarray) a binary mask. """
-
+    
     if bgValue not in {'high', 'low'}:
         raise ValueError(f"bgColor should ve {['high', 'low']}")
 
