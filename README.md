@@ -1,6 +1,6 @@
-# TAIAOexp
+# tee
 
-A python package for explanation experimentation. It provides methods for:
+A python package for the evaluation of machine learning explanations. It provides methods for:
 
 * Generation of synthetic data with available ground truth explanations:
 
