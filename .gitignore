@@ -1,9 +1,8 @@
 venv/
-torch_models/
 .ipynb_checkpoints/
 *.bat
-Makefile
 __pycache__/
-build/
 docs/
-source/
+.buildinfo
+_deprecated/
+_files/
