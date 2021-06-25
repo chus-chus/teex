@@ -1,4 +1,4 @@
-# tee
+# teex
 
 A python package for the evaluation of machine learning explanations. It provides methods for:
 
