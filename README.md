@@ -1,6 +1,6 @@
 # teex
 
-A python package for the evaluation of machine learning explanations. It provides methods for:
+A Python **T**oolbox for the **E**valuation of machine learning **Ex**planations. It provides methods for:
 
 * Generation of synthetic data with available ground truth explanations:
 
