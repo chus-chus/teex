@@ -1,0 +1,997 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>teex package &mdash; teex 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> teex
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">teex package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-teex.datasets">teex.datasets module</a></li>
+<li><a class="reference internal" href="#module-teex.decisionRule">teex.decisionRule module</a></li>
+<li><a class="reference internal" href="#module-teex.featureImportance">teex.featureImportance module</a></li>
+<li><a class="reference internal" href="#module-teex.saliencyMap">teex.saliencyMap module</a></li>
+<li><a class="reference internal" href="#module-teex.wordImportance">teex.wordImportance module</a></li>
+<li><a class="reference internal" href="#module-teex">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">teex</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>teex package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/teex.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="teex-package">
+<h1>teex package<a class="headerlink" href="#teex-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-teex.datasets">
+<span id="teex-datasets-module"></span><h2>teex.datasets module<a class="headerlink" href="#module-teex.datasets" title="Permalink to this headline">¶</a></h2>
+<p>Available dataset classes</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="teex.datasets.Kahikatea">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">teex.datasets.</span></span><span class="sig-name descname"><span class="pre">Kahikatea</span></span><a class="reference internal" href="_modules/teex/datasets.html#Kahikatea"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.datasets.Kahikatea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">teex._baseClasses._baseDatasets._ClassificationDataset</span></code></p>
+<p>Binary classification dataset from URL. If an image belongs to the negative class, None is provided as an
+explanation. An example of a returned observation when indexing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kDataset</span> <span class="o">=</span> <span class="n">Kahikatea</span><span class="p">()</span>
+<span class="n">img</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">exp</span> <span class="o">=</span> <span class="n">kDataset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>where <code class="code docutils literal notranslate"><span class="pre">img</span></code> is a PIL Image, <code class="code docutils literal notranslate"><span class="pre">label</span></code> is an int and <code class="code docutils literal notranslate"><span class="pre">exp</span></code> is a PIL Image.
+When a slice is performed, obs, label and exp are lists of the objects described above.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="teex.datasets.Newsgroup">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">teex.datasets.</span></span><span class="sig-name descname"><span class="pre">Newsgroup</span></span><a class="reference internal" href="_modules/teex/datasets.html#Newsgroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.datasets.Newsgroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">teex._baseClasses._baseDatasets._ClassificationDataset</span></code></p>
+<p>20 Newsgroup dataset from <a class="reference external" href="https://github.com/SinaMohseni/ML-Interpretability-Evaluation-Benchmark">https://github.com/SinaMohseni/ML-Interpretability-Evaluation-Benchmark</a></p>
+<p>The returned items when indexing are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nDataset</span> <span class="o">=</span> <span class="n">Newsgroup</span><span class="p">()</span>
+<span class="n">obs</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">exp</span> <span class="o">=</span> <span class="n">nDataset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>where <code class="code docutils literal notranslate"><span class="pre">obs</span></code> is a str, <code class="code docutils literal notranslate"><span class="pre">label</span></code> is an int and <code class="code docutils literal notranslate"><span class="pre">exp</span></code> is a dict. containing a score for each important
+word in <code class="code docutils literal notranslate"><span class="pre">obs</span></code>. When a slice is performed, obs, label and exp are lists of the objects described above.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-teex.decisionRule">
+<span id="teex-decisionrule-module"></span><h2>teex.decisionRule module<a class="headerlink" href="#module-teex.decisionRule" title="Permalink to this headline">¶</a></h2>
+<p>The rule module. Contains all of the methods regarding this datatype: synthetic data generation, evaluation of
+explanations and other utils.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="teex.decisionRule.DecisionRule">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">teex.decisionRule.</span></span><span class="sig-name descname"><span class="pre">DecisionRule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/decisionRule.html#DecisionRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.DecisionRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A conjunction of statements as conditions that imply a result. Internally, the rule is represented as a
+dictionary of statements with the feature names as keys. A feature cannot have more than one Statement (
+Statements can be binary). This class is capable of adapting previous Statements depending on new Statements that
+are added to it with the upsert method (see <cite>.upsert_condition</cite> method).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.decisionRule.DecisionRule.get_features">
+<span class="sig-name descname"><span class="pre">get_features</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="_modules/teex/decisionRule.html#DecisionRule.get_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.DecisionRule.get_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list with the features present in the rule conditions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.decisionRule.DecisionRule.insert_condition">
+<span class="sig-name descname"><span class="pre">insert_condition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statement</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#teex.decisionRule.Statement" title="teex.decisionRule.Statement"><span class="pre">teex.decisionRule.Statement</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/decisionRule.html#DecisionRule.insert_condition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.DecisionRule.insert_condition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add Condition inplace to the conjunction.
+:param statement: Statement object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.decisionRule.DecisionRule.set_result">
+<span class="sig-name descname"><span class="pre">set_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/decisionRule.html#DecisionRule.set_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.DecisionRule.set_result" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.decisionRule.DecisionRule.upsert_condition">
+<span class="sig-name descname"><span class="pre">upsert_condition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statement</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#teex.decisionRule.Statement" title="teex.decisionRule.Statement"><span class="pre">teex.decisionRule.Statement</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">updateOperators</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/decisionRule.html#DecisionRule.upsert_condition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.DecisionRule.upsert_condition" title="Permalink to this definition">¶</a></dt>
+<dd><p>If a statement already exists within the rule, updates its bounds (replacing or defining them) and its
+operators if specified. If not, inserts the statement as a new condition. If an existing condition is of
+different type (binary / non-binary) as the new condition, the update fails. A bound update is only performed
+if the new bound/s != np.inf or -np.inf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>statement</strong> – Statement object</p></li>
+<li><p><strong>updateOperators</strong> – Should the operators be updated too?</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="teex.decisionRule.Statement">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">teex.decisionRule.</span></span><span class="sig-name descname"><span class="pre">Statement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowOp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'&lt;'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowerBound</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upperOp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'&lt;='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upperBound</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/decisionRule.html#Statement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.Statement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="teex.decisionRule.TransparentRuleClassifier">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">teex.decisionRule.</span></span><span class="sig-name descname"><span class="pre">TransparentRuleClassifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/decisionRule.html#TransparentRuleClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.TransparentRuleClassifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">teex._baseClasses._baseClassifier._BaseClassifier</span></code></p>
+<p>Transparent, rule-based classifier with decision rules as explanations. For each prediction, the associated
+ground truth explanation is available with the <code class="code docutils literal notranslate"><span class="pre">.explain</span></code> method. Follows the sklean API. Presented in
+[Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021].</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.decisionRule.TransparentRuleClassifier.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/decisionRule.html#TransparentRuleClassifier.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.TransparentRuleClassifier.explain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Explain observations’ predictions with decision rules.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obs</strong> – array of n observations with m features and shape (n, m)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list with n <code class="code docutils literal notranslate"><span class="pre">DecisionRule</span></code> objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.decisionRule.TransparentRuleClassifier.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featureNames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/decisionRule.html#TransparentRuleClassifier.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.TransparentRuleClassifier.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fits the classifier and automatically parses the learned tree structure into statements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – (array-like) of shape (n_samples, n_features) The training input samples. Internally, it will be
+converted to dtype=np.float32.</p></li>
+<li><p><strong>target</strong> – (array-like of shape (n_samples,) or (n_samples, n_outputs)) The target values (class labels) as
+integers or strings.</p></li>
+<li><p><strong>featureNames</strong> – (str) todo</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.decisionRule.TransparentRuleClassifier.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/decisionRule.html#TransparentRuleClassifier.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.TransparentRuleClassifier.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predicts the class for each observation.
+:param obs: (array-like) of n observations with m features and shape (n, m)
+:return: array of n predicted labels</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.decisionRule.TransparentRuleClassifier.predict_proba">
+<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/decisionRule.html#TransparentRuleClassifier.predict_proba"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.TransparentRuleClassifier.predict_proba" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predicts probability that each observation belongs to each of the c classes.
+:param obs: array of n observations with m features and shape (n, m)
+:return: array of n probability tuples of length c</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.decisionRule.complete_rule_quality">
+<span class="sig-prename descclassname"><span class="pre">teex.decisionRule.</span></span><span class="sig-name descname"><span class="pre">complete_rule_quality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#teex.decisionRule.DecisionRule" title="teex.decisionRule.DecisionRule"><span class="pre">teex.decisionRule.DecisionRule</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#teex.decisionRule.DecisionRule" title="teex.decisionRule.DecisionRule"><span class="pre">teex.decisionRule.DecisionRule</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">float</span><a class="reference internal" href="_modules/teex/decisionRule.html#complete_rule_quality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.complete_rule_quality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the complete rule quality (crq) between two decision rules. All ‘Statements’ in both rules must be
+binary (have upper and lower bounds). The metric is defined as the proportion of lower and upper bounds in a rule
+explanation whose that are eps-close to the respective lower and upper bounds (same feature) in the ground truth
+rule explanation amongst those that are != inf. Mathematically, given two rules <span class="math notranslate nohighlight">\(e, \tilde{e}\)</span> and a
+similarity threshold <span class="math notranslate nohighlight">\(\varepsilon\)</span>, the quality of <span class="math notranslate nohighlight">\(e\)</span> with respect to <span class="math notranslate nohighlight">\(\tilde{e}\)</span> is:</p>
+<div class="math notranslate nohighlight">
+\[q(e, \tilde{e}) = \frac{1}{N_{\not\infty}} \sum_{i=1}^{|e|}{\delta_{\varepsilon}(e_i, \tilde e_i)},\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[\delta_{\varepsilon}(e_i, \tilde{e}_i) =
+        \begin{cases}
+            1 &amp; \text{if } |e_i - \tilde{e}_i| \leq \varepsilon \wedge |e_i| \neq \infty \wedge
+                |\tilde{e}_i| \neq \infty, \newline
+            0 &amp; \text{otherwise}
+        \end{cases}\]</div>
+<p>Where <span class="math notranslate nohighlight">\(N_{\not \infty}\)</span> is the number of lower and upper bounds that are different from <span class="math notranslate nohighlight">\(\infty\)</span> in
+both <span class="math notranslate nohighlight">\(e\)</span> and <span class="math notranslate nohighlight">\(\tilde e\)</span>. More about this metric can be found in [Evaluating local explanation methods
+on ground truth, Riccardo Guidotti, 2021].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gts</strong> – (DecisionRule or array-like of DecisionRules) ground truth rule w.r.t. which to compute the quality</p></li>
+<li><p><strong>rules</strong> – (DecisionRule or array-like of DecisionRules) rule to compute the quality for</p></li>
+<li><p><strong>eps</strong> – (float) threshold <span class="math notranslate nohighlight">\(\varepsilon\)</span> for the bounds to be taken into account in the metric, with
+precision up to 3 decimal places.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(float or ndarray of shape (n_samples,)) Complete rule quality.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.decisionRule.gen_data_rule">
+<span class="sig-prename descclassname"><span class="pre">teex.decisionRule.</span></span><span class="sig-name descname"><span class="pre">gen_data_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'seneca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nSamples</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nFeatures</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returnModel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featureNames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomState</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">888</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/decisionRule.html#gen_data_rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.gen_data_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate synthetic binary classification data with ground truth decision rule explanations. The returned
+decision rule g.t. explanations are instances of the <code class="code docutils literal notranslate"><span class="pre">DecisionRule</span></code> class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<em>str</em>) – <p>method to use for the generation of the ground truth explanations. Available:</p>
+<ul>
+<li><p>’seneca’: g.t. explanations generated with the <code class="xref py py-class docutils literal notranslate"><span class="pre">decisionRule.TransparentRuleClassifier</span></code> class. The
+method was presented in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021].</p></li>
+</ul>
+</p></li>
+<li><p><strong>nSamples</strong> – (int) number of samples to be generated.</p></li>
+<li><p><strong>nFeatures</strong> – (int) total number of features in the generated data.</p></li>
+<li><p><strong>returnModel</strong> – (bool) should the <code class="code docutils literal notranslate"><span class="pre">decisionRule.TransparentRuleClassifier</span></code> model used for the generation
+of the explanations be returned? Only used for the ‘seneca’ method.</p></li>
+<li><p><strong>featureNames</strong> – (array-like) names of the generated features. If not provided, a list with the generated
+feature names will be returned by the function (necessary because the g.t. decision rules use them).</p></li>
+<li><p><strong>randomState</strong> – (int) random state seed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>X (ndarray) of shape (nSamples, nFeatures) Generated data.</p></li>
+<li><p>y (ndarray) of shape (nSamples,) Binary data labels.</p></li>
+<li><p>explanations (list) of <code class="xref py py-class docutils literal notranslate"><span class="pre">decisionRule.DecisionRule</span></code> objects of length (nSamples). Generated ground
+truth explanations.</p></li>
+<li><p>featureNames (list) list with the generated feature names (only if they were not specified).</p></li>
+<li><p>model (<code class="xref py py-class docutils literal notranslate"><span class="pre">decisionRule.TransparentRuleClassifier</span></code>) Model instance used to generate the data (returned if
+<code class="code docutils literal notranslate"><span class="pre">returnModel</span></code> is True only when <code class="code docutils literal notranslate"><span class="pre">method='seneca'</span></code>).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.decisionRule.load_data_rule">
+<span class="sig-prename descclassname"><span class="pre">teex.decisionRule.</span></span><span class="sig-name descname"><span class="pre">load_data_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/decisionRule.html#load_data_rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.load_data_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads (or downloads) and returns a real image dataset with available ground truth Decision Rule explanations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> – (str) dataset name. Available:
+-</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A Dataset object. Read about it in the dataset module.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.decisionRule.rule_scores">
+<span class="sig-prename descclassname"><span class="pre">teex.decisionRule.</span></span><span class="sig-name descname"><span class="pre">rule_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#teex.decisionRule.DecisionRule" title="teex.decisionRule.DecisionRule"><span class="pre">teex.decisionRule.DecisionRule</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#teex.decisionRule.DecisionRule" title="teex.decisionRule.DecisionRule"><span class="pre">teex.decisionRule.DecisionRule</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">allFeatures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">float</span><a class="reference internal" href="_modules/teex/decisionRule.html#rule_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.rule_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quality metrics for <code class="xref py py-class docutils literal notranslate"><span class="pre">decisionRule.DecisionRule</span></code> objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gts</strong> – (DecisionRule or array-like of DecisionRules) ground truth decision rule/s.</p></li>
+<li><p><strong>rules</strong> – (DecisionRule or array-like of DecisionRules) approximated decision rule/s.</p></li>
+<li><p><strong>allFeatures</strong> – (array-like) names of all of the relevant features (i.e. <code class="code docutils literal notranslate"><span class="pre">create_rule_data.featureNames</span></code>)</p></li>
+<li><p><strong>metrics</strong> – <p>(array-like of str, default <code class="code docutils literal notranslate"><span class="pre">['fscore']</span></code>) metris to compute. Available:</p>
+<ul>
+<li><p>’fscore’: Computes the F1 Score between the ground truths and the predicted vectors.</p></li>
+<li><p>’prec’: Computes the Precision Score between the ground truths and the predicted vectors.</p></li>
+<li><p>’rec’: Computes the Recall Score between the ground truths and the predicted vectors.</p></li>
+<li><p>’crq’: Computes the Complete Rule Quality of <code class="code docutils literal notranslate"><span class="pre">rule</span></code> w.r.t. <code class="code docutils literal notranslate"><span class="pre">gt</span></code>.</p></li>
+<li><p>’auc’: Computes the ROC AUC Score between the two rules.</p></li>
+<li><p>’cs’: Computes the Cosine Similarity between the two rules.</p></li>
+</ul>
+<p>Note that for ‘fscore’, ‘prec’, ‘rec’, ‘auc’ and ‘cs’ the rules are transformed to binary vectors where there
+is one entry per possible feature and that entry contains a 1 if the feature is present in the rule, otherwise
+0.</p>
+</p></li>
+<li><p><strong>average</strong> – (bool, default <code class="code docutils literal notranslate"><span class="pre">True</span></code>) Used only if <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">rule</span></code> are array-like. Should the
+computed metrics be averaged across all of the samples?</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>(ndarray) specified metric/s in the original order. Can be of shape</p>
+<ul class="simple">
+<li><p>(n_metrics,) if only one DecisionRule has been provided in both <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">rules</span></code> or when both are
+array-like and <code class="code docutils literal notranslate"><span class="pre">average=True</span></code>.</p></li>
+<li><p>(n_metrics, n_samples) if <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">rules</span></code> are array-like and <code class="code docutils literal notranslate"><span class="pre">average=False</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.decisionRule.rule_to_feature_importance">
+<span class="sig-prename descclassname"><span class="pre">teex.decisionRule.</span></span><span class="sig-name descname"><span class="pre">rule_to_feature_importance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allFeatures</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="_modules/teex/decisionRule.html#rule_to_feature_importance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.rule_to_feature_importance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts one or more <code class="xref py py-class docutils literal notranslate"><span class="pre">decisionRule.DecisionRule</span></code> objects to feature importance vector/s. For each
+feature in <em>allFeatures</em>, the feature importance representation contains a 1 if there is a
+:class:’decisionRule.Statement’ with that particular feature in the decision rule and 0 otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rules</strong> – (<code class="xref py py-class docutils literal notranslate"><span class="pre">decisionRule.DecisionRule</span></code> or (1, r) array-like of <code class="xref py py-class docutils literal notranslate"><span class="pre">decisionRule.DecisionRule</span></code>) Rule/s
+to convert to feature importance vectors.</p></li>
+<li><p><strong>allFeatures</strong> – (array-like of str) List with mg features (same as the rule features) whose order the returned
+array will follow. The features must match the ones used in the decision rules.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(binary ndarray of shape (n_features,) or shape (n_rules, n_features)).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-teex.featureImportance">
+<span id="teex-featureimportance-module"></span><h2>teex.featureImportance module<a class="headerlink" href="#module-teex.featureImportance" title="Permalink to this headline">¶</a></h2>
+<p>The feature importance module. Contains all of the methods regarding this explanation type: synthetic data
+generation, evaluation of explanations and related utils.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="teex.featureImportance.TransparentLinearClassifier">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">teex.featureImportance.</span></span><span class="sig-name descname"><span class="pre">TransparentLinearClassifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">randomState</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">888</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/featureImportance.html#TransparentLinearClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.featureImportance.TransparentLinearClassifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">teex._baseClasses._baseClassifier._BaseClassifier</span></code></p>
+<p>Transparent, linear classifier with feature importances as explanations. This class also generates labeled
+data according to the generated random linear expression. Presented in [Evaluating local explanation methods on
+ground truth, Riccardo Guidotti, 2021].</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.featureImportance.TransparentLinearClassifier.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newLabels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/featureImportance.html#TransparentLinearClassifier.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.featureImportance.TransparentLinearClassifier.explain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get feature importance explanation as the gradient of the expression evaluated at the point (from the
+n ‘training’ observations) with the same class as ‘obs’ and closest to the decision boundary f = 0.</p>
+<p>The procedure is as follows: for each data observation x to explain, get the observation z from the ‘training’
+data that is closer to the decision boundary and is of different class than x. Then, get the observation t from
+the ‘training’ data that is closer to z but of the same class as x. Finally, return the explanation for x as the
+gradient vector of f evaluated at t.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – (ndarray) array of k observations and m features, shape (k, m).</p></li>
+<li><p><strong>newLabels</strong> – (ndarray, optional) precomputed data labels (binary ints) for ‘data’. Shape (k).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(ndarray) (k, m) array of feature importance explanations.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.featureImportance.TransparentLinearClassifier.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nFeatures</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featureNames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nSamples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/featureImportance.html#TransparentLinearClassifier.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.featureImportance.TransparentLinearClassifier.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a random linear expression and random data labeled by the linear expression as a binary
+dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nFeatures</strong> – (int) number of features in the data.</p></li>
+<li><p><strong>featureNames</strong> – (array-like) names of the features in the data.</p></li>
+<li><p><strong>nSamples</strong> – (int) number of samples for the generated data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(ndarray, ndarray) data of shape (n, m) and their respective labels of shape (n)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.featureImportance.TransparentLinearClassifier.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/featureImportance.html#TransparentLinearClassifier.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.featureImportance.TransparentLinearClassifier.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predicts label for observations. Class 1 if f(x) &gt; 0 and 0 otherwise where x is a point to label and f()
+is the generated classification expression.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – (ndarray) observations to label, shape (k, m).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(ndarray) array of length n with binary labels.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.featureImportance.TransparentLinearClassifier.predict_proba">
+<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/featureImportance.html#TransparentLinearClassifier.predict_proba"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.featureImportance.TransparentLinearClassifier.predict_proba" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get class probabilities by evaluating the expression f at ‘data’, normalizing the result and
+setting the probabilities as 1 - norm(f(data)), norm(f(data)).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – (ndarray) observations for which to obtain probabilities, shape (k, m).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(ndarray) array of shape (n, 2) with predicted class probabilities.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.featureImportance.cosine_similarity">
+<span class="sig-prename descclassname"><span class="pre">teex.featureImportance.</span></span><span class="sig-name descname"><span class="pre">cosine_similarity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounding</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'abs'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">float</span><a class="reference internal" href="_modules/teex/featureImportance.html#cosine_similarity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.featureImportance.cosine_similarity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes cosine similarity between two real valued arrays. If negative, returns 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u</strong> – (array-like), real valued array of dimension n.</p></li>
+<li><p><strong>v</strong> – (array-like), real valued array of dimension n.</p></li>
+<li><p><strong>bounding</strong> – if the CS is &lt; 0, bound it in [0, 1] via absolute value (‘abs’) or max(0, value) (‘max’)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(0, 1) cosine similarity.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.featureImportance.feature_importance_scores">
+<span class="sig-prename descclassname"><span class="pre">teex.featureImportance.</span></span><span class="sig-name descname"><span class="pre">feature_importance_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresholdType</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'abs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binThreshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/featureImportance.html#feature_importance_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.featureImportance.feature_importance_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes quality metrics between one or more feature importance vectors. The values in the vectors must be
+bounded in [0, 1] or [-1, 1] (to indicate negative importances in the second case).</p>
+<p>For the computation of the precision, recall and FScore, the vectors are binarized to simulate a classification
+setting depending on the param. <code class="code docutils literal notranslate"><span class="pre">thresholdType</span></code>. In the case of ROC AUC, the ground truth feature importance
+vector will be binarized as in the case of ‘precision’, ‘recall’ and ‘FScore’ and the predicted feature importance
+vector entries will be considered as prediction scores. If the predicted vectors contain negative values, these will
+be either mapped to 0 or taken their absolute value (depending on the chosen option in the param.
+<code class="code docutils literal notranslate"><span class="pre">thresholdType</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gts</strong> (<em>np.ndarray</em>) – (1d np.ndarray or 2d np.ndarray of shape (n_features, n_samples)) ground truth feature
+importance vectors.</p></li>
+<li><p><strong>preds</strong> (<em>np.ndarray</em>) – (1d np.ndarray or 2d np.ndarray of shape (n_features, n_samples)) predicted feature
+importance vectors.</p></li>
+<li><p><strong>metrics</strong> – <p>(str or array-like of str) metric/s to be computed. Available metrics are</p>
+<blockquote>
+<div><ul>
+<li><p>’fscore’: Computes the F1 Score between the ground truths and the predicted vectors.</p></li>
+<li><p>’prec’: Computes the Precision Score between the ground truths and the predicted vectors.</p></li>
+<li><p>’rec’: Computes the Recall Score between the ground truths and the predicted vectors.</p></li>
+<li><p>’auc’: Computes the ROC AUC Score between the ground truths and the predicted vectors.</p></li>
+<li><p>’cs’: Computes the Cosine Similarity between the ground truths and the predicted vectors.</p></li>
+</ul>
+</div></blockquote>
+<p>The vectors are automatically binarized for computing recall, precision and fscore.</p>
+</p></li>
+<li><p><strong>average</strong> (<em>bool</em>) – (default <code class="code docutils literal notranslate"><span class="pre">True</span></code>) Used only if <code class="code docutils literal notranslate"><span class="pre">gt</span></code> and <code class="code docutils literal notranslate"><span class="pre">rule</span></code> contain multiple
+observations. Should the computed metrics be averaged across all the samples?</p></li>
+<li><p><strong>thresholdType</strong> (<em>str</em>) – <p>Options for the binarization of the features for the computation of ‘fscore’, ‘prec’, ‘rec’ and ‘auc’.</p>
+<blockquote>
+<div><ul>
+<li><p>’abs’: features with absolute value &lt;= <code class="code docutils literal notranslate"><span class="pre">binThreshold</span></code> will be set to 0 and 1 otherwise. For the
+predicted feature importances in the case of ‘auc’, their absolute value will be taken.</p></li>
+<li><p>’thres’: features &lt;= <code class="code docutils literal notranslate"><span class="pre">binThreshold</span></code> will be set to 0, 1 otherwise. For the <cite>predicted</cite> feature
+importances in the case of ‘auc’, negative values will be cast to 0 and the others left <em>as-is</em>.</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>binThreshold</strong> (<em>float</em>) – (in [-1, 1]) Threshold for the binarization of the features for the computation of ‘fscore’, ‘prec’, ‘rec’ and
+‘auc’. The binarization depends on both this parameter and <code class="code docutils literal notranslate"><span class="pre">thresholdType</span></code>.
+If <code class="code docutils literal notranslate"><span class="pre">thresholdType</span> <span class="pre">=</span> <span class="pre">'abs'</span></code>, the value cannot be negative.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(ndarray of shape (n_metrics,) or (n_samples, n_metrics)) specified metric/s in the indicated order.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.featureImportance.gen_data_fi">
+<span class="sig-prename descclassname"><span class="pre">teex.featureImportance.</span></span><span class="sig-name descname"><span class="pre">gen_data_fi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'seneca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nSamples</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nFeatures</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returnModel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featureNames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomState</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">888</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/featureImportance.html#gen_data_fi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.featureImportance.gen_data_fi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate synthetic binary classification tabular data with ground truth feature importance explanations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> – <p>(str) method to use for the generation of the ground truth explanations. Available:</p>
+<ul>
+<li><p>’seneca’: g.t. explanations generated with the <code class="xref py py-class docutils literal notranslate"><span class="pre">featureImportance.TransparentLinearClassifier</span></code> class.
+The method was presented in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021].</p></li>
+</ul>
+</p></li>
+<li><p><strong>nSamples</strong> – (int) number of samples to be generated.</p></li>
+<li><p><strong>nFeatures</strong> – (int) total number of features in the generated data.</p></li>
+<li><p><strong>returnModel</strong> – (bool) should the <code class="code docutils literal notranslate"><span class="pre">featureImportance.TransparentLinearClassifier</span></code> model used for the
+generation of the explanations be returned? Only used for the ‘seneca’ method.</p></li>
+<li><p><strong>featureNames</strong> – (array-like) names of the generated features. If not provided, a list with the generated
+feature names will be returned by the function.</p></li>
+<li><p><strong>randomState</strong> – (int) random state seed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>X (ndarray) of shape (nSamples, nFeatures) Generated data.</p></li>
+<li><p>y (ndarray) of shape (nSamples,) Generated binary data labels.</p></li>
+<li><p>explanations (ndarray) of shape (nSamples, nFeatures) Generated g.t. feature importance explanations. For each
+explanation, the values are normalised to the [-1, 1] range.</p></li>
+<li><p>featureNames (list) list with the generated feature names (only if they were not specified).</p></li>
+<li><p>model (<code class="xref py py-class docutils literal notranslate"><span class="pre">featureImportance.TransparentLinearClassifier</span></code>) Model instance used to generate the data
+(returned if <code class="code docutils literal notranslate"><span class="pre">returnModel</span></code> is True only when <code class="code docutils literal notranslate"><span class="pre">method='seneca'</span></code>).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.featureImportance.load_data_fi">
+<span class="sig-prename descclassname"><span class="pre">teex.featureImportance.</span></span><span class="sig-name descname"><span class="pre">load_data_fi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'newsgroup'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/featureImportance.html#load_data_fi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.featureImportance.load_data_fi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads (or downloads) and returns a dataset with available ground truth feature importance explanations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> – <p>(str) dataset name. Available:</p>
+<ul class="simple">
+<li><p>’newsgroup’: Binary classification dataset from [] with g.t. explanations as word importances.
+# todo further explan.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A Dataset object. Read about it in the dataset module.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-teex.saliencyMap">
+<span id="teex-saliencymap-module"></span><h2>teex.saliencyMap module<a class="headerlink" href="#module-teex.saliencyMap" title="Permalink to this headline">¶</a></h2>
+<p>The image module. Contains all of the methods regarding this explanation type: synthetic data generation, evaluation
+of explanations and related utils.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="teex.saliencyMap.TransparentImageClassifier">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.</span></span><span class="sig-name descname"><span class="pre">TransparentImageClassifier</span></span><a class="reference internal" href="_modules/teex/saliencyMap.html#TransparentImageClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.TransparentImageClassifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">teex._baseClasses._baseClassifier._BaseClassifier</span></code></p>
+<p>Transparent, pixel-based classifier with pixel (features) importances as explanations. Predicts the
+class of the images based on whether they contain a certain specified pattern or not. Class 1 if they contain
+the pattern, 0 otherwise. To be trained only a pattern needs to be fed. Follows the sklean API. Presented in
+[Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021].</p>
+<p>IMPORTANT NOTE ON GENERATING G.T. EXPLANATIONS: the ground truth explanations are automatically generated with
+the ‘dataGen.gen_synthetic_imgs’ method, so using this class to generate g.t. explanations is not recommended,
+as it is much less efficient.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.saliencyMap.TransparentImageClassifier.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/saliencyMap.html#TransparentImageClassifier.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.TransparentImageClassifier.explain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Explain observations’ predictions with binary masks (pixel importance arrays).
+:param obs: array of n images as ndarrays.
+:return: list with n binary masks as explanations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.saliencyMap.TransparentImageClassifier.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellH</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellW</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/saliencyMap.html#TransparentImageClassifier.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.TransparentImageClassifier.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fits the model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.saliencyMap.TransparentImageClassifier.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/saliencyMap.html#TransparentImageClassifier.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.TransparentImageClassifier.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predicts the class for each observation.
+:param obs: array of n images as ndarrays of np.float32 type.
+:return: array of n predicted labels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.saliencyMap.TransparentImageClassifier.predict_proba">
+<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/saliencyMap.html#TransparentImageClassifier.predict_proba"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.TransparentImageClassifier.predict_proba" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predicts probability that each observation belongs to class 1 or 0. Probability of class 1 will be 1 if
+the image contains the pattern and 0 otherwise.
+:param obs: array of n images as ndarrays.
+:return: array of n probability tuples of length 2 ª</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.saliencyMap.binarize_rgb_mask">
+<span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.</span></span><span class="sig-name descname"><span class="pre">binarize_rgb_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bgValue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'high'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.array</span><a class="reference internal" href="_modules/teex/saliencyMap.html#binarize_rgb_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.binarize_rgb_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Binarizes a RGB binary mask, letting the background (negative class) be 0. Use this function when the image to
+binarize has a very defined background.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img</strong> – (ndarray) of shape (imageH, imageW, 3), RGB mask to binarize.</p></li>
+<li><p><strong>bgValue</strong> – (str) Intensity of the negative class of the image to binarize: {‘high’, ‘low’}</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(ndarray) a binary mask.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.saliencyMap.gen_data_sm">
+<span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.</span></span><span class="sig-name descname"><span class="pre">gen_data_sm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'seneca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nSamples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imageH</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imageW</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patternH</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patternW</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellH</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellW</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patternProp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillPct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorDev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomState</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">888</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returnModel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/saliencyMap.html#gen_data_sm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.gen_data_sm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate synthetic classification image data with saliency map ground truth explanations via different methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> – <p>(str) method to use for the generation of the data and g.t. explanations. Available:</p>
+<ul>
+<li><p><strong>’seneca’</strong>: Images and g.t. explanations generated following the procedure presented in [Evaluating local
+explanation methods on ground truth, Riccardo Guidotti, 2021]. The g.t. explanations are binary ndarray masks
+of shape (imageH, imageW) that indicate the position of the pattern in an image (zero array if the pattern is
+not present) and are generated  The generated RGB images belong to one class if they contain a certain
+generated pattern and to the other if not. The images are composed of homogeneous cells of size
+(cellH, cellW), which in turn compose a certain pattern of shape (patternH, patternW) that is inserted on
+some of the generated images.</p></li>
+</ul>
+</p></li>
+<li><p><strong>nSamples</strong> – (int) number of images to generate.</p></li>
+<li><p><strong>imageH</strong> – (int) height in pixels of the images. For <code class="code docutils literal notranslate"><span class="pre">method='seneca'</span></code> must be multiple of cellH.</p></li>
+<li><p><strong>imageW</strong> – (int) width in pixels of the images. For <code class="code docutils literal notranslate"><span class="pre">method='seneca'</span></code> must be multiple of cellW.</p></li>
+<li><p><strong>patternH</strong> – (int) height in pixels of the pattern. Must be &lt;= imageH and multiple of cellH.
+Only used for <code class="code docutils literal notranslate"><span class="pre">method='seneca'</span></code>.</p></li>
+<li><p><strong>patternW</strong> – (int) width in pixels of the pattern. Must be &lt;= imageW and multiple of cellW.
+Only used for <code class="code docutils literal notranslate"><span class="pre">method='seneca'</span></code>.</p></li>
+<li><p><strong>cellH</strong> – (int) height in pixels of each cell. Only used for <code class="code docutils literal notranslate"><span class="pre">method='seneca'</span></code>.</p></li>
+<li><p><strong>cellW</strong> – (int) width in pixels of each cell. Only used for <code class="code docutils literal notranslate"><span class="pre">method='seneca'</span></code>.</p></li>
+<li><p><strong>patternProp</strong> – (float, [0, 1]) percentage of appearance of the pattern in the dataset. Only used for
+<code class="code docutils literal notranslate"><span class="pre">method='seneca'</span></code>.</p></li>
+<li><p><strong>fillPct</strong> – (float, [0, 1]) percentage of cells filled (not black) in each image. Only used for
+<code class="code docutils literal notranslate"><span class="pre">method='seneca'</span></code>.</p></li>
+<li><p><strong>colorDev</strong> – (float, [0, 0.5])
+maximum value summed to 0 valued channels and minimum value substracted to 1 valued channels of filled cells.
+If 0, each cell will be completely red, green or blue. If &gt; 0, colors may be a mix of the three channels
+(one ~1, the other two ~0). Only used for <code class="code docutils literal notranslate"><span class="pre">method='seneca'</span></code>.</p></li>
+<li><p><strong>randomState</strong> – (int) random seed.</p></li>
+<li><p><strong>returnModel</strong> – (bool) should a transparent image classifier trained with the data be returned? Only used for
+<code class="code docutils literal notranslate"><span class="pre">method='seneca'</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>X (ndarray) of shape (nSamples, imageH, imageW, 3). Generated image data.</p></li>
+<li><p>y (ndarray) of shape (nSamples,). Image labels. 1 if an image contains the pattern and 0 otherwise.</p></li>
+<li><p>explanations (ndarray) of shape (nSamples, imageH, imageW). Ground truth explanations.</p></li>
+<li><p>pattern (ndarray) of shape (patternH, patternW, 3). Only returned if <code class="code docutils literal notranslate"><span class="pre">method='seneca'</span></code>.</p></li>
+<li><p>model (<code class="xref py py-class docutils literal notranslate"><span class="pre">rule.TransparentImageClassifier</span></code>) Model instance trained to recognize the pattern in the data
+(returned if <code class="code docutils literal notranslate"><span class="pre">returnModel</span></code> is True only when <code class="code docutils literal notranslate"><span class="pre">method='seneca'</span></code>).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.saliencyMap.load_data_sm">
+<span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.</span></span><span class="sig-name descname"><span class="pre">load_data_sm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'kahikatea'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/saliencyMap.html#load_data_sm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.load_data_sm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads (or downloads) and returns a dataset with available ground truth saliency map explanations. We consider
+segmentation masks as a special case of saliency maps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> – (str) dataset name. Available:
+- ‘kahikatea’: Binary classification dataset from [] with g.t. explanations as binary segmentation masks.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A Dataset object. Read about it in the dataset module.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.saliencyMap.rgb_to_grayscale">
+<span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.</span></span><span class="sig-name descname"><span class="pre">rgb_to_grayscale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/saliencyMap.html#rgb_to_grayscale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.rgb_to_grayscale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transforms a 3 channel RGB image into a grayscale image (1 channel).
+:param img: (ndarray) of shape (imageH, imageW, 3)
+:return: (ndarray) of shape (imageH, imageW)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.saliencyMap.saliency_map_scores">
+<span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.</span></span><span class="sig-name descname"><span class="pre">saliency_map_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sMaps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binThreshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtBackgroundVals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'high'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/saliencyMap.html#saliency_map_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.saliency_map_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quality metrics for saliency map explanations, where each pixel is considered as a feature.
+Computes different scores of a saliency map explanation w.r.t. its ground truth explanation (a binary mask).</p>
+<p># todo support for gts that are not binary, finish doc</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gts</strong> (<em>np.ndarray</em>) – <p>ground truth RGB or binary mask/s. Accepted shapes are</p>
+<blockquote>
+<div><ul>
+<li><p>(imageH, imageW) A single grayscale mask, where each pixel should be 1 if it is part of the salient class
+and 0 otherwise.</p></li>
+<li><p>(imageH, imageW, 3) A single RGB mask, where pixels that <strong>do not</strong> contain the salient class are all
+either black (all channels set to 0) or white (all channels set to max.).</p></li>
+<li><p>(nSamples, imageH, imageW) Multiple grayscale masks, where for each where, in each image, each pixel
+should be 1 if it is part of the salient class and 0 otherwise.</p></li>
+<li><p>(nSamples, imageH, imageW, 3) Multiple RGB masks, where for each image, pixels that <strong>do not</strong> contain the
+salient class are all either black (all channels set to 0) or white (all channels set to max.).</p></li>
+</ul>
+</div></blockquote>
+<p>If the g.t. masks are RGB they will be binarized (see param <code class="code docutils literal notranslate"><span class="pre">gtBackground</span></code> to specify the color of the
+pixels that pertain to the non-salient class).</p>
+</p></li>
+<li><p><strong>sMaps</strong> – <p>(ndarray) grayscale saliency map explanation/s ([0, 1] or [-1, 1] normalised). Supported shapes are</p>
+<ul>
+<li><p>(imageH, imageW) A single explanation</p></li>
+<li><p>(nSamples, imageH, imageW) Multiple explanations</p></li>
+</ul>
+</p></li>
+<li><p><strong>metrics</strong> – <p>(str / array-like of str, default=[‘auc’]) Quality metric/s to compute. Available:</p>
+<ul>
+<li><p>’auc’: ROC AUC score. The value of each pixel of each saliency map in <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> is considered as a
+prediction probability of the pixel pertaining to the salient class.</p></li>
+<li><p>’fscore’: F1 Score.</p></li>
+<li><p>’prec’: Precision Score.</p></li>
+<li><p>’rec’: Recall score.</p></li>
+<li><p>’cs’: Cosine Similarity.</p></li>
+</ul>
+<p>For ‘fscore’, ‘prec’, ‘rec’ and ‘cs’, the saliency maps in <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> are binarized (see param
+<code class="code docutils literal notranslate"><span class="pre">binThreshold</span></code>).</p>
+</p></li>
+<li><p><strong>binThreshold</strong> (<em>float</em>) – (in [0, 1]) pixels of images in <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> with a value bigger than this will be set to 1 and 0 otherwise
+when binarizing for the computation of ‘fscore’, ‘prec’, ‘rec’ and ‘auc’.</p></li>
+<li><p><strong>gtBackgroundVals</strong> (<em>str</em>) – Only used when provided ground truth explanations are RGB. Color of the background
+of the g.t. masks ‘low’ if pixels in the mask representing the non-salient class are dark, ‘high’ otherwise).</p></li>
+<li><p><strong>average</strong> (<em>bool</em>) – (default <code class="code docutils literal notranslate"><span class="pre">True</span></code>) Used only if <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> contain multiple
+observations. Should the computed metrics be averaged across all of the samples?</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>(ndarray) specified metric/s in the original order. Can be of shape</p>
+<ul class="simple">
+<li><p>(n_metrics,) if only one image has been provided in both <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> or when both are
+contain multiple observations and <code class="code docutils literal notranslate"><span class="pre">average=True</span></code>.</p></li>
+<li><p>(n_metrics, n_samples) if <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> contain multiple observations and
+<code class="code docutils literal notranslate"><span class="pre">average=False</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-teex.wordImportance">
+<span id="teex-wordimportance-module"></span><h2>teex.wordImportance module<a class="headerlink" href="#module-teex.wordImportance" title="Permalink to this headline">¶</a></h2>
+<p>The word importance module. Contains all of the methods regarding this explanation type: synthetic data generation,
+evaluation of explanations and related utils.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.wordImportance.word_importance_scores">
+<span class="sig-prename descclassname"><span class="pre">teex.wordImportance.</span></span><span class="sig-name descname"><span class="pre">word_importance_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/wordImportance.html#word_importance_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.wordImportance.word_importance_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quality metrics for word importance explanations, where each word is considered as a feature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gts</strong> – (dict, array-like of dicts) ground truth word importance/s, where each BOW is represented as a
+dictionary with words as keys and values as importances. Importances must be</p></li>
+<li><p><strong>preds</strong> – (dict, array-like of dicts) predicted word importance/s, where each BOW is represented in the same
+way as the ground truths.</p></li>
+<li><p><strong>metrics</strong> – <p>(str / array-like of str, default=[‘auc’]) Quality metric/s to compute. Available:</p>
+<ul>
+<li><dl class="simple">
+<dt>Classification scores:</dt><dd><ul>
+<li><p>’auc’: ROC AUC score. The value of each pixel of each saliency map in <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> is considered as a
+prediction probability of the pixel pertaining to the salient class.</p></li>
+<li><p>’fscore’: F1 Score.</p></li>
+<li><p>’prec’: Precision Score.</p></li>
+<li><p>’rec’: Recall score.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Similarity metrics:</dt><dd><ul>
+<li><p>’cs’: Cosine Similarity.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>For ‘fscore’, ‘prec’, ‘rec’ and ‘cs’, the saliency maps in <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> are binarized (see param
+<code class="code docutils literal notranslate"><span class="pre">binThreshold</span></code>).</p>
+</p></li>
+<li><p><strong>binThreshold</strong> – (float in [0, 1]) pixels of images in <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> with a value bigger than this will be set
+to 1 and 0 otherwise when binarizing for the computation of ‘fscore’, ‘prec’, ‘rec’ and ‘auc’.</p></li>
+<li><p><strong>gtBackgroundVals</strong> – (str) Only used when provided ground truth explanations are RGB. Color of the background
+of the g.t. masks ‘low’ if pixels in the mask representing the non-salient class are dark, ‘high’ otherwise).</p></li>
+<li><p><strong>average</strong> – (bool, default <code class="code docutils literal notranslate"><span class="pre">True</span></code>) Used only if <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> contain multiple
+observations. Should the computed metrics be averaged across all of the samples?</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>(ndarray) specified metric/s in the original order. Can be of shape</p>
+<ul class="simple">
+<li><p>(n_metrics,) if only one image has been provided in both <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> or when both are
+contain multiple observations and <code class="code docutils literal notranslate"><span class="pre">average=True</span></code>.</p></li>
+<li><p>(n_metrics, n_samples) if <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> contain multiple observations and
+<code class="code docutils literal notranslate"><span class="pre">average=False</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-teex">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-teex" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Jesus Antonanzas.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

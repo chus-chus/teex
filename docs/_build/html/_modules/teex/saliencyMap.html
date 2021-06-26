@@ -1,0 +1,723 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>teex.saliencyMap &mdash; teex 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> teex
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">teex</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>teex.saliencyMap</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for teex.saliencyMap</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; The image module. Contains all of the methods regarding this explanation type: synthetic data generation, evaluation</span>
+<span class="sd">of explanations and related utils. &quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">import</span> <span class="nn">cv2</span>
+
+<span class="kn">from</span> <span class="nn">teex.featureImportance</span> <span class="kn">import</span> <span class="n">feature_importance_scores</span>
+<span class="c1"># noinspection PyProtectedMember</span>
+<span class="kn">from</span> <span class="nn">teex._baseClasses._baseClassifier</span> <span class="kn">import</span> <span class="n">_BaseClassifier</span>
+<span class="kn">from</span> <span class="nn">teex.datasets</span> <span class="kn">import</span> <span class="n">Kahikatea</span>
+
+<span class="n">_AVAILABLE_SALIENCY_MAP_METRICS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;fscore&#39;</span><span class="p">,</span> <span class="s1">&#39;prec&#39;</span><span class="p">,</span> <span class="s1">&#39;rec&#39;</span><span class="p">,</span> <span class="s1">&#39;cs&#39;</span><span class="p">,</span> <span class="s1">&#39;auc&#39;</span><span class="p">}</span>
+<span class="n">_AVAILABLE_SALIENCY_MAP_GEN_METHODS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;seneca&#39;</span><span class="p">}</span>
+<span class="n">_AVAILABLE_SALIENCY_MAP_DATASETS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;kahikatea&#39;</span><span class="p">}</span>
+
+<span class="c1"># ===================================</span>
+<span class="c1">#       TRANSPARENT MODEL</span>
+<span class="c1"># ===================================</span>
+
+
+<div class="viewcode-block" id="TransparentImageClassifier"><a class="viewcode-back" href="../../teex.html#teex.saliencyMap.TransparentImageClassifier">[docs]</a><span class="k">class</span> <span class="nc">TransparentImageClassifier</span><span class="p">(</span><span class="n">_BaseClassifier</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Transparent, pixel-based classifier with pixel (features) importances as explanations. Predicts the</span>
+<span class="sd">    class of the images based on whether they contain a certain specified pattern or not. Class 1 if they contain</span>
+<span class="sd">    the pattern, 0 otherwise. To be trained only a pattern needs to be fed. Follows the sklean API. Presented in</span>
+<span class="sd">    [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021].</span>
+
+<span class="sd">    IMPORTANT NOTE ON GENERATING G.T. EXPLANATIONS: the ground truth explanations are automatically generated with</span>
+<span class="sd">    the &#39;dataGen.gen_synthetic_imgs&#39; method, so using this class to generate g.t. explanations is not recommended,</span>
+<span class="sd">    as it is much less efficient. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattH</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattW</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cellH</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cellW</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_binaryPattern</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_maskedPattern</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="TransparentImageClassifier.fit"><a class="viewcode-back" href="../../teex.html#teex.saliencyMap.TransparentImageClassifier.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">cellH</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cellW</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattH</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattW</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pattern</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cellH</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellW</span> <span class="o">=</span> <span class="n">cellH</span><span class="p">,</span> <span class="n">cellW</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_binaryPattern</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="c1"># noinspection PyArgumentList</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binaryPattern</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pattH</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattW</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_maskedPattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="TransparentImageClassifier.predict"><a class="viewcode-back" href="../../teex.html#teex.saliencyMap.TransparentImageClassifier.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Predicts the class for each observation.</span>
+<span class="sd">            :param obs: array of n images as ndarrays of np.float32 type.</span>
+<span class="sd">            :return: array of n predicted labels. &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">obs</span><span class="p">:</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_pattern</span><span class="p">(</span><span class="n">image</span><span class="p">)</span> <span class="k">else</span> <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+<div class="viewcode-block" id="TransparentImageClassifier.predict_proba"><a class="viewcode-back" href="../../teex.html#teex.saliencyMap.TransparentImageClassifier.predict_proba">[docs]</a>    <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Predicts probability that each observation belongs to class 1 or 0. Probability of class 1 will be 1 if</span>
+<span class="sd">            the image contains the pattern and 0 otherwise.</span>
+<span class="sd">            :param obs: array of n images as ndarrays.</span>
+<span class="sd">            :return: array of n probability tuples of length 2 ª&quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">obs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_pattern</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+<div class="viewcode-block" id="TransparentImageClassifier.explain"><a class="viewcode-back" href="../../teex.html#teex.saliencyMap.TransparentImageClassifier.explain">[docs]</a>    <span class="k">def</span> <span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Explain observations&#39; predictions with binary masks (pixel importance arrays).</span>
+<span class="sd">            :param obs: array of n images as ndarrays.</span>
+<span class="sd">            :return: list with n binary masks as explanations. &quot;&quot;&quot;</span>
+        <span class="n">exps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">obs</span><span class="p">:</span>
+            <span class="n">hasPat</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_pattern</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">retIndices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="n">hasPat</span><span class="p">:</span>
+                <span class="n">exp</span><span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]:(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">pattH</span><span class="p">),</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]:(</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">pattW</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binaryPattern</span>
+            <span class="n">exps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exp</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">exps</span></div>
+
+    <span class="k">def</span> <span class="nf">_has_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">retIndices</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Searches for the pattern in the image and returns whether it contains it or not and its upper left indices</span>
+<span class="sd">        if specified. The pattern is contained within an image if the distribution and color of the cells != 0 coincide.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">hasPat</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattH</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellH</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattW</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellW</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="n">row</span><span class="p">:(</span><span class="n">row</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">pattH</span><span class="p">),</span> <span class="n">col</span><span class="p">:(</span><span class="n">col</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">pattW</span><span class="p">)][</span><span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maskedPattern</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                    <span class="n">hasPat</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">hasPat</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="k">if</span> <span class="n">retIndices</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">hasPat</span><span class="p">,</span> <span class="n">indices</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">hasPat</span></div>
+
+
+<span class="c1"># ===================================</span>
+<span class="c1">#       DATA GENERATION</span>
+<span class="c1"># ===================================</span>
+
+<div class="viewcode-block" id="gen_data_sm"><a class="viewcode-back" href="../../teex.html#teex.saliencyMap.gen_data_sm">[docs]</a><span class="k">def</span> <span class="nf">gen_data_sm</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;seneca&#39;</span><span class="p">,</span> <span class="n">nSamples</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">imageH</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">imageW</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">patternH</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">patternW</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">cellH</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                <span class="n">cellW</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">patternProp</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">fillPct</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">colorDev</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">randomState</span><span class="o">=</span><span class="mi">888</span><span class="p">,</span> <span class="n">returnModel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Generate synthetic classification image data with saliency map ground truth explanations via different methods.</span>
+
+<span class="sd">     :param method: (str) method to use for the generation of the data and g.t. explanations. Available:</span>
+
+<span class="sd">        - **&#39;seneca&#39;**: Images and g.t. explanations generated following the procedure presented in [Evaluating local</span>
+<span class="sd">          explanation methods on ground truth, Riccardo Guidotti, 2021]. The g.t. explanations are binary ndarray masks</span>
+<span class="sd">          of shape (imageH, imageW) that indicate the position of the pattern in an image (zero array if the pattern is</span>
+<span class="sd">          not present) and are generated  The generated RGB images belong to one class if they contain a certain</span>
+<span class="sd">          generated pattern and to the other if not. The images are composed of homogeneous cells of size</span>
+<span class="sd">          (cellH, cellW), which in turn compose a certain pattern of shape (patternH, patternW) that is inserted on</span>
+<span class="sd">          some of the generated images.</span>
+
+<span class="sd">     :param nSamples: (int) number of images to generate.</span>
+<span class="sd">     :param imageH: (int) height in pixels of the images. For :code:`method=&#39;seneca&#39;` must be multiple of cellH.</span>
+<span class="sd">     :param imageW: (int) width in pixels of the images. For :code:`method=&#39;seneca&#39;` must be multiple of cellW.</span>
+<span class="sd">     :param patternH: (int) height in pixels of the pattern. Must be &lt;= imageH and multiple of cellH.</span>
+<span class="sd">        Only used for :code:`method=&#39;seneca&#39;`.</span>
+<span class="sd">     :param patternW: (int) width in pixels of the pattern. Must be &lt;= imageW and multiple of cellW.</span>
+<span class="sd">        Only used for :code:`method=&#39;seneca&#39;`.</span>
+<span class="sd">     :param cellH: (int) height in pixels of each cell. Only used for :code:`method=&#39;seneca&#39;`.</span>
+<span class="sd">     :param cellW: (int) width in pixels of each cell. Only used for :code:`method=&#39;seneca&#39;`.</span>
+<span class="sd">     :param patternProp: (float, [0, 1]) percentage of appearance of the pattern in the dataset. Only used for</span>
+<span class="sd">        :code:`method=&#39;seneca&#39;`.</span>
+<span class="sd">     :param fillPct: (float, [0, 1]) percentage of cells filled (not black) in each image. Only used for</span>
+<span class="sd">        :code:`method=&#39;seneca&#39;`.</span>
+<span class="sd">     :param colorDev: (float, [0, 0.5])</span>
+<span class="sd">        maximum value summed to 0 valued channels and minimum value substracted to 1 valued channels of filled cells.</span>
+<span class="sd">        If 0, each cell will be completely red, green or blue. If &gt; 0, colors may be a mix of the three channels</span>
+<span class="sd">        (one ~1, the other two ~0). Only used for :code:`method=&#39;seneca&#39;`.</span>
+<span class="sd">     :param randomState: (int) random seed.</span>
+<span class="sd">     :param returnModel: (bool) should a transparent image classifier trained with the data be returned? Only used for</span>
+<span class="sd">        :code:`method=&#39;seneca&#39;`.</span>
+<span class="sd">     :return:</span>
+<span class="sd">        - X (ndarray) of shape (nSamples, imageH, imageW, 3). Generated image data.</span>
+<span class="sd">        - y (ndarray) of shape (nSamples,). Image labels. 1 if an image contains the pattern and 0 otherwise.</span>
+<span class="sd">        - explanations (ndarray) of shape (nSamples, imageH, imageW). Ground truth explanations.</span>
+<span class="sd">        - pattern (ndarray) of shape (patternH, patternW, 3). Only returned if :code:`method=&#39;seneca&#39;`.</span>
+<span class="sd">        - model (:class:`rule.TransparentImageClassifier`) Model instance trained to recognize the pattern in the data</span>
+<span class="sd">          (returned if :code:`returnModel` is True only when :code:`method=&#39;seneca&#39;`). &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_AVAILABLE_SALIENCY_MAP_GEN_METHODS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Method not available. Use one in </span><span class="si">{</span><span class="n">_AVAILABLE_SALIENCY_MAP_GEN_METHODS</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">randomState</span><span class="p">)</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">randomState</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;seneca&#39;</span><span class="p">:</span>
+        <span class="n">imgs</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">exps</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">mod</span> <span class="o">=</span> <span class="n">_gen_seneca_dataset_sm</span><span class="p">(</span><span class="n">nSamples</span><span class="o">=</span><span class="n">nSamples</span><span class="p">,</span> <span class="n">imageH</span><span class="o">=</span><span class="n">imageH</span><span class="p">,</span> <span class="n">imageW</span><span class="o">=</span><span class="n">imageW</span><span class="p">,</span>
+                                                                  <span class="n">patternH</span><span class="o">=</span><span class="n">patternH</span><span class="p">,</span> <span class="n">patternW</span><span class="o">=</span><span class="n">patternW</span><span class="p">,</span> <span class="n">cellH</span><span class="o">=</span><span class="n">cellH</span><span class="p">,</span>
+                                                                  <span class="n">cellW</span><span class="o">=</span><span class="n">cellW</span><span class="p">,</span> <span class="n">patternProp</span><span class="o">=</span><span class="n">patternProp</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">,</span>
+                                                                  <span class="n">colorDev</span><span class="o">=</span><span class="n">colorDev</span><span class="p">,</span> <span class="n">fillPct</span><span class="o">=</span><span class="n">fillPct</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">returnModel</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">imgs</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">exps</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">mod</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">imgs</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">exps</span><span class="p">,</span> <span class="n">pattern</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;kahikatea&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="load_data_sm"><a class="viewcode-back" href="../../teex.html#teex.saliencyMap.load_data_sm">[docs]</a><span class="k">def</span> <span class="nf">load_data_sm</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;kahikatea&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Loads (or downloads) and returns a dataset with available ground truth saliency map explanations. We consider</span>
+<span class="sd">    segmentation masks as a special case of saliency maps.</span>
+
+<span class="sd">    :param name: (str) dataset name. Available:</span>
+<span class="sd">        - &#39;kahikatea&#39;: Binary classification dataset from [] with g.t. explanations as binary segmentation masks.</span>
+<span class="sd">    :return: A Dataset object. Read about it in the dataset module. &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_AVAILABLE_SALIENCY_MAP_DATASETS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Dataset not available (</span><span class="si">{</span><span class="n">_AVAILABLE_SALIENCY_MAP_DATASETS</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;kahikatea&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Kahikatea</span><span class="p">()</span></div>
+
+
+<span class="k">def</span> <span class="nf">_gen_seneca_dataset_sm</span><span class="p">(</span><span class="n">nSamples</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">imageH</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">imageW</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">patternH</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">patternW</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cellH</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">cellW</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">patternProp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colorDev</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fillPct</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Images and g.t. explanations generated following the procedure presented in [Evaluating local</span>
+<span class="sd">    explanation methods on ground truth, Riccardo Guidotti, 2021]. The g.t. explanations are binary ndarray masks of</span>
+<span class="sd">    shape (imageH, imageW) that indicate the position of the pattern in an image (zero array if the pattern is not</span>
+<span class="sd">    present) and are generated  The generated RGB images belong to one class if they contain a certain generated</span>
+<span class="sd">    pattern and to the other if not. The images are composed of homogeneous cells of size (cellH, cellW), which in</span>
+<span class="sd">    turn compose a certain pattern of shape (patternH, patternW) that is inserted on some of the generated images. &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">imageH</span> <span class="o">%</span> <span class="n">patternH</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">imageW</span> <span class="o">%</span> <span class="n">patternW</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">imageH</span> <span class="o">%</span> <span class="n">cellH</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">imageW</span> <span class="o">%</span> <span class="n">cellW</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Image height and width not multiple of cell or pattern dimensions.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">imageH</span> <span class="o">&lt;</span> <span class="n">patternH</span> <span class="ow">or</span> <span class="n">imageH</span> <span class="o">&lt;</span> <span class="n">cellH</span> <span class="ow">or</span> <span class="n">imageW</span> <span class="o">&lt;</span> <span class="n">patternW</span> <span class="ow">or</span> <span class="n">imageW</span> <span class="o">&lt;</span> <span class="n">cellW</span> <span class="ow">or</span> <span class="n">patternH</span> <span class="o">&lt;</span> <span class="n">cellH</span> <span class="ow">or</span> \
+            <span class="n">patternW</span> <span class="o">&lt;</span> <span class="n">cellW</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cells should be smaller than patterns and patterns than image size.&#39;</span><span class="p">)</span>
+
+    <span class="n">nWithPattern</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">nSamples</span> <span class="o">*</span> <span class="n">patternProp</span><span class="p">)</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">_generate_image_seneca</span><span class="p">(</span><span class="n">imageH</span><span class="o">=</span><span class="n">patternH</span><span class="p">,</span> <span class="n">imageW</span><span class="o">=</span><span class="n">patternW</span><span class="p">,</span> <span class="n">cellH</span><span class="o">=</span><span class="n">cellH</span><span class="p">,</span> <span class="n">cellW</span><span class="o">=</span><span class="n">cellW</span><span class="p">,</span> <span class="n">fillPct</span><span class="o">=</span><span class="n">fillPct</span><span class="p">,</span>
+                                     <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">,</span> <span class="n">colorDev</span><span class="o">=</span><span class="n">colorDev</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># transform pattern into a 2d array and then set the channel to 1 if the pixel had any intensity at all (if a</span>
+    <span class="c1"># cell was part of the pattern it will have at least some intensity). Squeeze it so it has shape pattH x pattW.</span>
+    <span class="n">binaryPattern</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nWithPattern</span><span class="p">):</span>
+        <span class="n">image</span><span class="p">,</span> <span class="n">explanation</span> <span class="o">=</span> <span class="n">_generate_image_seneca</span><span class="p">(</span><span class="n">imageH</span><span class="o">=</span><span class="n">imageH</span><span class="p">,</span> <span class="n">imageW</span><span class="o">=</span><span class="n">imageW</span><span class="p">,</span> <span class="n">cellH</span><span class="o">=</span><span class="n">cellH</span><span class="p">,</span> <span class="n">cellW</span><span class="o">=</span><span class="n">cellW</span><span class="p">,</span>
+                                                    <span class="n">fillPct</span><span class="o">=</span><span class="n">fillPct</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">,</span> <span class="n">colorDev</span><span class="o">=</span><span class="n">colorDev</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="n">pattern</span><span class="p">,</span>
+                                                    <span class="n">binaryPattern</span><span class="o">=</span><span class="n">binaryPattern</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">image</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nSamples</span> <span class="o">-</span> <span class="n">nWithPattern</span><span class="p">):</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">_generate_image_seneca</span><span class="p">(</span><span class="n">imageH</span><span class="o">=</span><span class="n">imageH</span><span class="p">,</span> <span class="n">imageW</span><span class="o">=</span><span class="n">imageW</span><span class="p">,</span> <span class="n">cellH</span><span class="o">=</span><span class="n">cellH</span><span class="p">,</span> <span class="n">cellW</span><span class="o">=</span><span class="n">cellW</span><span class="p">,</span> <span class="n">fillPct</span><span class="o">=</span><span class="n">fillPct</span><span class="p">,</span>
+                                       <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">,</span> <span class="n">colorDev</span><span class="o">=</span><span class="n">colorDev</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># blank explanation</span>
+        <span class="n">explanation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">imageH</span><span class="p">,</span> <span class="n">imageW</span><span class="p">))</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">image</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+    <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">imgs</span><span class="p">,</span> <span class="n">exps</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">TransparentImageClassifier</span><span class="p">()</span>
+    <span class="n">mod</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">cellH</span><span class="o">=</span><span class="n">cellH</span><span class="p">,</span> <span class="n">cellW</span><span class="o">=</span><span class="n">cellW</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">imgs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">exps</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">),</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">mod</span>
+
+
+<span class="k">def</span> <span class="nf">_generate_image_seneca</span><span class="p">(</span><span class="n">imageH</span><span class="p">,</span> <span class="n">imageW</span><span class="p">,</span> <span class="n">cellH</span><span class="p">,</span> <span class="n">cellW</span><span class="p">,</span> <span class="n">fillPct</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">colorDev</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">binaryPattern</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Generates RGB image as ndarray of shape (imageH, imageW, 3) pixels and uniform cells of cellH * cellW pixels.</span>
+<span class="sd">     fillPct% [0, 1] of the cells are != 0. If &#39;pattern&#39; is an ndarray of shape (patternH, patternW, 3), inserts it into</span>
+<span class="sd">     the generated image in a random position and also returns a binary feature importance ndarray of shape</span>
+<span class="sd">     (imageH, imageW) as ground truth explanation for the generated image. &quot;&quot;&quot;</span>
+
+    <span class="n">totalCells</span> <span class="o">=</span> <span class="p">(</span><span class="n">imageH</span> <span class="o">/</span> <span class="n">cellH</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">imageW</span> <span class="o">/</span> <span class="n">cellW</span><span class="p">)</span>
+    <span class="n">filledCells</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">totalCells</span> <span class="o">*</span> <span class="n">fillPct</span><span class="p">)</span>
+
+    <span class="c1"># starting pixels (upper left) of each cell</span>
+    <span class="n">startingPixelsRow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">imageH</span><span class="p">,</span> <span class="n">cellH</span><span class="p">)</span>
+    <span class="n">startingPixelsCol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">imageW</span><span class="p">,</span> <span class="n">cellW</span><span class="p">)</span>
+
+    <span class="c1"># choose random cells to fill</span>
+    <span class="n">cellIndexes</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">startingPixelsRow</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">filledCells</span><span class="p">),</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">startingPixelsCol</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">filledCells</span><span class="p">))</span>
+
+    <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">imageH</span><span class="p">,</span> <span class="n">imageW</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">cellRow</span><span class="p">,</span> <span class="n">cellCol</span> <span class="ow">in</span> <span class="n">cellIndexes</span><span class="p">:</span>
+        <span class="c1"># set reg, green and blue for each chosen cell</span>
+        <span class="n">img</span><span class="p">[</span><span class="n">cellRow</span><span class="p">:(</span><span class="n">cellRow</span><span class="o">+</span><span class="n">cellH</span><span class="p">),</span> <span class="n">cellCol</span><span class="p">:(</span><span class="n">cellCol</span><span class="o">+</span><span class="n">cellW</span><span class="p">)]</span> <span class="o">=</span> <span class="n">_generate_rgb</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="n">colorDev</span><span class="o">=</span><span class="n">colorDev</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">pattern</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># choose where the pattern goes (upper left corner) and overwrite the image</span>
+        <span class="n">patternRow</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">imageH</span> <span class="o">-</span> <span class="n">pattern</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cellH</span><span class="p">))</span>
+        <span class="n">patternCol</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">imageW</span> <span class="o">-</span> <span class="n">pattern</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cellW</span><span class="p">))</span>
+        <span class="n">img</span><span class="p">[</span><span class="n">patternRow</span><span class="p">:(</span><span class="n">patternRow</span><span class="o">+</span><span class="n">pattern</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">patternCol</span><span class="p">:(</span><span class="n">patternCol</span><span class="o">+</span><span class="n">pattern</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">pattern</span>
+
+        <span class="n">exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">imageH</span><span class="p">,</span> <span class="n">imageW</span><span class="p">))</span>
+        <span class="n">exp</span><span class="p">[</span><span class="n">patternRow</span><span class="p">:(</span><span class="n">patternRow</span> <span class="o">+</span> <span class="n">pattern</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">patternCol</span><span class="p">:(</span><span class="n">patternCol</span> <span class="o">+</span> <span class="n">pattern</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">binaryPattern</span>
+        <span class="k">return</span> <span class="n">img</span><span class="p">,</span> <span class="n">exp</span>
+
+    <span class="k">return</span> <span class="n">img</span>
+
+
+<span class="k">def</span> <span class="nf">_generate_rgb</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="n">colorDev</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Generates a ndarray of shape (3,)representing  RGB color with one of the channels turned to, at least,</span>
+<span class="sd">    1 - colorDev and the other channels valued at, at most, colorDev. &#39;colorDev&#39; must be between 0 and 1. &quot;&quot;&quot;</span>
+
+    <span class="c1"># first array position will be turned on, last two turned off</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">colors</span><span class="p">[</span><span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">colorDev</span><span class="p">)</span>
+    <span class="n">colors</span><span class="p">[</span><span class="n">order</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">colorDev</span><span class="p">)</span>
+    <span class="n">colors</span><span class="p">[</span><span class="n">order</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">colorDev</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">colors</span>
+
+<span class="c1"># ===================================</span>
+<span class="c1">#       EXPLANATION EVALUATION</span>
+<span class="c1"># ===================================</span>
+
+
+<div class="viewcode-block" id="saliency_map_scores"><a class="viewcode-back" href="../../teex.html#teex.saliencyMap.saliency_map_scores">[docs]</a><span class="k">def</span> <span class="nf">saliency_map_scores</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">sMaps</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">binThreshold</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">gtBackgroundVals</span><span class="o">=</span><span class="s1">&#39;high&#39;</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Quality metrics for saliency map explanations, where each pixel is considered as a feature.</span>
+<span class="sd">    Computes different scores of a saliency map explanation w.r.t. its ground truth explanation (a binary mask).</span>
+
+<span class="sd">    # todo support for gts that are not binary, finish doc</span>
+
+<span class="sd">    :param np.ndarray gts:</span>
+<span class="sd">        ground truth RGB or binary mask/s. Accepted shapes are</span>
+
+<span class="sd">            - (imageH, imageW) A single grayscale mask, where each pixel should be 1 if it is part of the salient class</span>
+<span class="sd">              and 0 otherwise.</span>
+<span class="sd">            - (imageH, imageW, 3) A single RGB mask, where pixels that **do not** contain the salient class are all</span>
+<span class="sd">              either black (all channels set to 0) or white (all channels set to max.).</span>
+<span class="sd">            - (nSamples, imageH, imageW) Multiple grayscale masks, where for each where, in each image, each pixel</span>
+<span class="sd">              should be 1 if it is part of the salient class and 0 otherwise.</span>
+<span class="sd">            - (nSamples, imageH, imageW, 3) Multiple RGB masks, where for each image, pixels that **do not** contain the</span>
+<span class="sd">              salient class are all either black (all channels set to 0) or white (all channels set to max.).</span>
+
+<span class="sd">        If the g.t. masks are RGB they will be binarized (see param :code:`gtBackground` to specify the color of the</span>
+<span class="sd">        pixels that pertain to the non-salient class).</span>
+<span class="sd">    :param sMaps: (ndarray) grayscale saliency map explanation/s ([0, 1] or [-1, 1] normalised). Supported shapes are</span>
+
+<span class="sd">        - (imageH, imageW) A single explanation</span>
+<span class="sd">        - (nSamples, imageH, imageW) Multiple explanations</span>
+
+<span class="sd">    :param metrics: (str / array-like of str, default=[&#39;auc&#39;]) Quality metric/s to compute. Available:</span>
+
+<span class="sd">        - &#39;auc&#39;: ROC AUC score. The value of each pixel of each saliency map in :code:`sMaps` is considered as a</span>
+<span class="sd">          prediction probability of the pixel pertaining to the salient class.</span>
+<span class="sd">        - &#39;fscore&#39;: F1 Score.</span>
+<span class="sd">        - &#39;prec&#39;: Precision Score.</span>
+<span class="sd">        - &#39;rec&#39;: Recall score.</span>
+<span class="sd">        - &#39;cs&#39;: Cosine Similarity.</span>
+
+<span class="sd">        For &#39;fscore&#39;, &#39;prec&#39;, &#39;rec&#39; and &#39;cs&#39;, the saliency maps in :code:`sMaps` are binarized (see param</span>
+<span class="sd">        :code:`binThreshold`).</span>
+<span class="sd">    :param float binThreshold:</span>
+<span class="sd">        (in [0, 1]) pixels of images in :code:`sMaps` with a value bigger than this will be set to 1 and 0 otherwise</span>
+<span class="sd">        when binarizing for the computation of &#39;fscore&#39;, &#39;prec&#39;, &#39;rec&#39; and &#39;auc&#39;.</span>
+<span class="sd">    :param str gtBackgroundVals: Only used when provided ground truth explanations are RGB. Color of the background</span>
+<span class="sd">        of the g.t. masks &#39;low&#39; if pixels in the mask representing the non-salient class are dark, &#39;high&#39; otherwise).</span>
+<span class="sd">    :param bool average: (default :code:`True`) Used only if :code:`gts` and :code:`sMaps` contain multiple</span>
+<span class="sd">        observations. Should the computed metrics be averaged across all of the samples?</span>
+<span class="sd">    :return: (ndarray) specified metric/s in the original order. Can be of shape</span>
+
+<span class="sd">        - (n_metrics,) if only one image has been provided in both :code:`gts` and :code:`sMaps` or when both are</span>
+<span class="sd">          contain multiple observations and :code:`average=True`.</span>
+<span class="sd">        - (n_metrics, n_samples) if :code:`gts` and :code:`sMaps` contain multiple observations and</span>
+<span class="sd">          :code:`average=False`. &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">metrics</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;auc&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">metrics</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">metric</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_AVAILABLE_SALIENCY_MAP_METRICS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">&#39; metric not valid. Use </span><span class="si">{</span><span class="n">_AVAILABLE_SALIENCY_MAP_METRICS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c1"># Single binary g.t. mask</span>
+        <span class="k">return</span> <span class="n">feature_importance_scores</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">sMaps</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span> <span class="n">binThreshold</span><span class="o">=</span><span class="n">binThreshold</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="c1"># naive RGB check</span>
+        <span class="k">if</span> <span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Binarizing g.t. RGB mask. If it is not RGB, binarize it before calling this function.&#39;</span><span class="p">)</span>
+            <span class="n">gts</span> <span class="o">=</span> <span class="n">binarize_rgb_mask</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">bgValue</span><span class="o">=</span><span class="n">gtBackgroundVals</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">feature_importance_scores</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">sMaps</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span> <span class="n">binThreshold</span><span class="o">=</span><span class="n">binThreshold</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># multiple binary masks provided</span>
+            <span class="k">return</span> <span class="n">feature_importance_scores</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                                             <span class="n">sMaps</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">sMaps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sMaps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">sMaps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                                             <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="n">average</span><span class="p">,</span> <span class="n">binThreshold</span><span class="o">=</span><span class="n">binThreshold</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Binarizing </span><span class="si">{</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1"> g.t. RGB masks.&#39;</span><span class="p">)</span>
+        <span class="n">newGts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">imIndex</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">newGts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">binarize_rgb_mask</span><span class="p">(</span><span class="n">gts</span><span class="p">[</span><span class="n">imIndex</span><span class="p">],</span> <span class="n">bgValue</span><span class="o">=</span><span class="n">gtBackgroundVals</span><span class="p">))</span>
+        <span class="n">gts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">newGts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">feature_importance_scores</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                                         <span class="n">sMaps</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">sMaps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sMaps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">sMaps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
+                                         <span class="n">average</span><span class="o">=</span><span class="n">average</span><span class="p">,</span> <span class="n">binThreshold</span><span class="o">=</span><span class="n">binThreshold</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Shape </span><span class="si">{</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1"> of ground truth explanations not supported.&#39;</span><span class="p">)</span></div>
+
+<span class="c1"># ===================================</span>
+<span class="c1">#       UTILS</span>
+<span class="c1"># ===================================</span>
+
+
+<div class="viewcode-block" id="rgb_to_grayscale"><a class="viewcode-back" href="../../teex.html#teex.saliencyMap.rgb_to_grayscale">[docs]</a><span class="k">def</span> <span class="nf">rgb_to_grayscale</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Transforms a 3 channel RGB image into a grayscale image (1 channel).</span>
+<span class="sd">     :param img: (ndarray) of shape (imageH, imageW, 3)</span>
+<span class="sd">     :return: (ndarray) of shape (imageH, imageW) &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">),</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_RGB2GRAY</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="binarize_rgb_mask"><a class="viewcode-back" href="../../teex.html#teex.saliencyMap.binarize_rgb_mask">[docs]</a><span class="k">def</span> <span class="nf">binarize_rgb_mask</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">bgValue</span><span class="o">=</span><span class="s1">&#39;high&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Binarizes a RGB binary mask, letting the background (negative class) be 0. Use this function when the image to</span>
+<span class="sd">    binarize has a very defined background.</span>
+
+<span class="sd">    :param img: (ndarray) of shape (imageH, imageW, 3), RGB mask to binarize.</span>
+<span class="sd">    :param bgValue: (str) Intensity of the negative class of the image to binarize: {&#39;high&#39;, &#39;low&#39;}</span>
+<span class="sd">    :return: (ndarray) a binary mask. &quot;&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="n">bgValue</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;high&#39;</span><span class="p">,</span> <span class="s1">&#39;low&#39;</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;bgColor should ve </span><span class="si">{</span><span class="p">[</span><span class="s1">&#39;high&#39;</span><span class="p">,</span> <span class="s1">&#39;low&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">imgmod</span> <span class="o">=</span> <span class="n">rgb_to_grayscale</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+    <span class="n">maxVal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">imgmod</span><span class="p">)</span>
+    <span class="n">minVal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">imgmod</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bgValue</span> <span class="o">==</span> <span class="s1">&#39;high&#39;</span><span class="p">:</span>
+        <span class="c1"># assign darker pixels the positive class</span>
+        <span class="n">imgmod</span><span class="p">[</span><span class="n">imgmod</span> <span class="o">&lt;</span> <span class="n">maxVal</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">imgmod</span><span class="p">[</span><span class="n">imgmod</span> <span class="o">==</span> <span class="n">maxVal</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">bgValue</span> <span class="o">==</span> <span class="s1">&#39;low&#39;</span><span class="p">:</span>
+        <span class="c1"># assign lighter pixels the positive class</span>
+        <span class="n">imgmod</span><span class="p">[</span><span class="n">imgmod</span> <span class="o">&gt;</span> <span class="n">minVal</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">imgmod</span><span class="p">[</span><span class="n">imgmod</span> <span class="o">==</span> <span class="n">minVal</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">imgmod</span></div>
+
+
+<span class="c1"># ===================================</span>
+
+<span class="k">def</span> <span class="nf">_main</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">_read_rgb_img</span><span class="p">(</span><span class="n">imgPath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read RGB image from path.</span>
+<span class="sd">        :param imgPath: relative (from w.d.) or absolute path of the file.</span>
+<span class="sd">        :return: np.array as RGB image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">imgPath</span><span class="p">),</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2RGB</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;TRANSPARENT MODEL&#39;</span><span class="p">)</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+    <span class="n">nSamples</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">randomState</span> <span class="o">=</span> <span class="mi">7</span>
+    <span class="n">imageH</span><span class="p">,</span> <span class="n">imageW</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span>
+    <span class="n">patternH</span><span class="p">,</span> <span class="n">patternW</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span>
+    <span class="n">cellHeight</span><span class="p">,</span> <span class="n">cellWidth</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span>
+    <span class="n">patternProp</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">fillPct</span> <span class="o">=</span> <span class="mf">0.4</span>
+    <span class="n">colorDev</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">gen_data_sm</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;seneca&#39;</span><span class="p">,</span> <span class="n">nSamples</span><span class="o">=</span><span class="n">nSamples</span><span class="p">,</span> <span class="n">imageH</span><span class="o">=</span><span class="n">imageH</span><span class="p">,</span> <span class="n">imageW</span><span class="o">=</span><span class="n">imageW</span><span class="p">,</span> <span class="n">patternH</span><span class="o">=</span><span class="n">patternH</span><span class="p">,</span>
+                                    <span class="n">patternW</span><span class="o">=</span><span class="n">patternW</span><span class="p">,</span> <span class="n">cellH</span><span class="o">=</span><span class="n">cellHeight</span><span class="p">,</span> <span class="n">cellW</span><span class="o">=</span><span class="n">cellWidth</span><span class="p">,</span> <span class="n">patternProp</span><span class="o">=</span><span class="n">patternProp</span><span class="p">,</span>
+                                    <span class="n">fillPct</span><span class="o">=</span><span class="n">fillPct</span><span class="p">,</span> <span class="n">colorDev</span><span class="o">=</span><span class="n">colorDev</span><span class="p">,</span> <span class="n">randomState</span><span class="o">=</span><span class="n">randomState</span><span class="p">,</span> <span class="n">returnModel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="mi">5</span><span class="p">]),</span> <span class="n">y</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">TransparentImageClassifier</span><span class="p">()</span>
+    <span class="n">imgs</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">explanations</span><span class="p">,</span> <span class="n">pat</span> <span class="o">=</span> <span class="n">gen_data_sm</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;seneca&#39;</span><span class="p">,</span> <span class="n">nSamples</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">patternProp</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="c1"># the model now recognizes the pattern &#39;pat&#39;</span>
+    <span class="n">mod</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">pat</span><span class="p">)</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">imgs</span><span class="p">)</span>
+
+    <span class="n">_</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">imgs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Images&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Explanations&#39;</span><span class="p">)</span>
+
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">imgs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">imgs</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">imgs</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">mod</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">imgs</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">mod</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">imgs</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Cosine similarity and ROC AUC not defined when the explanation contains all 0s.&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">saliency_map_scores</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;fscore&#39;</span><span class="p">,</span> <span class="s1">&#39;cs&#39;</span><span class="p">,</span> <span class="s1">&#39;auc&#39;</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">saliency_map_scores</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;SYNTHETIC DATA GENERATION&#39;</span><span class="p">)</span>
+
+    <span class="n">_</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">images</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">gen_data_sm</span><span class="p">(</span><span class="n">nSamples</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">patternProp</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">randomState</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Pattern&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Generated image&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Explanation&#39;</span><span class="p">)</span>
+
+    <span class="n">images</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">gen_data_sm</span><span class="p">(</span><span class="n">nSamples</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">patternProp</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">randomState</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;EVALUATION&#39;</span><span class="p">)</span>
+
+    <span class="kn">from</span> <span class="nn">cv2</span> <span class="kn">import</span> <span class="n">erode</span>
+
+    <span class="n">imgpath</span> <span class="o">=</span> <span class="s1">&#39;../TAIAOexp_CLI/data/Kahikatea/data/ve_positive/Biospatial_20160702U_1860_01_03.png&#39;</span>
+
+    <span class="n">img</span> <span class="o">=</span> <span class="n">_read_rgb_img</span><span class="p">(</span><span class="n">imgpath</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="n">maskpath</span> <span class="o">=</span> <span class="s1">&#39;../TAIAOexp_CLI/data/Kahikatea/expl/ve_positive/Biospatial_20160702U_1860_01_03.png&#39;</span>
+
+    <span class="c1"># load ground truth mask and generate perturbed mask for testing</span>
+    <span class="n">gtmask</span> <span class="o">=</span> <span class="n">_read_rgb_img</span><span class="p">(</span><span class="n">maskpath</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">gtmask</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="c1"># bgValue is &#39;high&#39; because background is white</span>
+    <span class="n">gtmask</span> <span class="o">=</span> <span class="n">binarize_rgb_mask</span><span class="p">(</span><span class="n">gtmask</span><span class="p">,</span> <span class="n">bgValue</span><span class="o">=</span><span class="s1">&#39;high&#39;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">gtmask</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="c1"># perturb ground truth mask</span>
+    <span class="n">testmask</span> <span class="o">=</span> <span class="n">erode</span><span class="p">(</span><span class="n">gtmask</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">))</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">testmask</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="n">f1Score</span><span class="p">,</span> <span class="n">prec</span><span class="p">,</span> <span class="n">rec</span><span class="p">,</span> <span class="n">auc</span><span class="p">,</span> <span class="n">cs</span> <span class="o">=</span> <span class="n">saliency_map_scores</span><span class="p">(</span><span class="n">gtmask</span><span class="p">,</span> <span class="n">testmask</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;fscore&#39;</span><span class="p">,</span> <span class="s1">&#39;prec&#39;</span><span class="p">,</span> <span class="s1">&#39;rec&#39;</span><span class="p">,</span> <span class="s1">&#39;auc&#39;</span><span class="p">,</span> <span class="s1">&#39;cs&#39;</span><span class="p">])</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;F1Score: </span><span class="si">{</span><span class="n">f1Score</span><span class="si">}</span><span class="s1">, Precision: </span><span class="si">{</span><span class="n">prec</span><span class="si">}</span><span class="s1">, Recall: </span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s1">, AUC: </span><span class="si">{</span><span class="n">auc</span><span class="si">}</span><span class="s1">, CS: </span><span class="si">{</span><span class="n">cs</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">_main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Jesus Antonanzas.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

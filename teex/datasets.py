@@ -84,7 +84,7 @@ class Kahikatea(_ClassificationDataset):
 
 
 class Newsgroup(_ClassificationDataset):
-    """ 20 Newsgroup dataset from  https://github.com/SinaMohseni/ML-Interpretability-Evaluation-Benchmark
+    """ 20 Newsgroup dataset from https://github.com/SinaMohseni/ML-Interpretability-Evaluation-Benchmark
 
     The returned items when indexing are:
 

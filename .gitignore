@@ -2,7 +2,6 @@ venv/
 .ipynb_checkpoints/
 *.bat
 __pycache__/
-docs/
-.buildinfo
+.idea/
 _deprecated/
 _files/

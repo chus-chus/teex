@@ -5,7 +5,7 @@ import numpy as np
 from numpy import ndarray
 from sklearn.tree import DecisionTreeClassifier
 
-from .featureImportance import feature_importance_scores
+from teex.featureImportance import feature_importance_scores
 
 # noinspection PyProtectedMember
 from teex._baseClasses._baseClassifier import _BaseClassifier

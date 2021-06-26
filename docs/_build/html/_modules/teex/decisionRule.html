@@ -1,0 +1,790 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>teex.decisionRule &mdash; teex 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> teex
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">teex</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>teex.decisionRule</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for teex.decisionRule</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; The rule module. Contains all of the methods regarding this datatype: synthetic data generation, evaluation of</span>
+<span class="sd">explanations and other utils. &quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
+<span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="kn">import</span> <span class="n">DecisionTreeClassifier</span>
+
+<span class="kn">from</span> <span class="nn">teex.featureImportance</span> <span class="kn">import</span> <span class="n">feature_importance_scores</span>
+
+<span class="c1"># noinspection PyProtectedMember</span>
+<span class="kn">from</span> <span class="nn">teex._baseClasses._baseClassifier</span> <span class="kn">import</span> <span class="n">_BaseClassifier</span>
+<span class="c1"># noinspection PyProtectedMember</span>
+<span class="kn">from</span> <span class="nn">teex._utils._misc</span> <span class="kn">import</span> <span class="n">_generate_feature_names</span>
+
+<span class="n">_AVAILABLE_DECISION_RULE_METRICS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;fscore&#39;</span><span class="p">,</span> <span class="s1">&#39;prec&#39;</span><span class="p">,</span> <span class="s1">&#39;rec&#39;</span><span class="p">,</span> <span class="s1">&#39;cs&#39;</span><span class="p">,</span> <span class="s1">&#39;auc&#39;</span><span class="p">,</span> <span class="s1">&#39;crq&#39;</span><span class="p">}</span>
+<span class="n">_AVAILABLE_DECISION_RULE_GEN_METHODS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;seneca&#39;</span><span class="p">}</span>
+<span class="n">_AVAILABLE_DECISION_RULE_DATASETS</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="n">_VALID_OPERATORS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="s1">&#39;!=&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;=&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;=&#39;</span><span class="p">}</span>
+<span class="c1"># operators for statements of shape: value1 &lt;opLower&gt; feature &lt;opUpper&gt; value2</span>
+<span class="n">_BINARY_OPERATORS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;=&#39;</span><span class="p">}</span>
+
+
+<span class="c1"># ===================================</span>
+<span class="c1">#       TRANSPARENT MODEL</span>
+<span class="c1"># ===================================</span>
+
+<div class="viewcode-block" id="Statement"><a class="viewcode-back" href="../../teex.html#teex.decisionRule.Statement">[docs]</a><span class="k">class</span> <span class="nc">Statement</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sa">f</span><span class="s2">&quot;&quot;&quot; Class representing the atomic structure of a rule. A Statement follows the structure of &#39;feature&#39; </span>
+<span class="s2">    &lt;operator&gt; &#39;value&#39;. It can also be binary, like so: value1 &lt;operatorLower&gt; feature &lt;operatorHigher&gt; value2 Valid </span>
+<span class="s2">    operators are </span><span class="si">{</span><span class="n">_VALID_OPERATORS</span><span class="si">}</span><span class="s2"> or </span><span class="si">{</span><span class="n">_BINARY_OPERATORS</span><span class="si">}</span><span class="s2"> in the case of a binary statement. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lowOp</span><span class="o">=</span><span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="n">lowerBound</span><span class="o">=-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">upperOp</span><span class="o">=</span><span class="s1">&#39;&lt;=&#39;</span><span class="p">,</span> <span class="n">upperBound</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s1">&#39;=&#39;</span><span class="p">,</span>
+                 <span class="n">val</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param feature: (str) name of the feature for the Statement</span>
+<span class="sd">        :param binary: (bool) is the statement binary?</span>
+<span class="sd">        :param lowOp: (str) Operator for the lower bound (if binary)</span>
+<span class="sd">        :param lowerBound: Value of the upper bound (if binary)</span>
+<span class="sd">        :param upperOp: (str) Operator for the upper bound (if binary)</span>
+<span class="sd">        :param upperBound: Value of the lower bound (if binary)</span>
+<span class="sd">        :param op: (str) Operator for the statement (if not binary)</span>
+<span class="sd">        :param val: Value for the statement (if not binary)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feature</span> <span class="o">=</span> <span class="n">feature</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">binary</span>
+        <span class="k">if</span> <span class="n">binary</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_binary_operators</span><span class="p">(</span><span class="n">lowOp</span><span class="p">,</span> <span class="n">upperOp</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lowerOperator</span> <span class="o">=</span> <span class="n">lowOp</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">upperOperator</span> <span class="o">=</span> <span class="n">upperOp</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lowerBound</span> <span class="o">=</span> <span class="n">lowerBound</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">upperBound</span> <span class="o">=</span> <span class="n">upperBound</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_operator</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">=</span> <span class="n">op</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">feature</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowerOperator</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">lowerBound</span> <span class="ow">and</span> \
+                   <span class="bp">self</span><span class="o">.</span><span class="n">upperOperator</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">upperBound</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowerBound</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">lowerBound</span> <span class="ow">and</span> \
+                   <span class="bp">self</span><span class="o">.</span><span class="n">upperBound</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">upperBound</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">feature</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">operator</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowerBound</span> <span class="o">!=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">upperBound</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lowerBound</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lowerOperator</span><span class="si">}</span><span class="s2"> &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">feature</span><span class="si">}</span><span class="s2">&#39; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">upperOperator</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">upperBound</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowerBound</span> <span class="o">!=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lowerBound</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lowerOperator</span><span class="si">}</span><span class="s2"> &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">feature</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">upperBound</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">feature</span><span class="si">}</span><span class="s2">&#39; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">upperOperator</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">upperBound</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">feature</span><span class="si">}</span><span class="s2">&#39; not bounded&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">feature</span><span class="si">}</span><span class="s2">&#39; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">feature</span><span class="si">}</span><span class="s2">&#39; not bounded&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_check_operator</span><span class="p">(</span><span class="n">op</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_VALID_OPERATORS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Operator &#39;</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2">&#39; not valid. Choose from </span><span class="si">{</span><span class="n">_VALID_OPERATORS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_check_binary_operators</span><span class="p">(</span><span class="n">lowerOp</span><span class="p">,</span> <span class="n">upperOp</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">lowerOp</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_BINARY_OPERATORS</span> <span class="ow">or</span> <span class="n">upperOp</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_BINARY_OPERATORS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Operator not valid, must be in </span><span class="si">{</span><span class="n">_BINARY_OPERATORS</span><span class="si">}</span><span class="s1"> for a binary statement.&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DecisionRule"><a class="viewcode-back" href="../../teex.html#teex.decisionRule.DecisionRule">[docs]</a><span class="k">class</span> <span class="nc">DecisionRule</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A conjunction of statements as conditions that imply a result. Internally, the rule is represented as a</span>
+<span class="sd">    dictionary of statements with the feature names as keys. A feature cannot have more than one Statement (</span>
+<span class="sd">    Statements can be binary). This class is capable of adapting previous Statements depending on new Statements that</span>
+<span class="sd">    are added to it with the upsert method (see `.upsert_condition` method).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># todo add renaming of features</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">statements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param statements: (list-like) Statement objects.</span>
+<span class="sd">        :param result: Statement object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">statements</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">statements</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># if array-like, convert it into a dict</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">statements</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+                <span class="k">for</span> <span class="n">statement</span> <span class="ow">in</span> <span class="n">statements</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span> <span class="n">Statement</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Statements are not instances of the Statement class.&#39;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">statement</span><span class="o">.</span><span class="n">feature</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Only one rule per feature is allowed.&#39;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">[</span><span class="n">statement</span><span class="o">.</span><span class="n">feature</span><span class="p">]</span> <span class="o">=</span> <span class="n">statement</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Statements not valid.&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Statement</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Result must be an Statement.&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;IF </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">statement</span><span class="p">)</span> <span class="k">for</span> <span class="n">statement</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span><span class="si">}</span><span class="s2"> THEN </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">statements</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">statements</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">result</span>
+
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Check if a Statement related to a feature is in the rule. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">feature</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">statements</span> <span class="k">else</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="DecisionRule.insert_condition"><a class="viewcode-back" href="../../teex.html#teex.decisionRule.DecisionRule.insert_condition">[docs]</a>    <span class="k">def</span> <span class="nf">insert_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">statement</span><span class="p">:</span> <span class="n">Statement</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Add Condition inplace to the conjunction.</span>
+<span class="sd">        :param statement: Statement object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">statement</span><span class="o">.</span><span class="n">feature</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;A condition for this feature already exists.&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">[</span><span class="n">statement</span><span class="o">.</span><span class="n">feature</span><span class="p">]</span> <span class="o">=</span> <span class="n">statement</span></div>
+
+<div class="viewcode-block" id="DecisionRule.upsert_condition"><a class="viewcode-back" href="../../teex.html#teex.decisionRule.DecisionRule.upsert_condition">[docs]</a>    <span class="k">def</span> <span class="nf">upsert_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">statement</span><span class="p">:</span> <span class="n">Statement</span><span class="p">,</span> <span class="n">updateOperators</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; If a statement already exists within the rule, updates its bounds (replacing or defining them) and its</span>
+<span class="sd">        operators if specified. If not, inserts the statement as a new condition. If an existing condition is of</span>
+<span class="sd">        different type (binary / non-binary) as the new condition, the update fails. A bound update is only performed</span>
+<span class="sd">        if the new bound/s != np.inf or -np.inf.</span>
+
+<span class="sd">        :param statement: Statement object</span>
+<span class="sd">        :param updateOperators: Should the operators be updated too? &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">statement</span><span class="o">.</span><span class="n">feature</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">[</span><span class="n">statement</span><span class="o">.</span><span class="n">feature</span><span class="p">]</span> <span class="o">=</span> <span class="n">statement</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">statement</span><span class="o">.</span><span class="n">binary</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">[</span><span class="n">statement</span><span class="o">.</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">binary</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">statement</span><span class="o">.</span><span class="n">upperBound</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">[</span><span class="n">statement</span><span class="o">.</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">upperBound</span> <span class="o">=</span> <span class="n">statement</span><span class="o">.</span><span class="n">upperBound</span>
+                <span class="k">if</span> <span class="n">statement</span><span class="o">.</span><span class="n">lowerBound</span> <span class="o">!=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">[</span><span class="n">statement</span><span class="o">.</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">lowerBound</span> <span class="o">=</span> <span class="n">statement</span><span class="o">.</span><span class="n">lowerBound</span>
+                <span class="k">if</span> <span class="n">updateOperators</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">[</span><span class="n">statement</span><span class="o">.</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">upperOperator</span> <span class="o">=</span> <span class="n">statement</span><span class="o">.</span><span class="n">upperOperator</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">[</span><span class="n">statement</span><span class="o">.</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">lowerOperator</span> <span class="o">=</span> <span class="n">statement</span><span class="o">.</span><span class="n">lowerOperator</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">statement</span><span class="o">.</span><span class="n">binary</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">[</span><span class="n">statement</span><span class="o">.</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">binary</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">[</span><span class="n">statement</span><span class="o">.</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">statement</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="n">updateOperators</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">[</span><span class="n">statement</span><span class="o">.</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">operator</span> <span class="o">=</span> <span class="n">statement</span><span class="o">.</span><span class="n">operator</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">prevStatType</span> <span class="o">=</span> <span class="s1">&#39;binary&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">[</span><span class="n">statement</span><span class="o">.</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">binary</span> <span class="k">else</span> <span class="s1">&#39;non-binary&#39;</span>
+                <span class="n">newStatType</span> <span class="o">=</span> <span class="s1">&#39;binary&#39;</span> <span class="k">if</span> <span class="n">statement</span><span class="o">.</span><span class="n">binary</span> <span class="k">else</span> <span class="s1">&#39;non-binary&#39;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot update </span><span class="si">{</span><span class="n">prevStatType</span><span class="si">}</span><span class="s1"> statement with new </span><span class="si">{</span><span class="n">newStatType</span><span class="si">}</span><span class="s1"> statement.&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DecisionRule.get_features"><a class="viewcode-back" href="../../teex.html#teex.decisionRule.DecisionRule.get_features">[docs]</a>    <span class="k">def</span> <span class="nf">get_features</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns list with the features present in the rule conditions. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="DecisionRule.set_result"><a class="viewcode-back" href="../../teex.html#teex.decisionRule.DecisionRule.set_result">[docs]</a>    <span class="k">def</span> <span class="nf">set_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span></div></div>
+
+
+<div class="viewcode-block" id="TransparentRuleClassifier"><a class="viewcode-back" href="../../teex.html#teex.decisionRule.TransparentRuleClassifier">[docs]</a><span class="k">class</span> <span class="nc">TransparentRuleClassifier</span><span class="p">(</span><span class="n">_BaseClassifier</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Transparent, rule-based classifier with decision rules as explanations. For each prediction, the associated</span>
+<span class="sd">    ground truth explanation is available with the :code:`.explain` method. Follows the sklean API. Presented in</span>
+<span class="sd">    [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021]. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># dict. for each tree node, contains its learned condition as a &quot;Statement&quot; (None if node is a leaf)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nodeStatements</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="TransparentRuleClassifier.fit"><a class="viewcode-back" href="../../teex.html#teex.decisionRule.TransparentRuleClassifier.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">featureNames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Fits the classifier and automatically parses the learned tree structure into statements.</span>
+
+<span class="sd">        :param data: (array-like) of shape (n_samples, n_features) The training input samples. Internally, it will be</span>
+<span class="sd">            converted to dtype=np.float32.</span>
+<span class="sd">        :param target: (array-like of shape (n_samples,) or (n_samples, n_outputs)) The target values (class labels) as</span>
+<span class="sd">            integers or strings.</span>
+<span class="sd">        :param featureNames: (str) todo</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">featureNames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">featureNames</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">featureNames</span> <span class="o">=</span> <span class="n">featureNames</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parse_tree_structure</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TransparentRuleClassifier.predict"><a class="viewcode-back" href="../../teex.html#teex.decisionRule.TransparentRuleClassifier.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Predicts the class for each observation.</span>
+<span class="sd">        :param obs: (array-like) of n observations with m features and shape (n, m)</span>
+<span class="sd">        :return: array of n predicted labels</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TransparentRuleClassifier.predict_proba"><a class="viewcode-back" href="../../teex.html#teex.decisionRule.TransparentRuleClassifier.predict_proba">[docs]</a>    <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Predicts probability that each observation belongs to each of the c classes.</span>
+<span class="sd">        :param obs: array of n observations with m features and shape (n, m)</span>
+<span class="sd">        :return: array of n probability tuples of length c</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TransparentRuleClassifier.explain"><a class="viewcode-back" href="../../teex.html#teex.decisionRule.TransparentRuleClassifier.explain">[docs]</a>    <span class="k">def</span> <span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;  Explain observations&#39; predictions with decision rules.</span>
+
+<span class="sd">        :param obs: array of n observations with m features and shape (n, m)</span>
+<span class="sd">        :return: list with n :code:`DecisionRule` objects &quot;&quot;&quot;</span>
+        <span class="n">nodeIndicators</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">decision_path</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>  <span class="c1"># id&#39;s of the nodes for which each observation passes through</span>
+        <span class="n">rules</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># for each sample, retrieve its path and navigate it, looking at the precomputed decision splits</span>
+        <span class="k">for</span> <span class="n">sampleId</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">obs</span><span class="p">)):</span>
+            <span class="n">nodePath</span> <span class="o">=</span> <span class="n">nodeIndicators</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">nodeIndicators</span><span class="o">.</span><span class="n">indptr</span><span class="p">[</span><span class="n">sampleId</span><span class="p">]:</span><span class="n">nodeIndicators</span><span class="o">.</span><span class="n">indptr</span><span class="p">[</span><span class="n">sampleId</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="n">rule</span> <span class="o">=</span> <span class="n">DecisionRule</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">nodeId</span> <span class="ow">in</span> <span class="n">nodePath</span><span class="p">:</span>
+                <span class="c1"># node is not a leaf if None</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodeStatements</span><span class="p">[</span><span class="n">nodeId</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">feature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodeStatements</span><span class="p">[</span><span class="n">nodeId</span><span class="p">]</span><span class="o">.</span><span class="n">feature</span>
+                    <span class="n">threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodeStatements</span><span class="p">[</span><span class="n">nodeId</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+                    <span class="n">statement</span> <span class="o">=</span> <span class="n">Statement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">featureNames</span><span class="p">[</span><span class="n">feature</span><span class="p">],</span> <span class="n">binary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lowOp</span><span class="o">=</span><span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="n">upperOp</span><span class="o">=</span><span class="s1">&#39;&lt;=&#39;</span><span class="p">)</span>
+                    <span class="c1"># define bounds. Remember that the tree splits are of the form: feature &#39;&lt;=&#39; value</span>
+                    <span class="k">if</span> <span class="n">obs</span><span class="p">[</span><span class="n">sampleId</span><span class="p">][</span><span class="n">feature</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">threshold</span><span class="p">:</span>
+                        <span class="n">statement</span><span class="o">.</span><span class="n">upperBound</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">threshold</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">statement</span><span class="o">.</span><span class="n">lowerBound</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">threshold</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+                    <span class="c1"># we create binary statements and will update the bounds as we traverse the tree&#39;s decision</span>
+                    <span class="n">rule</span><span class="o">.</span><span class="n">upsert_condition</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span> <span class="n">updateOperators</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">rule</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">Statement</span><span class="p">(</span><span class="s1">&#39;Class&#39;</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">obs</span><span class="p">[</span><span class="n">sampleId</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="n">rules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rules</span></div>
+
+    <span class="k">def</span> <span class="nf">_parse_tree_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Precomputes the learned tree splits and stores them as unary :code:`Statement` objects. &quot;&quot;&quot;</span>
+
+        <span class="n">nodeFeatures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">tree_</span><span class="o">.</span><span class="n">feature</span>
+        <span class="n">nodeThresholds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">tree_</span><span class="o">.</span><span class="n">threshold</span>
+        <span class="n">childrenRight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">tree_</span><span class="o">.</span><span class="n">children_right</span>
+        <span class="n">childrenLeft</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">tree_</span><span class="o">.</span><span class="n">children_left</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nodeStatements</span> <span class="o">=</span> <span class="p">{</span><span class="n">nodeId</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">nodeId</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">tree_</span><span class="o">.</span><span class="n">node_count</span><span class="p">)}</span>
+
+        <span class="c1"># root node</span>
+        <span class="n">nodeStack</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodeStack</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">nodeId</span> <span class="o">=</span> <span class="n">nodeStack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">childrenRight</span><span class="p">[</span><span class="n">nodeId</span><span class="p">]</span> <span class="o">!=</span> <span class="n">childrenLeft</span><span class="p">[</span><span class="n">nodeId</span><span class="p">]:</span>
+                <span class="c1"># nodeId is a split node; add child nodes to the stack and parse its decision split into a statement</span>
+                <span class="n">nodeStack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">childrenRight</span><span class="p">[</span><span class="n">nodeId</span><span class="p">])</span>
+                <span class="n">nodeStack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">childrenLeft</span><span class="p">[</span><span class="n">nodeId</span><span class="p">])</span>
+                <span class="c1"># all split nodes check with the &#39;&lt;=&#39; operator</span>
+                <span class="n">nodeStatement</span> <span class="o">=</span> <span class="n">Statement</span><span class="p">(</span><span class="n">nodeFeatures</span><span class="p">[</span><span class="n">nodeId</span><span class="p">],</span> <span class="n">op</span><span class="o">=</span><span class="s1">&#39;&lt;=&#39;</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">nodeThresholds</span><span class="p">[</span><span class="n">nodeId</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_nodeStatements</span><span class="p">[</span><span class="n">nodeId</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodeStatement</span></div>
+
+
+<span class="c1"># ===================================</span>
+<span class="c1">#       DATA GENERATION</span>
+<span class="c1"># ===================================</span>
+
+
+<div class="viewcode-block" id="gen_data_rule"><a class="viewcode-back" href="../../teex.html#teex.decisionRule.gen_data_rule">[docs]</a><span class="k">def</span> <span class="nf">gen_data_rule</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;seneca&#39;</span><span class="p">,</span> <span class="n">nSamples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">nFeatures</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">returnModel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                  <span class="n">featureNames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">randomState</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">888</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Generate synthetic binary classification data with ground truth decision rule explanations. The returned</span>
+<span class="sd">    decision rule g.t. explanations are instances of the :code:`DecisionRule` class.</span>
+
+<span class="sd">    :param str method: method to use for the generation of the ground truth explanations. Available:</span>
+
+<span class="sd">        - &#39;seneca&#39;: g.t. explanations generated with the :class:`decisionRule.TransparentRuleClassifier` class. The</span>
+<span class="sd">          method was presented in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021].</span>
+
+<span class="sd">    :param nSamples: (int) number of samples to be generated.</span>
+<span class="sd">    :param nFeatures: (int) total number of features in the generated data.</span>
+<span class="sd">    :param returnModel: (bool) should the :code:`decisionRule.TransparentRuleClassifier` model used for the generation</span>
+<span class="sd">        of the explanations be returned? Only used for the &#39;seneca&#39; method.</span>
+<span class="sd">    :param featureNames: (array-like) names of the generated features. If not provided, a list with the generated</span>
+<span class="sd">        feature names will be returned by the function (necessary because the g.t. decision rules use them).</span>
+<span class="sd">    :param randomState: (int) random state seed.</span>
+<span class="sd">    :return:</span>
+<span class="sd">        - X (ndarray) of shape (nSamples, nFeatures) Generated data.</span>
+<span class="sd">        - y (ndarray) of shape (nSamples,) Binary data labels.</span>
+<span class="sd">        - explanations (list) of :class:`decisionRule.DecisionRule` objects of length (nSamples). Generated ground</span>
+<span class="sd">          truth explanations.</span>
+<span class="sd">        - featureNames (list) list with the generated feature names (only if they were not specified).</span>
+<span class="sd">        - model (:class:`decisionRule.TransparentRuleClassifier`) Model instance used to generate the data (returned if</span>
+<span class="sd">          :code:`returnModel` is True only when :code:`method=&#39;seneca&#39;`). &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_AVAILABLE_DECISION_RULE_GEN_METHODS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Method not available. Use one in </span><span class="si">{</span><span class="n">_AVAILABLE_DECISION_RULE_GEN_METHODS</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">retFNames</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">featureNames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">retFNames</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">featureNames</span> <span class="o">=</span> <span class="n">_generate_feature_names</span><span class="p">(</span><span class="n">nFeatures</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;seneca&#39;</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">explanations</span><span class="p">,</span> <span class="n">classifier</span> <span class="o">=</span> <span class="n">_gen_rule_dataset_seneca</span><span class="p">(</span><span class="n">nSamples</span><span class="o">=</span><span class="n">nSamples</span><span class="p">,</span> <span class="n">nFeatures</span><span class="o">=</span><span class="n">nFeatures</span><span class="p">,</span>
+                                                                           <span class="n">randomState</span><span class="o">=</span><span class="n">randomState</span><span class="p">,</span>
+                                                                           <span class="n">featureNames</span><span class="o">=</span><span class="n">featureNames</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">returnModel</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">retFNames</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">explanations</span><span class="p">,</span> <span class="n">featureNames</span><span class="p">,</span> <span class="n">classifier</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">explanations</span><span class="p">,</span> <span class="n">classifier</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">retFNames</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">explanations</span><span class="p">,</span> <span class="n">featureNames</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">explanations</span></div>
+
+
+<div class="viewcode-block" id="load_data_rule"><a class="viewcode-back" href="../../teex.html#teex.decisionRule.load_data_rule">[docs]</a><span class="k">def</span> <span class="nf">load_data_rule</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Loads (or downloads) and returns a real image dataset with available ground truth Decision Rule explanations.</span>
+
+<span class="sd">    :param name: (str) dataset name. Available:</span>
+<span class="sd">        -</span>
+<span class="sd">    :return: A Dataset object. Read about it in the dataset module. &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_AVAILABLE_DECISION_RULE_METRICS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Dataset not available (</span><span class="si">{</span><span class="n">_AVAILABLE_DECISION_RULE_METRICS</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># todo</span>
+        <span class="k">pass</span></div>
+
+
+<span class="k">def</span> <span class="nf">_gen_rule_dataset_seneca</span><span class="p">(</span><span class="n">nSamples</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nFeatures</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">randomState</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">featureNames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; g.t. explanations generated with the :class:`decisionRule.TransparentRuleClassifier` class. The</span>
+<span class="sd">        method was presented in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021]. &quot;&quot;&quot;</span>
+
+    <span class="c1"># generate explanations with rules and binarize</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="n">nSamples</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><span class="n">nFeatures</span><span class="p">,</span>
+                                        <span class="n">n_informative</span><span class="o">=</span><span class="n">nFeatures</span><span class="p">,</span> <span class="n">n_redundant</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_repeated</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                        <span class="n">random_state</span><span class="o">=</span><span class="n">randomState</span><span class="p">)</span>
+    <span class="n">classifier</span> <span class="o">=</span> <span class="n">TransparentRuleClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">randomState</span><span class="p">)</span>
+    <span class="n">classifier</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">featureNames</span><span class="o">=</span><span class="n">featureNames</span><span class="p">)</span>
+    <span class="n">explanations</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">explanations</span><span class="p">,</span> <span class="n">classifier</span>
+
+<span class="c1"># ===================================</span>
+<span class="c1">#       EXPLANATION EVALUATION</span>
+<span class="c1"># ===================================</span>
+
+
+<div class="viewcode-block" id="complete_rule_quality"><a class="viewcode-back" href="../../teex.html#teex.decisionRule.complete_rule_quality">[docs]</a><span class="k">def</span> <span class="nf">complete_rule_quality</span><span class="p">(</span><span class="n">gts</span><span class="p">:</span> <span class="n">DecisionRule</span><span class="p">,</span> <span class="n">rules</span><span class="p">:</span> <span class="n">DecisionRule</span><span class="p">,</span> <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Computes the complete rule quality (crq) between two decision rules. All &#39;Statements&#39; in both rules must be</span>
+<span class="sd">    binary (have upper and lower bounds). The metric is defined as the proportion of lower and upper bounds in a rule</span>
+<span class="sd">    explanation whose that are eps-close to the respective lower and upper bounds (same feature) in the ground truth</span>
+<span class="sd">    rule explanation amongst those that are != inf. Mathematically, given two rules :math:`e, \\tilde{e}` and a</span>
+<span class="sd">    similarity threshold :math:`\\varepsilon`, the quality of :math:`e` with respect to :math:`\\tilde{e}` is:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        q(e, \\tilde{e}) = \\frac{1}{N_{\\not\\infty}} \\sum_{i=1}^{|e|}{\\delta_{\\varepsilon}(e_i, \\tilde e_i)},</span>
+
+<span class="sd">    where</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \\delta_{\\varepsilon}(e_i, \\tilde{e}_i) =</span>
+<span class="sd">                \\begin{cases}</span>
+<span class="sd">                    1 &amp; \\text{if } |e_i - \\tilde{e}_i| \\leq \\varepsilon \\wedge |e_i| \\neq \\infty \wedge</span>
+<span class="sd">                        |\\tilde{e}_i| \\neq \\infty, \\newline</span>
+<span class="sd">                    0 &amp; \\text{otherwise}</span>
+<span class="sd">                \\end{cases}</span>
+
+<span class="sd">    Where :math:`N_{\\not \\infty}` is the number of lower and upper bounds that are different from :math:`\\infty` in</span>
+<span class="sd">    both :math:`e` and :math:`\\tilde e`. More about this metric can be found in [Evaluating local explanation methods</span>
+<span class="sd">    on ground truth, Riccardo Guidotti, 2021].</span>
+
+<span class="sd">    :param gts: (DecisionRule or array-like of DecisionRules) ground truth rule w.r.t. which to compute the quality</span>
+<span class="sd">    :param rules: (DecisionRule or array-like of DecisionRules) rule to compute the quality for</span>
+<span class="sd">    :param eps: (float) threshold :math:`\\varepsilon` for the bounds to be taken into account in the metric, with</span>
+<span class="sd">        precision up to 3 decimal places.</span>
+<span class="sd">    :return: (float or ndarray of shape (n_samples,)) Complete rule quality. &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">DecisionRule</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">DecisionRule</span><span class="p">):</span>
+        <span class="n">gts</span><span class="p">,</span> <span class="n">rules</span> <span class="o">=</span> <span class="p">[</span><span class="n">gts</span><span class="p">],</span> <span class="p">[</span><span class="n">rules</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Rules format not supported.&#39;</span><span class="p">)</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">gt</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">rules</span><span class="p">):</span>
+        <span class="n">nBounded</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">epsCloseBounds</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">rule</span><span class="o">.</span><span class="n">get_features</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">gt</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">gt</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">binary</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">rule</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">binary</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Statements must be binary.&#39;</span><span class="p">)</span>
+                <span class="c1"># compare upper bounds</span>
+                <span class="k">if</span> <span class="n">gt</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">upperBound</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="ow">and</span> <span class="n">rule</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">upperBound</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                    <span class="n">nBounded</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="nb">round</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">gt</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">upperBound</span> <span class="o">-</span> <span class="n">rule</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">upperBound</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">eps</span><span class="p">:</span>
+                        <span class="n">epsCloseBounds</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c1"># compare lower bounds</span>
+                <span class="k">if</span> <span class="n">gt</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">lowerBound</span> <span class="o">!=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="ow">and</span> <span class="n">rule</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">lowerBound</span> <span class="o">!=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                    <span class="n">nBounded</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="nb">round</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">gt</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">lowerBound</span> <span class="o">-</span> <span class="n">rule</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">lowerBound</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">eps</span><span class="p">:</span>
+                        <span class="n">epsCloseBounds</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epsCloseBounds</span> <span class="o">/</span> <span class="n">nBounded</span> <span class="k">if</span> <span class="n">nBounded</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">res</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="rule_scores"><a class="viewcode-back" href="../../teex.html#teex.decisionRule.rule_scores">[docs]</a><span class="k">def</span> <span class="nf">rule_scores</span><span class="p">(</span><span class="n">gts</span><span class="p">:</span> <span class="n">DecisionRule</span><span class="p">,</span> <span class="n">rules</span><span class="p">:</span> <span class="n">DecisionRule</span><span class="p">,</span> <span class="n">allFeatures</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Quality metrics for :class:`decisionRule.DecisionRule` objects.</span>
+
+<span class="sd">    :param gts: (DecisionRule or array-like of DecisionRules) ground truth decision rule/s.</span>
+<span class="sd">    :param rules: (DecisionRule or array-like of DecisionRules) approximated decision rule/s.</span>
+<span class="sd">    :param allFeatures: (array-like) names of all of the relevant features (i.e. :code:`create_rule_data.featureNames`)</span>
+<span class="sd">    :param metrics: (array-like of str, default :code:`[&#39;fscore&#39;]`) metris to compute. Available:</span>
+
+<span class="sd">        - &#39;fscore&#39;: Computes the F1 Score between the ground truths and the predicted vectors.</span>
+<span class="sd">        - &#39;prec&#39;: Computes the Precision Score between the ground truths and the predicted vectors.</span>
+<span class="sd">        - &#39;rec&#39;: Computes the Recall Score between the ground truths and the predicted vectors.</span>
+<span class="sd">        - &#39;crq&#39;: Computes the Complete Rule Quality of :code:`rule` w.r.t. :code:`gt`.</span>
+<span class="sd">        - &#39;auc&#39;: Computes the ROC AUC Score between the two rules.</span>
+<span class="sd">        - &#39;cs&#39;: Computes the Cosine Similarity between the two rules.</span>
+
+<span class="sd">        Note that for &#39;fscore&#39;, &#39;prec&#39;, &#39;rec&#39;, &#39;auc&#39; and &#39;cs&#39; the rules are transformed to binary vectors where there</span>
+<span class="sd">        is one entry per possible feature and that entry contains a 1 if the feature is present in the rule, otherwise</span>
+<span class="sd">        0.</span>
+<span class="sd">    :param average: (bool, default :code:`True`) Used only if :code:`gts` and :code:`rule` are array-like. Should the</span>
+<span class="sd">        computed metrics be averaged across all of the samples?</span>
+<span class="sd">    :return: (ndarray) specified metric/s in the original order. Can be of shape</span>
+
+<span class="sd">        - (n_metrics,) if only one DecisionRule has been provided in both :code:`gts` and :code:`rules` or when both are</span>
+<span class="sd">          array-like and :code:`average=True`.</span>
+<span class="sd">        - (n_metrics, n_samples) if :code:`gts` and :code:`rules` are array-like and :code:`average=False`. &quot;&quot;&quot;</span>
+
+    <span class="n">isArrayLike</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isArrayLike</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">metrics</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_AVAILABLE_DECISION_RULE_METRICS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">metrics</span><span class="si">}</span><span class="s2">&#39; metric not valid. Use </span><span class="si">{</span><span class="n">_AVAILABLE_DECISION_RULE_METRICS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">metric</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_AVAILABLE_DECISION_RULE_METRICS</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">&#39; metric not valid. Use </span><span class="si">{</span><span class="n">_AVAILABLE_DECISION_RULE_METRICS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">crq</span><span class="p">,</span> <span class="n">crqIndex</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">metrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">metrics</span> <span class="o">==</span> <span class="s1">&#39;crq&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">complete_rule_quality</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">isArrayLike</span> <span class="ow">and</span> <span class="s1">&#39;crq&#39;</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
+            <span class="n">crq</span> <span class="o">=</span> <span class="n">complete_rule_quality</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">crqIndex</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;crq&#39;</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">metrics</span><span class="p">[</span><span class="n">metrics</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;crq&#39;</span><span class="p">)]</span>
+
+    <span class="n">binaryGts</span> <span class="o">=</span> <span class="n">rule_to_feature_importance</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">allFeatures</span><span class="p">)</span>
+    <span class="n">binaryRules</span> <span class="o">=</span> <span class="n">rule_to_feature_importance</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">allFeatures</span><span class="p">)</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">feature_importance_scores</span><span class="p">(</span><span class="n">binaryGts</span><span class="p">,</span> <span class="n">binaryRules</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="n">average</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">crq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crq</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="c1"># multiple observations, insert as a column</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">crqIndex</span><span class="p">,</span> <span class="n">crq</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crq</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="c1"># one observation</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">crqIndex</span><span class="p">,</span> <span class="n">crq</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+<span class="c1"># ===================================</span>
+<span class="c1">#       UTILS</span>
+<span class="c1"># ===================================</span>
+
+<span class="c1"># todo parser to DecisionRule from other common representations</span>
+
+<div class="viewcode-block" id="rule_to_feature_importance"><a class="viewcode-back" href="../../teex.html#teex.decisionRule.rule_to_feature_importance">[docs]</a><span class="k">def</span> <span class="nf">rule_to_feature_importance</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">allFeatures</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;  Converts one or more :class:`decisionRule.DecisionRule` objects to feature importance vector/s. For each</span>
+<span class="sd">    feature in *allFeatures*, the feature importance representation contains a 1 if there is a</span>
+<span class="sd">    :class:&#39;decisionRule.Statement&#39; with that particular feature in the decision rule and 0 otherwise.</span>
+
+<span class="sd">    :param rules: (:class:`decisionRule.DecisionRule` or (1, r) array-like of :class:`decisionRule.DecisionRule`) Rule/s</span>
+<span class="sd">        to convert to feature importance vectors.</span>
+<span class="sd">    :param allFeatures: (array-like of str) List with mg features (same as the rule features) whose order the returned</span>
+<span class="sd">        array will follow. The features must match the ones used in the decision rules.</span>
+<span class="sd">    :return: (binary ndarray of shape (n_features,) or shape (n_rules, n_features)). &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">rules</span><span class="p">:</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="mi">1</span> <span class="k">if</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">rule</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">allFeatures</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">DecisionRule</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="k">if</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">rules</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">allFeatures</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The rule is not a DecisionRule object nor array-like.&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">res</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_classification</span>
+
+    <span class="c1"># c = Statement(&#39;f&#39;, binary=True)</span>
+    <span class="c1"># r = DecisionRule([c], result=Statement(&#39;a&#39;, op=&#39;=&#39;, val=5))</span>
+
+    <span class="n">ruleModel</span> <span class="o">=</span> <span class="n">TransparentRuleClassifier</span><span class="p">()</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_informative</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_redundant</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_repeated</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                               <span class="n">random_state</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+    <span class="n">ruleModel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MANUALLY GENERATING EXPLANATIONS WITH SENECA&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Only one observation:&#39;</span><span class="p">)</span>
+    <span class="n">exp</span> <span class="o">=</span> <span class="n">ruleModel</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">exp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> Multiple observations at once:&#39;</span><span class="p">)</span>
+    <span class="n">exp</span> <span class="o">=</span> <span class="n">ruleModel</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">5</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">exp</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;EXPLANATION EVALUATION&#39;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;COMPLETE RULE QUALITY&#39;</span><span class="p">)</span>
+    <span class="n">c1</span> <span class="o">=</span> <span class="n">Statement</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lowerBound</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">upperBound</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="n">Statement</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lowerBound</span><span class="o">=</span><span class="mf">2.2</span><span class="p">,</span> <span class="n">upperBound</span><span class="o">=</span><span class="mf">1.1</span><span class="p">)</span>
+    <span class="n">r1</span> <span class="o">=</span> <span class="n">DecisionRule</span><span class="p">([</span><span class="n">c1</span><span class="p">])</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">DecisionRule</span><span class="p">([</span><span class="n">c2</span><span class="p">])</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">complete_rule_quality</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.01</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">complete_rule_quality</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">complete_rule_quality</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+
+    <span class="n">c3</span> <span class="o">=</span> <span class="n">Statement</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lowerBound</span><span class="o">=</span><span class="mf">2.2</span><span class="p">,</span> <span class="n">upperBound</span><span class="o">=</span><span class="mf">1.1</span><span class="p">)</span>
+    <span class="n">r3</span> <span class="o">=</span> <span class="n">DecisionRule</span><span class="p">([</span><span class="n">c3</span><span class="p">])</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">complete_rule_quality</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">r3</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The metric does not take the absence of a feature into account:&#39;</span><span class="p">)</span>
+    <span class="n">r3</span> <span class="o">=</span> <span class="n">DecisionRule</span><span class="p">([</span><span class="n">c3</span><span class="p">,</span> <span class="n">c2</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">complete_rule_quality</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">r3</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;F1SCORE&#39;</span><span class="p">)</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">]</span>
+    <span class="n">mets</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;fscore&#39;</span><span class="p">,</span> <span class="s1">&#39;prec&#39;</span><span class="p">,</span> <span class="s1">&#39;rec&#39;</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;r3:&#39;</span><span class="p">,</span> <span class="n">rule_to_feature_importance</span><span class="p">(</span><span class="n">r3</span><span class="p">,</span> <span class="n">features</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;r1:&#39;</span><span class="p">,</span> <span class="n">rule_to_feature_importance</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">features</span><span class="p">))</span>
+
+    <span class="n">fscore</span><span class="p">,</span> <span class="n">precision</span><span class="p">,</span> <span class="n">recall</span> <span class="o">=</span> <span class="n">rule_scores</span><span class="p">(</span><span class="n">r3</span><span class="p">,</span> <span class="n">r1</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">mets</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">fscore</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PRECISION&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">precision</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;RECALL&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">recall</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">r3</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">rule_scores</span><span class="p">(</span><span class="n">r3</span><span class="p">,</span> <span class="n">r1</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;crq&#39;</span><span class="p">,</span> <span class="s1">&#39;prec&#39;</span><span class="p">,</span> <span class="s1">&#39;rec&#39;</span><span class="p">,</span> <span class="s1">&#39;fscore&#39;</span><span class="p">,</span> <span class="s1">&#39;cs&#39;</span><span class="p">]))</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Jesus Antonanzas.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
