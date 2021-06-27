@@ -55,8 +55,9 @@ class TransparentImageClassifier(_BaseClassifier):
 
     def predict(self, obs):
         """ Predicts the class for each observation.
-            :param obs: array of n images as ndarrays of np.float32 type.
-            :return: array of n predicted labels. """
+
+        :param obs: array of n images as ndarrays of np.float32 type.
+        :return: array of n predicted labels. """
         ret = []
         for image in obs:
             ret.append(1) if self._has_pattern(image) else ret.append(0)
@@ -65,8 +66,9 @@ class TransparentImageClassifier(_BaseClassifier):
     def predict_proba(self, obs):
         """ Predicts probability that each observation belongs to class 1 or 0. Probability of class 1 will be 1 if
             the image contains the pattern and 0 otherwise.
-            :param obs: array of n images as ndarrays.
-            :return: array of n probability tuples of length 2 ª"""
+
+        :param obs: array of n images as ndarrays.
+        :return: array of n probability tuples of length 2 """
         ret = []
         for image in obs:
             if self._has_pattern(image):
@@ -77,8 +79,9 @@ class TransparentImageClassifier(_BaseClassifier):
 
     def explain(self, obs):
         """ Explain observations' predictions with binary masks (pixel importance arrays).
-            :param obs: array of n images as ndarrays.
-            :return: list with n binary masks as explanations. """
+
+        :param obs: array of n images as ndarrays.
+        :return: list with n binary masks as explanations. """
         exps = []
         for image in obs:
             hasPat, indices = self._has_pattern(image, retIndices=True)

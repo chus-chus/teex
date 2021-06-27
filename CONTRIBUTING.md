@@ -1,0 +1,1 @@
+Thank you for choosing to contribute to teex! This guide will come soon :)

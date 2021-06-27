@@ -152,6 +152,7 @@ class DecisionRule(object):
 
     def insert_condition(self, statement: Statement):
         """ Add Condition inplace to the conjunction.
+
         :param statement: Statement object
         """
         if statement.feature in self.statements:
