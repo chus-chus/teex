@@ -270,7 +270,7 @@ class DecisionRule(object):
 
 
 class TransparentRuleClassifier(_BaseClassifier):
-    """ Used on the higher level data generation class :class:`SenecaFI`
+    """ Used on the higher level data generation class :class:`teex.featureImportance.data.SenecaFI`
     (**use that and get it from there preferably**).
 
     Transparent, rule-based classifier with decision rules as explanations. For each prediction, the associated

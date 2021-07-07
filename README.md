@@ -84,11 +84,8 @@ For example:
 <p align="center">
     <img src="https://www.mdpi.com/entropy/entropy-22-01365/article_deploy/html/images/entropy-22-01365-g001.png" 
          alt="drawing" width="350"/>
-    <caption align="center">
-        Fig. 2 Input image and saliency map for the prediction of the class "dog" overlayed on top
-        of the original image. It tells us where the model "looks" when issuing the prediction.
-        <a href="https://www.mdpi.com/1099-4300/22/12/1365">source</a>
-    </caption>
+
+Fig. 2 Input image and saliency map for the prediction of the class "dog" overlayed on top of the original image. It tells us where the model "looks" when issuing the prediction. <a href="https://www.mdpi.com/1099-4300/22/12/1365">source</a>
 </p>
 
 **teex** contains artificial and real-life datasets for saliency map explanations:
@@ -96,19 +93,17 @@ For example:
 <p align="center">
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/kahikatea.png" 
          alt="drawing" width="450"/>
-    <caption align="center">
-        Fig. 3 The <a href="https://zenodo.org/record/5059769#.YN7KKegzZPZ">Kahikatea</a> dataset. Contains aerial images with the task of identifying whether there are 
-        Kahikatea trees (a species endemic to New Zealand) in the area or not. Observation on the left, ground truth 
-        explanation on the right.
-    </caption>
+
+Fig. 3 The <a href="https://zenodo.org/record/5059769#.YN7KKegzZPZ">Kahikatea</a> dataset. Contains aerial images with the task of identifying whether there are 
+Kahikatea trees (a species endemic to New Zealand) in the area or not. Observation on the left, ground truth 
+explanation on the right.
 </p>
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/artificial_sm.png" 
          alt="drawing" width="400"/>
-    <caption align="center">
-        Fig. 4 Artificial image dataset with g.t. saliency map explanations.
-    </caption>
+
+Fig. 4 Artificial image dataset with g.t. saliency map explanations.
 </p>
 
 A basic usage example of **teex** with saliency maps simulating perfect predicted explanations:
