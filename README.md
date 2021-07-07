@@ -43,12 +43,11 @@ represents a feature's importance for the observation's outcome. Weights are usu
 <p align="center">
     <img src="https://raw.githubusercontent.com/slundberg/shap/master/docs/artwork/boston_instance.png" 
          alt="drawing" width="650"/>
-    <figcaption align="center">
+    <caption align="center">
         Fig. 1 <a href="https://github.com/slundberg/shap">SHAP</a> values, each representing impact on model output of 
         each feature.
-    </figcaption>
+    </caption>
 </p>
-
 
 Popular feature importance model-agnostic explainers are, for example, [SHAP](https://github.com/slundberg/shap) or 
 [LIME](https://github.com/marcotcr/lime). Because weights in each method represent slighlty different things, 
@@ -85,11 +84,11 @@ For example:
 <p align="center">
     <img src="https://www.mdpi.com/entropy/entropy-22-01365/article_deploy/html/images/entropy-22-01365-g001.png" 
          alt="drawing" width="350"/>
-    <figcaption align="center">
+    <caption align="center">
         Fig. 2 Input image and saliency map for the prediction of the class "dog" overlayed on top
         of the original image. It tells us where the model "looks" when issuing the prediction.
         <a href="https://www.mdpi.com/1099-4300/22/12/1365">source</a>
-    </figcaption>
+    </caption>
 </p>
 
 **teex** contains artificial and real-life datasets for saliency map explanations:
@@ -97,20 +96,20 @@ For example:
 <p align="center">
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/kahikatea.png" 
          alt="drawing" width="450"/>
-    <figcaption align="center">
+    <caption align="center">
         Fig. 3 The <a href="https://zenodo.org/record/5059769#.YN7KKegzZPZ">Kahikatea</a> dataset. Contains aerial images with the task of identifying whether there are 
         Kahikatea trees (a species endemic to New Zealand) in the area or not. Observation on the left, ground truth 
         explanation on the right.
-    </figcaption>
+    </caption>
 </p>
 
-<figure align="center">
+<p align="center">
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/artificial_sm.png" 
          alt="drawing" width="400"/>
-    <figcaption align="center">
+    <caption align="center">
         Fig. 4 Artificial image dataset with g.t. saliency map explanations.
-    </figcaption>
-</figure>
+    </caption>
+</p>
 
 A basic usage example of **teex** with saliency maps simulating perfect predicted explanations:
 
@@ -143,6 +142,9 @@ Before contributing to teex, please take a moment to read the [manual](https://g
 This work has been made possible by the [University of Waikato](https://www.waikato.ac.nz/) under the scope of 
 the [TAIAO](https://taiao.ai/) project.
 
-<img src="https://taiao.ai/img/Untitled.png" alt="drawing" width="50"/>
-<img src="https://upload.wikimedia.org/wikipedia/en/thumb/b/bd/University_of_Waikato_logo.svg/1200px-University_of_Waikato_logo.svg.png" alt="drawing" width="45"/>
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Logo_UPC.svg/2048px-Logo_UPC.svg.png" alt="drawing" width="50"/>
+<p align="center">
+    <img src="https://taiao.ai/img/Untitled.png" alt="drawing" width="50"/>
+    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/b/bd/University_of_Waikato_logo.svg/1200px-University_of_Waikato_logo.svg.png" alt="drawing" width="45"/>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Logo_UPC.svg/2048px-Logo_UPC.svg.png" alt="drawing" width="50"/>
+</p>
+
