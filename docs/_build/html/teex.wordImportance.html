@@ -187,9 +187,13 @@ methods and classes for word importance data manipulation.</p>
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">teex.wordImportance.data.</span></span><span class="sig-name descname"><span class="pre">Newsgroup</span></span><a class="reference internal" href="_modules/teex/wordImportance/data.html#Newsgroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.wordImportance.data.Newsgroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">teex._baseClasses._baseDatasets._ClassificationDataset</span></code></p>
 <p>20 Newsgroup dataset from <a class="reference external" href="https://github.com/SinaMohseni/ML-Interpretability-Evaluation-Benchmark">https://github.com/SinaMohseni/ML-Interpretability-Evaluation-Benchmark</a></p>
-<p>The returned items when indexing are:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nDataset</span> <span class="o">=</span> <span class="n">Newsgroup</span><span class="p">()</span>
-<span class="n">obs</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">exp</span> <span class="o">=</span> <span class="n">nDataset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<p>Contains 188 human annotaded newsgroup texts belonging to two categories.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nDataset</span> <span class="o">=</span> <span class="n">Newsgroup</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obs</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">exp</span> <span class="o">=</span> <span class="n">nDataset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>where <code class="code docutils literal notranslate"><span class="pre">obs</span></code> is a str, <code class="code docutils literal notranslate"><span class="pre">label</span></code> is an int and <code class="code docutils literal notranslate"><span class="pre">exp</span></code> is a dict. containing a score for each important

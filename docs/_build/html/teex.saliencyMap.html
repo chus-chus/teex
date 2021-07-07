@@ -191,12 +191,15 @@ truth explanations, respectively.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">teex._baseClasses._baseDatasets._ClassificationDataset</span></code></p>
 <p>Binary classification dataset from [Y. Jia et al. (2021) Studying and Exploiting the Relationship Between Model
 Accuracy and Explanation Quality, ECML-PKDD 2021].</p>
-<p>This dataset contains images for Kahikatea (an indigenous plant in New Zealand) classification. Positive examples
+<p>This dataset contains images for Kahikatea (an endemic tree in New Zealand) classification. Positive examples
 (in which Kahikatea trees can be identified) are annotated with true explanations such that the Kahikatea trees are
 highlighted. If an image belongs to the negative class, None is provided as an explanation.</p>
-<p>An example of a returned observation when slicing:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kDataset</span> <span class="o">=</span> <span class="n">Kahikatea</span><span class="p">()</span>
-<span class="n">img</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">exp</span> <span class="o">=</span> <span class="n">kDataset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<dl class="field-list simple">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">kDataset</span> <span class="o">=</span> <span class="n">Kahikatea</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">exp</span> <span class="o">=</span> <span class="n">kDataset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>where <code class="code docutils literal notranslate"><span class="pre">img</span></code> is a PIL Image, <code class="code docutils literal notranslate"><span class="pre">label</span></code> is an int and <code class="code docutils literal notranslate"><span class="pre">exp</span></code> is a PIL Image.
@@ -215,15 +218,15 @@ not present) and are generated  The generated RGB images belong to one class if 
 generated pattern and to the other if not. The images are composed of homogeneous cells of size
 (cellH, cellW), which in turn compose a certain pattern of shape (patternH, patternW) that is inserted on
 some of the generated images.</p>
-<p>From this class one can also obtain a trained transparent model (instance of <code class="code docutils literal notranslate"><span class="pre">TransparentImageClassifier</span></code>).</p>
-<dl class="simple">
-<dt>When sliced, this object will return</dt><dd><ul class="simple">
+<p>From this class one can also obtain a trained transparent model (instance of <a class="reference internal" href="#teex.saliencyMap.data.TransparentImageClassifier" title="teex.saliencyMap.data.TransparentImageClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransparentImageClassifier</span></code></a>).</p>
+<p>When sliced, this object will return</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>X (ndarray) of shape (nSamples, imageH, imageW, 3) or (imageH, imageW, 3). Generated image data.</p></li>
 <li><p>y (ndarray) of shape (nSamples,) or int. Image labels. 1 if an image contains the pattern and 0 otherwise.</p></li>
 <li><p>explanations (ndarray) of shape (nSamples, imageH, imageW) or (imageH, imageW). Ground truth explanations.</p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -232,8 +235,8 @@ some of the generated images.</p>
 <li><p><strong>imageW</strong> (<em>int</em>) – width in pixels of the images. Must be multiple of <code class="code docutils literal notranslate"><span class="pre">cellW</span></code>.</p></li>
 <li><p><strong>patternH</strong> (<em>int</em>) – height in pixels of the pattern. Must be &lt;= <code class="code docutils literal notranslate"><span class="pre">imageH</span></code> and multiple of <code class="code docutils literal notranslate"><span class="pre">cellH</span></code>.</p></li>
 <li><p><strong>patternW</strong> (<em>int</em>) – width in pixels of the pattern. Must be &lt;= <code class="code docutils literal notranslate"><span class="pre">imageW</span></code> and multiple of <code class="code docutils literal notranslate"><span class="pre">cellW</span></code>.</p></li>
-<li><p><strong>cellH</strong> (<em>int</em>) – height in pixels of each cell. Only used for <code class="code docutils literal notranslate"><span class="pre">method='seneca'</span></code>.</p></li>
-<li><p><strong>cellW</strong> (<em>int</em>) – width in pixels of each cell. Only used for <code class="code docutils literal notranslate"><span class="pre">method='seneca'</span></code>.</p></li>
+<li><p><strong>cellH</strong> (<em>int</em>) – height in pixels of each cell.</p></li>
+<li><p><strong>cellW</strong> (<em>int</em>) – width in pixels of each cell.</p></li>
 <li><p><strong>patternProp</strong> (<em>float</em>) – ([0, 1]) percentage of appearance of the pattern in the dataset.</p></li>
 <li><p><strong>fillPct</strong> (<em>float</em>) – ([0, 1]) percentage of cells filled (not black) in each image.</p></li>
 <li><p><strong>colorDev</strong> (<em>float</em>) – ([0, 0.5])
@@ -250,18 +253,19 @@ If 0, each cell will be completely red, green or blue. If &gt; 0, colors may be 
 <dt class="sig sig-object py" id="teex.saliencyMap.data.TransparentImageClassifier">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.data.</span></span><span class="sig-name descname"><span class="pre">TransparentImageClassifier</span></span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#TransparentImageClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">teex._baseClasses._baseClassifier._BaseClassifier</span></code></p>
-<p>Used on the higher level data generation class <code class="code docutils literal notranslate"><span class="pre">SenecaSM</span></code> (<strong>use that and get it from there preferably</strong>).</p>
+<p>Used on the higher level data generation class <a class="reference internal" href="#teex.saliencyMap.data.SenecaSM" title="teex.saliencyMap.data.SenecaSM"><code class="xref py py-class docutils literal notranslate"><span class="pre">SenecaSM</span></code></a> (<strong>use that and get it from there
+preferably</strong>).</p>
 <p>Transparent, pixel-based classifier with pixel (features) importances as explanations. Predicts the
 class of the images based on whether they contain a certain specified pattern or not. Class 1 if they contain
 the pattern, 0 otherwise. To be trained only a pattern needs to be fed. Follows the sklean API. Presented in
 [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021].</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="teex.saliencyMap.data.TransparentImageClassifier.explain">
-<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#TransparentImageClassifier.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.explain" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#TransparentImageClassifier.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.explain" title="Permalink to this definition">¶</a></dt>
 <dd><p>Explain observations’ predictions with binary masks (pixel importance arrays).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>obs</strong> – array of n images as ndarrays.</p>
+<dd class="field-odd"><p><strong>obs</strong> (<em>np.ndarray</em>) – array of n images as ndarrays.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>list with n binary masks as explanations.</p>
@@ -271,17 +275,17 @@ the pattern, 0 otherwise. To be trained only a pattern needs to be fed. Follows 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="teex.saliencyMap.data.TransparentImageClassifier.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellH</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellW</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#TransparentImageClassifier.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.fit" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellH</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellW</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#TransparentImageClassifier.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fits the model.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="teex.saliencyMap.data.TransparentImageClassifier.predict">
-<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#TransparentImageClassifier.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.predict" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#TransparentImageClassifier.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.predict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Predicts the class for each observation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>obs</strong> – array of n images as ndarrays of np.float32 type.</p>
+<dd class="field-odd"><p><strong>obs</strong> (<em>np.ndarray</em>) – array of n images as ndarrays of np.float32 type.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>array of n predicted labels.</p>
@@ -291,17 +295,15 @@ the pattern, 0 otherwise. To be trained only a pattern needs to be fed. Follows 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="teex.saliencyMap.data.TransparentImageClassifier.predict_proba">
-<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#TransparentImageClassifier.predict_proba"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.predict_proba" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Predicts probability that each observation belongs to class 1 or 0. Probability of class 1 will be 1 if</dt><dd><p>the image contains the pattern and 0 otherwise.</p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#TransparentImageClassifier.predict_proba"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.predict_proba" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predicts probability that each observation belongs to class 1 or 0. Probability of class 1 will be 1 if
+the image contains the pattern and 0 otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>obs</strong> – array of n images as ndarrays.</p>
+<dd class="field-odd"><p><strong>obs</strong> (<em>np.ndarray</em>) – array of n images as ndarrays.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>array of n probability tuples of length 2</p>
+<dd class="field-even"><p>array of n probability tuples of length 2.</p>
 </dd>
 </dl>
 </dd></dl>

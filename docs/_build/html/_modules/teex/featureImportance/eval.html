@@ -171,7 +171,7 @@
 
 <span class="k">def</span> <span class="nf">_individual_fi_metrics</span><span class="p">(</span><span class="n">gt</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">binGt</span><span class="p">,</span> <span class="n">binPred</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">predsNegative</span><span class="p">,</span> <span class="n">thresholdType</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Classification and real vector metrics. If metric=&#39;auc&#39; and predsNegative=True, &#39;pred&#39; is modified accordingly</span>
-<span class="sd">    (see documentation of featureImportance.feature_importance_scores).</span>
+<span class="sd">    (see :func:`feature_importance_scores`).</span>
 
 <span class="sd">     :param gt: (ndarray) of shape (nFeatures,). Ground truth (real or binary) vector.</span>
 <span class="sd">     :param pred: (ndarray) of shape (nFeatures,). Predicted (real or binary) vector.</span>
@@ -208,7 +208,8 @@
 <span class="sd">    be either mapped to 0 or taken their absolute val (depending on the chosen option in the param.</span>
 <span class="sd">    :code:`thresholdType`).</span>
 
-<span class="sd">    **Edge cases**: Edge cases for when metrics are not defined have been accounted for.</span>
+<span class="sd">    **Edge cases**: Edge cases for when metrics are not defined have been accounted for:</span>
+
 <span class="sd">        * When computing classification scores (&#39;fscore&#39;, &#39;prec&#39;, &#39;rec&#39;), if there is only one class in the</span>
 <span class="sd">          ground truth and / or the prediction, one random feature will be flipped (same feature in both).</span>
 <span class="sd">          Note that some metrics such as &#39;auc&#39; may still be undefined in this case if there is only 1 feature per data</span>

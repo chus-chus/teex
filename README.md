@@ -1,9 +1,10 @@
 # teex
 
-<img src="https://img.shields.io/pypi/v/teex" alt="drawing"/>
-<img src="https://img.shields.io/github/issues/chus-chus/teex" alt="drawing"/>
-<img src="https://img.shields.io/github/repo-size/chus-chus/teex" alt="drawing"/>
-<img src="https://img.shields.io/pypi/dm/teex" alt="drawing"/>
+[![PyPI Version](https://img.shields.io/pypi/v/teex)](https://img.shields.io/pypi/v/teex)
+[![Open GitHub Issues](https://img.shields.io/github/issues/chus-chus/teex)](https://img.shields.io/github/issues/chus-chus/teex)
+[![Documentation Status](https://readthedocs.org/projects/teex/badge/?version=latest)](https://teex.readthedocs.io/en/latest/?badge=latest)
+[![Repo Size](https://img.shields.io/github/repo-size/chus-chus/teex)](https://img.shields.io/github/repo-size/chus-chus/teex)
+[![Downloads](https://img.shields.io/pypi/dm/teex)](https://img.shields.io/pypi/dm/teex)
 
 A Python **T**oolbox for the **E**valuation of machine learning **Ex**planations.
 
@@ -38,14 +39,15 @@ to feature importance vectors.
 **What are feature importance vectors?** They are vectors with one entry per feature. Each entry contains a weight that 
 represents a feature's importance for the observation's outcome. Weights are usually in the range [-1, 1]. 
 
-<figure align="center">
+
+<p align="center">
     <img src="https://raw.githubusercontent.com/slundberg/shap/master/docs/artwork/boston_instance.png" 
          alt="drawing" width="650"/>
-    <figcaption>
+    <figcaption align="center">
         Fig. 1 <a href="https://github.com/slundberg/shap">SHAP</a> values, each representing impact on model output of 
         each feature.
     </figcaption>
-</figure>
+</p>
 
 
 Popular feature importance model-agnostic explainers are, for example, [SHAP](https://github.com/slundberg/shap) or 
@@ -60,8 +62,7 @@ from sklearn import DecisionTreeClassifier
 import shap
 
 # generate artificial data
-dataGen = SenecaFI(nSamples=500, nFeatures=5)
-X, y, exps = dataGen[:]
+X, y, exps = SenecaFI(nSamples=500, nFeatures=5)[:]
 
 # instance and train the model
 model = DecisionTreeClassifier()
@@ -81,7 +82,7 @@ A saliency map is an image that shows each pixel's unique quality. In our contex
 ranges [-1, 1] or [0, 1] as before) that represents a likelihood or probability of belonging to a particular class. 
 For example:
 
-<figure align="center">
+<p align="center">
     <img src="https://www.mdpi.com/entropy/entropy-22-01365/article_deploy/html/images/entropy-22-01365-g001.png" 
          alt="drawing" width="350"/>
     <figcaption align="center">
@@ -89,23 +90,23 @@ For example:
         of the original image. It tells us where the model "looks" when issuing the prediction.
         <a href="https://www.mdpi.com/1099-4300/22/12/1365">source</a>
     </figcaption>
-</figure>
+</p>
 
 **teex** contains artificial and real-life datasets for saliency map explanations:
 
-<figure align="center">
+<p align="center">
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/kahikatea.png" 
-         alt="drawing" width="350"/>
+         alt="drawing" width="450"/>
     <figcaption align="center">
         Fig. 3 The <a href="https://zenodo.org/record/5059769#.YN7KKegzZPZ">Kahikatea</a> dataset. Contains aerial images with the task of identifying whether there are 
         Kahikatea trees (a species endemic to New Zealand) in the area or not. Observation on the left, ground truth 
         explanation on the right.
     </figcaption>
-</figure>
+</p>
 
 <figure align="center">
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/artificial_sm.png" 
-         alt="drawing" width="300"/>
+         alt="drawing" width="400"/>
     <figcaption align="center">
         Fig. 4 Artificial image dataset with g.t. saliency map explanations.
     </figcaption>
@@ -117,9 +118,7 @@ A basic usage example of **teex** with saliency maps simulating perfect predicte
 from teex.saliencyMap.data import Kahikatea
 from teex.saliencyMap.eval import saliency_map_scores
 
-dataGen = Kahikatea()
-X, y, exps = dataGen[:]
-
+X, y, exps = Kahikatea()[:]
 saliency_map_scores(exps[y == 1], exps[y == 1], metrics=['fscore', 'auc'])
 ```
 

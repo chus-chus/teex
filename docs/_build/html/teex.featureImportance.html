@@ -192,16 +192,16 @@ truth explanations, respectively.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">teex._baseClasses._baseDatasets._SyntheticDataset</span></code></p>
 <p>Generate synthetic binary classification tabular data with ground truth feature importance explanations. This
 method was presented in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021].</p>
-<p>From this class one can also obtain a trained transparent model (instance of <code class="code docutils literal notranslate"><span class="pre">TransparentLinearClassifier</span></code>).</p>
-<dl class="simple">
-<dt>When sliced, this object will return</dt><dd><ul class="simple">
+<p>From this class one can also obtain a trained transparent model (instance of <a class="reference internal" href="#teex.featureImportance.data.TransparentLinearClassifier" title="teex.featureImportance.data.TransparentLinearClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransparentLinearClassifier</span></code></a>).
+When sliced, this object will return</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>X (ndarray) of shape (nSamples, nFeatures) or (nFeatures). Generated data.</p></li>
 <li><p>y (ndarray) of shape (nSamples,) or int. Generated binary data labels.</p></li>
 <li><p>explanations (ndarray) of shape (nSamples, nFeatures) or (nFeatures). Generated g.t. feature importance
 explanations. For each explanation, the values are normalised to the [-1, 1] range.</p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -217,9 +217,10 @@ feature names will be returned by the function.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="teex.featureImportance.data.TransparentLinearClassifier">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">teex.featureImportance.data.</span></span><span class="sig-name descname"><span class="pre">TransparentLinearClassifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">randomState</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">888</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/featureImportance/data.html#TransparentLinearClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.featureImportance.data.TransparentLinearClassifier" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">teex.featureImportance.data.</span></span><span class="sig-name descname"><span class="pre">TransparentLinearClassifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">randomState</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">888</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/featureImportance/data.html#TransparentLinearClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.featureImportance.data.TransparentLinearClassifier" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">teex._baseClasses._baseClassifier._BaseClassifier</span></code></p>
-<p>Used on the higher level data generation class <code class="code docutils literal notranslate"><span class="pre">SenecaFI</span></code> (<strong>use that and get it from there preferably</strong>).</p>
+<p>Used on the higher level data generation class <a class="reference internal" href="#teex.featureImportance.data.SenecaFI" title="teex.featureImportance.data.SenecaFI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SenecaFI</span></code></a> (<strong>use that and get it from there
+preferably</strong>).</p>
 <p>Transparent, linear classifier with feature importances as explanations. This class also generates labeled
 data according to the generated random linear expression. Presented in [Evaluating local explanation methods on
 ground truth, Riccardo Guidotti, 2021].</p>
@@ -247,7 +248,7 @@ gradient vector of f evaluated at t.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="teex.featureImportance.data.TransparentLinearClassifier.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nFeatures</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featureNames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nSamples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/featureImportance/data.html#TransparentLinearClassifier.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.featureImportance.data.TransparentLinearClassifier.fit" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nFeatures</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featureNames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nSamples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="_modules/teex/featureImportance/data.html#TransparentLinearClassifier.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.featureImportance.data.TransparentLinearClassifier.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates a random linear expression and random data labeled by the linear expression as a binary
 dataset.</p>
 <dl class="field-list simple">
@@ -330,8 +331,9 @@ vector will be binarized as in the case of ‘precision’, ‘recall’ and ‘
 vector entries will be considered as prediction scores. If the predicted vectors contain negative values, these will
 be either mapped to 0 or taken their absolute val (depending on the chosen option in the param.
 <code class="code docutils literal notranslate"><span class="pre">thresholdType</span></code>).</p>
-<dl class="simple">
-<dt><strong>Edge cases</strong>: Edge cases for when metrics are not defined have been accounted for.</dt><dd><ul class="simple">
+<p><strong>Edge cases</strong>: Edge cases for when metrics are not defined have been accounted for:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>When computing classification scores (‘fscore’, ‘prec’, ‘rec’), if there is only one class in the
 ground truth and / or the prediction, one random feature will be flipped (same feature in both).
 Note that some metrics such as ‘auc’ may still be undefined in this case if there is only 1 feature per data
@@ -342,8 +344,7 @@ contain only one value, only in the ground truth a feature will be flipped. In t
 <li><p>When computing cosine similarity, if there is no value != 0 in the ground truth and / or prediction, one
 random feature will be summed 1e-4.</p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 <p><strong>On vector ranges</strong>: If the ground truth array or the predicted array have values that are not bounded in
 <span class="math notranslate nohighlight">\([-1, 1]\)</span> or <span class="math notranslate nohighlight">\([0, 1]\)</span>, they will be mapped accordingly. Note that if the values lie within
 <span class="math notranslate nohighlight">\([-1, 1]\)</span> or <span class="math notranslate nohighlight">\([0, 1]\)</span> no mapping will be performed, so it is assumed that the scores represent feature

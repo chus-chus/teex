@@ -15,7 +15,7 @@ _AVAILABLE_FEATURE_IMPORTANCE_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc'}
 
 def _individual_fi_metrics(gt, pred, binGt, binPred, metric, predsNegative, thresholdType):
     """ Classification and real vector metrics. If metric='auc' and predsNegative=True, 'pred' is modified accordingly
-    (see documentation of featureImportance.feature_importance_scores).
+    (see :func:`feature_importance_scores`).
 
      :param gt: (ndarray) of shape (nFeatures,). Ground truth (real or binary) vector.
      :param pred: (ndarray) of shape (nFeatures,). Predicted (real or binary) vector.
@@ -52,7 +52,8 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
     be either mapped to 0 or taken their absolute val (depending on the chosen option in the param.
     :code:`thresholdType`).
 
-    **Edge cases**: Edge cases for when metrics are not defined have been accounted for.
+    **Edge cases**: Edge cases for when metrics are not defined have been accounted for:
+
         * When computing classification scores ('fscore', 'prec', 'rec'), if there is only one class in the
           ground truth and / or the prediction, one random feature will be flipped (same feature in both).
           Note that some metrics such as 'auc' may still be undefined in this case if there is only 1 feature per data

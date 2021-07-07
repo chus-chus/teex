@@ -175,32 +175,32 @@
 
 
 <div class="viewcode-block" id="Statement"><a class="viewcode-back" href="../../../teex.decisionRule.html#teex.decisionRule.data.Statement">[docs]</a><span class="k">class</span> <span class="nc">Statement</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sa">f</span><span class="s2">&quot;&quot;&quot; Class representing the atomic structure of a rule. A Statement follows the structure of &#39;feature&#39; </span>
-<span class="s2">    &lt;operator&gt; &#39;value&#39;. It can also be binary, like so: ``value1 &lt;lowOp&gt; feature &lt;upperOp&gt; value2``. Valid </span>
-<span class="s2">    operators are </span><span class="si">{</span><span class="n">_VALID_OPERATORS</span><span class="si">}</span><span class="s2"> or </span><span class="si">{</span><span class="n">_BINARY_OPERATORS</span><span class="si">}</span><span class="s2"> in the case of a binary statement. The class will store</span>
-<span class="s2">    upper and lower bound values if the lower and upper operators are specified (both, just 1 is not valid). If</span>
-<span class="s2">    the upper and lower operators are not specified, a unary Statement will be created.</span>
-<span class="s2">    </span>
-<span class="s2">    Although unary Statements (except &#39;!=&#39;) have translation into single binary Statements, they are separately </span>
-<span class="s2">    represented for clarity. Moreover, unary Statements with operators &#39;=&#39; and &#39;!=&#39; are able to represent non-numeric</span>
-<span class="s2">    values.</span>
-<span class="s2">    </span>
-<span class="s2">    :Example:</span>
-<span class="s2">    </span>
-<span class="s2">    &gt;&gt;&gt; Statement(&#39;a&#39;,1.5)                                     # a = 1.5</span>
-<span class="s2">    &gt;&gt;&gt; Statement(&#39;a&#39;,1.5,op=&#39;!=&#39;)                             # a != 1.5</span>
-<span class="s2">    &gt;&gt;&gt; Statement(&#39;a&#39;,lowOp=&#39;&lt;&#39;,lowB=2,upperOp=&#39;&lt;&#39;,upperB=5)   # 2 &lt; a &lt; 5</span>
-<span class="s2">    &gt;&gt;&gt; Statement(&#39;a&#39;,lowOp=&#39;&lt;&#39;,lowB=2)                        # 2 &lt; a Wrong. Need to explicitly specify upper op</span>
-<span class="s2">    &gt;&gt;&gt; Statement(&#39;a&#39;,lowOp=&#39;&lt;&#39;,lowB=2,upperOp=&#39;&lt;&#39;)            # 2 &lt; a &lt; np.inf</span>
-<span class="s2">    </span>
-<span class="s2">    :param str feature: name of the feature for the Statement</span>
-<span class="s2">    :param val: (float or str) Value for the statement (if not binary). Default ``np.inf``.</span>
-<span class="s2">    :param str op: Operator for the statement (if not binary)</span>
-<span class="s2">    :param str lowOp: Operator for the lower bound (if binary)</span>
-<span class="s2">    :param float lowB: Value of the upper bound (if binary). Default ``-np.inf``.</span>
-<span class="s2">    :param str upperOp: Operator for the upper bound (if binary)</span>
-<span class="s2">    :param float upperB: Value of the lower bound (if binary). Default ``np.inf``.</span>
-<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot; Class representing the atomic structure of a rule. A Statement follows the structure of &#39;feature&#39;</span>
+<span class="sd">    &lt;operator&gt; &#39;value&#39;. It can also be binary, like so: ``value1 &lt;lowOp&gt; feature &lt;upperOp&gt; value2``. Valid </span>
+<span class="sd">    operators are {&#39;=&#39;, &#39;!=&#39;, &#39;&gt;&#39;, &#39;&lt;&#39;, &#39;&gt;=&#39;, &#39;&lt;=&#39;} or {&#39;&lt;&#39;, &#39;&lt;=&#39;} in the case of a binary statement. The class will</span>
+<span class="sd">    store upper and lower bound values if the lower and upper operators are specified (both, just 1 is not valid). If</span>
+<span class="sd">    the upper and lower operators are not specified, a unary Statement will be created.</span>
+<span class="sd">    </span>
+<span class="sd">    Although unary Statements (except &#39;!=&#39;) have translation into single binary Statements, they are separately </span>
+<span class="sd">    represented for clarity. Moreover, unary Statements with operators &#39;=&#39; and &#39;!=&#39; are able to represent non-numeric</span>
+<span class="sd">    values.</span>
+<span class="sd">    </span>
+<span class="sd">    :Example:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; Statement(&#39;a&#39;,1.5)                                     # a = 1.5</span>
+<span class="sd">    &gt;&gt;&gt; Statement(&#39;a&#39;,1.5,op=&#39;!=&#39;)                             # a != 1.5</span>
+<span class="sd">    &gt;&gt;&gt; Statement(&#39;a&#39;,lowOp=&#39;&lt;&#39;,lowB=2,upperOp=&#39;&lt;&#39;,upperB=5)   # 2 &lt; a &lt; 5</span>
+<span class="sd">    &gt;&gt;&gt; Statement(&#39;a&#39;,lowOp=&#39;&lt;&#39;,lowB=2)                        # 2 &lt; a Wrong. Need to explicitly specify upper op</span>
+<span class="sd">    &gt;&gt;&gt; Statement(&#39;a&#39;,lowOp=&#39;&lt;&#39;,lowB=2,upperOp=&#39;&lt;&#39;)            # 2 &lt; a &lt; np.inf</span>
+<span class="sd">    </span>
+<span class="sd">    :param str feature: name of the feature for the Statement</span>
+<span class="sd">    :param val: (float or str) Value for the statement (if not binary). Default ``np.inf``.</span>
+<span class="sd">    :param str op: Operator for the statement (if not binary)</span>
+<span class="sd">    :param str lowOp: Operator for the lower bound (if binary)</span>
+<span class="sd">    :param float lowB: Value of the upper bound (if binary). Default ``-np.inf``.</span>
+<span class="sd">    :param str upperOp: Operator for the upper bound (if binary)</span>
+<span class="sd">    :param float upperB: Value of the lower bound (if binary). Default ``np.inf``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="n">lowOp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lowB</span><span class="o">=-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">upperOp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">upperB</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">feature</span> <span class="o">=</span> <span class="n">feature</span>
@@ -265,10 +265,10 @@
 
 <div class="viewcode-block" id="DecisionRule"><a class="viewcode-back" href="../../../teex.decisionRule.html#teex.decisionRule.data.DecisionRule">[docs]</a><span class="k">class</span> <span class="nc">DecisionRule</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; A conjunction of statements as conditions that imply a result. Internally, the rule is represented as a</span>
-<span class="sd">    dictionary of :code:`Statement` with the feature names as unique identifiers. A feature cannot have more than one</span>
-<span class="sd">    :code:`Statement` (:code:`Statement`s can be binary). This class is capable of adapting previous :code:`Statement`</span>
-<span class="sd">    objects depending on new Statements that are added to it with the upsert method (see :code:`.upsert_statement`</span>
-<span class="sd">    method).</span>
+<span class="sd">    dictionary of :class:`Statement` with the feature names as unique identifiers. A feature cannot have more than one</span>
+<span class="sd">    :class:`Statement` (:class:`Statements` can be binary). This class is capable of adapting previous :class:`Statement`</span>
+<span class="sd">    objects depending on new Statements that are added to it with the upsert method</span>
+<span class="sd">    (see :func:`upsert_statement` method).</span>
 
 <span class="sd">    :Example:</span>
 
@@ -386,7 +386,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">[</span><span class="n">oldFeature</span><span class="p">]</span> <span class="o">=</span> <span class="n">newStatement</span></div>
 
 <div class="viewcode-block" id="DecisionRule.set_result"><a class="viewcode-back" href="../../../teex.decisionRule.html#teex.decisionRule.data.DecisionRule.set_result">[docs]</a>    <span class="k">def</span> <span class="nf">set_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; Sets the result for the Decision Rule. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Sets the result for the Decision Rule.</span>
+
+<span class="sd">        :param Statement result: statement as logical implication.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Statement</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;results should be a Statement object.&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -423,10 +426,11 @@
 
 
 <div class="viewcode-block" id="TransparentRuleClassifier"><a class="viewcode-back" href="../../../teex.decisionRule.html#teex.decisionRule.data.TransparentRuleClassifier">[docs]</a><span class="k">class</span> <span class="nc">TransparentRuleClassifier</span><span class="p">(</span><span class="n">_BaseClassifier</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Used on the higher level data generation class :code:`SenecaFI` (**use that and get it from there preferably**).</span>
+    <span class="sd">&quot;&quot;&quot; Used on the higher level data generation class :class:`SenecaFI`</span>
+<span class="sd">    (**use that and get it from there preferably**).</span>
 
 <span class="sd">    Transparent, rule-based classifier with decision rules as explanations. For each prediction, the associated</span>
-<span class="sd">    ground truth explanation is available with the :code:`.explain` method. Follows the sklean API. Presented in</span>
+<span class="sd">    ground truth explanation is available with the :func:`explain` method. Follows the sklean API. Presented in</span>
 <span class="sd">    [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021]. &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -474,7 +478,7 @@
         <span class="sd">&quot;&quot;&quot;  Explain observations&#39; predictions with decision rules.</span>
 
 <span class="sd">        :param obs: array of n observations with m features and shape (n, m)</span>
-<span class="sd">        :return: list with n :code:`DecisionRule` objects &quot;&quot;&quot;</span>
+<span class="sd">        :return: list with n :class:`DecisionRule` objects &quot;&quot;&quot;</span>
         <span class="n">nodeIndicators</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">decision_path</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>  <span class="c1"># id&#39;s of the nodes for which each observation passes through</span>
         <span class="n">rules</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># for each sample, retrieve its path and navigate it, looking at the precomputed decision splits</span>
@@ -523,11 +527,11 @@
 
 <div class="viewcode-block" id="SenecaDR"><a class="viewcode-back" href="../../../teex.decisionRule.html#teex.decisionRule.data.SenecaDR">[docs]</a><span class="k">class</span> <span class="nc">SenecaDR</span><span class="p">(</span><span class="n">_SyntheticDataset</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Generate synthetic binary classification data with ground truth decision rule explanations. The returned</span>
-<span class="sd">    decision rule g.t. explanations are instances of the :code:`DecisionRule` class.</span>
+<span class="sd">    decision rule g.t. explanations are instances of the :class:`DecisionRule` class.</span>
 
 <span class="sd">    Ground truth explanations are generated with the :class:`TransparentRuleClassifier` class. The method was presented</span>
 <span class="sd">    in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021]. From this class one can also</span>
-<span class="sd">    obtain a trained transparent model (instance of :code:`TransparentRuleClassifier`).</span>
+<span class="sd">    obtain a trained transparent model (instance of :class:`TransparentRuleClassifier`).</span>
 
 <span class="sd">    When sliced, this object will return</span>
 <span class="sd">        - X (ndarray) of shape (nSamples, nFeatures) or (nFeatures). Generated data.</span>
@@ -559,7 +563,7 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_gen_dataset_seneca_dr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; g.t. explanations generated with the :class:`decisionRule.TransparentRuleClassifier` class. The</span>
+        <span class="sd">&quot;&quot;&quot; g.t. explanations generated with the :class:`TransparentRuleClassifier` class. The</span>
 <span class="sd">            method was presented in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021]. &quot;&quot;&quot;</span>
 
         <span class="c1"># generate explanations with rules and binarize</span>
@@ -576,11 +580,11 @@
 <span class="c1"># Utils for data manipulation:</span>
 
 <div class="viewcode-block" id="rule_to_feature_importance"><a class="viewcode-back" href="../../../teex.decisionRule.html#teex.decisionRule.data.rule_to_feature_importance">[docs]</a><span class="k">def</span> <span class="nf">rule_to_feature_importance</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">allFeatures</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;  Converts one or more :class:`decisionRule.DecisionRule` objects to feature importance vector/s. For each</span>
+    <span class="sd">&quot;&quot;&quot;  Converts one or more :class:`DecisionRule` objects to feature importance vector/s. For each</span>
 <span class="sd">    feature in *allFeatures*, the feature importance representation contains a 1 if there is a</span>
-<span class="sd">    :class:&#39;decisionRule.Statement&#39; with that particular feature in the decision rule and 0 otherwise.</span>
+<span class="sd">    :class:&#39;Statement&#39; with that particular feature in the decision rule and 0 otherwise.</span>
 
-<span class="sd">    :param rules: (:class:`decisionRule.DecisionRule` or (1, r) array-like of :class:`decisionRule.DecisionRule`) Rule/s</span>
+<span class="sd">    :param rules: (:class:`DecisionRule` or (1, r) array-like of :class:`DecisionRule`) Rule/s</span>
 <span class="sd">        to convert to feature importance vectors.</span>
 <span class="sd">    :param allFeatures: (array-like of str) List with mg features (same as the rule features) whose order the returned</span>
 <span class="sd">        array will follow. The features must match the ones used in the decision rules.</span>

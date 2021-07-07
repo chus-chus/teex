@@ -13,8 +13,7 @@ def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=0.01, gtBackgroun
     """ Quality metrics for saliency map explanations, where each pixel is considered as a feature.
     Computes different scores of a saliency map explanation w.r.t. its ground truth explanation (a binary mask).
 
-    :param np.ndarray gts:
-        ground truth RGB or binary mask/s. Accepted shapes are
+    :param np.ndarray gts: ground truth RGB or binary mask/s. Accepted shapes are
 
             - *(imageH, imageW)* A single grayscale mask, where each pixel should be 1 if it is part of the salient
               class and 0 otherwise.

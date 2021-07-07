@@ -22,7 +22,8 @@ from teex._datasets.info.kahikatea import _kahikateaLabels, _kahikateaNEntries, 
 # Datasets
 
 class TransparentImageClassifier(_BaseClassifier):
-    """ Used on the higher level data generation class :code:`SenecaSM` (**use that and get it from there preferably**).
+    """ Used on the higher level data generation class :class:`SenecaSM` (**use that and get it from there
+    preferably**).
 
     Transparent, pixel-based classifier with pixel (features) importances as explanations. Predicts the
     class of the images based on whether they contain a certain specified pattern or not. Class 1 if they contain
@@ -40,7 +41,7 @@ class TransparentImageClassifier(_BaseClassifier):
         self._patternMask = None
         self._maskedPattern = None
 
-    def fit(self, pattern, cellH=1, cellW=1):
+    def fit(self, pattern: np.ndarray, cellH: int = 1, cellW: int = 1) -> None:
         self.pattern = pattern.astype(np.float32)
         self.pattH, self.pattW = pattern.shape[0], pattern.shape[1]
         self.cellH, self.cellW = cellH, cellW
@@ -50,22 +51,22 @@ class TransparentImageClassifier(_BaseClassifier):
         self._patternMask = np.concatenate((self._patternMask, self._patternMask, self._patternMask), axis=2)
         self._maskedPattern = self.pattern[self._patternMask]
 
-    def predict(self, obs):
+    def predict(self, obs: np.ndarray) -> np.ndarray:
         """ Predicts the class for each observation.
 
-        :param obs: array of n images as ndarrays of np.float32 type.
+        :param np.ndarray obs: array of n images as ndarrays of np.float32 type.
         :return: array of n predicted labels. """
         ret = []
         for image in obs:
             ret.append(1) if self._has_pattern(image) else ret.append(0)
         return ret
 
-    def predict_proba(self, obs):
+    def predict_proba(self, obs: np.ndarray) -> np.ndarray:
         """ Predicts probability that each observation belongs to class 1 or 0. Probability of class 1 will be 1 if
-            the image contains the pattern and 0 otherwise.
+        the image contains the pattern and 0 otherwise.
 
-        :param obs: array of n images as ndarrays.
-        :return: array of n probability tuples of length 2 """
+        :param np.ndarray obs: array of n images as ndarrays.
+        :return: array of n probability tuples of length 2. """
         ret = []
         for image in obs:
             if self._has_pattern(image):
@@ -74,10 +75,10 @@ class TransparentImageClassifier(_BaseClassifier):
                 ret.append([1., 0.])
         return ret
 
-    def explain(self, obs):
+    def explain(self, obs: np.ndarray) -> np.ndarray:
         """ Explain observations' predictions with binary masks (pixel importance arrays).
 
-        :param obs: array of n images as ndarrays.
+        :param np.ndarray obs: array of n images as ndarrays.
         :return: list with n binary masks as explanations. """
         exps = []
         for image in obs:
@@ -88,7 +89,7 @@ class TransparentImageClassifier(_BaseClassifier):
             exps.append(exp)
         return exps
 
-    def _has_pattern(self, image, retIndices=False):
+    def _has_pattern(self, image: np.ndarray, retIndices: bool = False) -> bool:
         """ Searches for the pattern in the image and returns whether it contains it or not and its upper left indices
         if specified. The pattern is contained within an image if the distribution and color of the cells != 0 coincide.
         """
@@ -121,9 +122,10 @@ class SenecaSM(_SyntheticDataset):
     (cellH, cellW), which in turn compose a certain pattern of shape (patternH, patternW) that is inserted on
     some of the generated images.
 
-    From this class one can also obtain a trained transparent model (instance of :code:`TransparentImageClassifier`).
+    From this class one can also obtain a trained transparent model (instance of :class:`TransparentImageClassifier`).
 
     When sliced, this object will return
+
         - X (ndarray) of shape (nSamples, imageH, imageW, 3) or (imageH, imageW, 3). Generated image data.
         - y (ndarray) of shape (nSamples,) or int. Image labels. 1 if an image contains the pattern and 0 otherwise.
         - explanations (ndarray) of shape (nSamples, imageH, imageW) or (imageH, imageW). Ground truth explanations.
@@ -133,8 +135,8 @@ class SenecaSM(_SyntheticDataset):
     :param int imageW: width in pixels of the images. Must be multiple of :code:`cellW`.
     :param int patternH: height in pixels of the pattern. Must be <= :code:`imageH` and multiple of :code:`cellH`.
     :param int patternW: width in pixels of the pattern. Must be <= :code:`imageW` and multiple of :code:`cellW`.
-    :param int cellH: height in pixels of each cell. Only used for :code:`method='seneca'`.
-    :param int cellW: width in pixels of each cell. Only used for :code:`method='seneca'`.
+    :param int cellH: height in pixels of each cell.
+    :param int cellW: width in pixels of each cell.
     :param float patternProp: ([0, 1]) percentage of appearance of the pattern in the dataset.
     :param float fillPct: ([0, 1]) percentage of cells filled (not black) in each image.
     :param float colorDev: ([0, 0.5])
@@ -263,16 +265,14 @@ class Kahikatea(_ClassificationDataset):
     """ Binary classification dataset from [Y. Jia et al. (2021) Studying and Exploiting the Relationship Between Model
     Accuracy and Explanation Quality, ECML-PKDD 2021].
 
-    This dataset contains images for Kahikatea (an indigenous plant in New Zealand) classification. Positive examples
+    This dataset contains images for Kahikatea (an endemic tree in New Zealand) classification. Positive examples
     (in which Kahikatea trees can be identified) are annotated with true explanations such that the Kahikatea trees are
     highlighted. If an image belongs to the negative class, None is provided as an explanation.
 
-    An example of a returned observation when slicing:
+    :Example:
 
-    .. code::
-
-        kDataset = Kahikatea()
-        img, label, exp = kDataset[1]
+    >>> kDataset = Kahikatea()
+    >>> img, label, exp = kDataset[1]
 
     where :code:`img` is a PIL Image, :code:`label` is an int and :code:`exp` is a PIL Image.
     When a slice is performed, obs, label and exp are lists of the objects described above.

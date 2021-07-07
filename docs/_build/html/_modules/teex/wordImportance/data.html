@@ -169,12 +169,12 @@
 <div class="viewcode-block" id="Newsgroup"><a class="viewcode-back" href="../../../teex.wordImportance.html#teex.wordImportance.data.Newsgroup">[docs]</a><span class="k">class</span> <span class="nc">Newsgroup</span><span class="p">(</span><span class="n">_ClassificationDataset</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; 20 Newsgroup dataset from https://github.com/SinaMohseni/ML-Interpretability-Evaluation-Benchmark</span>
 
-<span class="sd">    The returned items when indexing are:</span>
+<span class="sd">    Contains 188 human annotaded newsgroup texts belonging to two categories.</span>
 
-<span class="sd">    .. code::</span>
+<span class="sd">    :Example:</span>
 
-<span class="sd">        nDataset = Newsgroup()</span>
-<span class="sd">        obs, label, exp = nDataset[1]</span>
+<span class="sd">    &gt;&gt;&gt; nDataset = Newsgroup()</span>
+<span class="sd">    &gt;&gt;&gt; obs, label, exp = nDataset[1]</span>
 
 <span class="sd">    where :code:`obs` is a str, :code:`label` is an int and :code:`exp` is a dict. containing a score for each important</span>
 <span class="sd">    word in :code:`obs`. When a slice is performed, obs, label and exp are lists of the objects described above. &quot;&quot;&quot;</span>

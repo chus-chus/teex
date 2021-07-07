@@ -13,12 +13,12 @@ from teex._baseClasses._baseDatasets import _ClassificationDataset
 class Newsgroup(_ClassificationDataset):
     """ 20 Newsgroup dataset from https://github.com/SinaMohseni/ML-Interpretability-Evaluation-Benchmark
 
-    The returned items when indexing are:
+    Contains 188 human annotaded newsgroup texts belonging to two categories.
 
-    .. code::
+    :Example:
 
-        nDataset = Newsgroup()
-        obs, label, exp = nDataset[1]
+    >>> nDataset = Newsgroup()
+    >>> obs, label, exp = nDataset[1]
 
     where :code:`obs` is a str, :code:`label` is an int and :code:`exp` is a dict. containing a score for each important
     word in :code:`obs`. When a slice is performed, obs, label and exp are lists of the objects described above. """

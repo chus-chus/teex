@@ -19,10 +19,10 @@ _BINARY_OPERATORS = {'<', '<='}
 
 
 class Statement(object):
-    f""" Class representing the atomic structure of a rule. A Statement follows the structure of 'feature' 
+    """ Class representing the atomic structure of a rule. A Statement follows the structure of 'feature'
     <operator> 'value'. It can also be binary, like so: ``value1 <lowOp> feature <upperOp> value2``. Valid 
-    operators are {_VALID_OPERATORS} or {_BINARY_OPERATORS} in the case of a binary statement. The class will store
-    upper and lower bound values if the lower and upper operators are specified (both, just 1 is not valid). If
+    operators are {'=', '!=', '>', '<', '>=', '<='} or {'<', '<='} in the case of a binary statement. The class will
+    store upper and lower bound values if the lower and upper operators are specified (both, just 1 is not valid). If
     the upper and lower operators are not specified, a unary Statement will be created.
     
     Although unary Statements (except '!=') have translation into single binary Statements, they are separately 
@@ -109,10 +109,10 @@ class Statement(object):
 
 class DecisionRule(object):
     """ A conjunction of statements as conditions that imply a result. Internally, the rule is represented as a
-    dictionary of :code:`Statement` with the feature names as unique identifiers. A feature cannot have more than one
-    :code:`Statement` (:code:`Statement`s can be binary). This class is capable of adapting previous :code:`Statement`
-    objects depending on new Statements that are added to it with the upsert method (see :code:`.upsert_statement`
-    method).
+    dictionary of :class:`Statement` with the feature names as unique identifiers. A feature cannot have more than one
+    :class:`Statement` (:class:`Statements` can be binary). This class is capable of adapting previous :class:`Statement`
+    objects depending on new Statements that are added to it with the upsert method
+    (see :func:`upsert_statement` method).
 
     :Example:
 
@@ -230,7 +230,10 @@ class DecisionRule(object):
             self.statements[oldFeature] = newStatement
 
     def set_result(self, result) -> None:
-        """ Sets the result for the Decision Rule. """
+        """ Sets the result for the Decision Rule.
+
+        :param Statement result: statement as logical implication.
+        """
         if not isinstance(result, Statement):
             raise TypeError('results should be a Statement object.')
         else:
@@ -267,10 +270,11 @@ class DecisionRule(object):
 
 
 class TransparentRuleClassifier(_BaseClassifier):
-    """ Used on the higher level data generation class :code:`SenecaFI` (**use that and get it from there preferably**).
+    """ Used on the higher level data generation class :class:`SenecaFI`
+    (**use that and get it from there preferably**).
 
     Transparent, rule-based classifier with decision rules as explanations. For each prediction, the associated
-    ground truth explanation is available with the :code:`.explain` method. Follows the sklean API. Presented in
+    ground truth explanation is available with the :func:`explain` method. Follows the sklean API. Presented in
     [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021]. """
 
     def __init__(self, **kwargs):
@@ -318,7 +322,7 @@ class TransparentRuleClassifier(_BaseClassifier):
         """  Explain observations' predictions with decision rules.
 
         :param obs: array of n observations with m features and shape (n, m)
-        :return: list with n :code:`DecisionRule` objects """
+        :return: list with n :class:`DecisionRule` objects """
         nodeIndicators = self.model.decision_path(obs)  # id's of the nodes for which each observation passes through
         rules = []
         # for each sample, retrieve its path and navigate it, looking at the precomputed decision splits
@@ -367,11 +371,11 @@ class TransparentRuleClassifier(_BaseClassifier):
 
 class SenecaDR(_SyntheticDataset):
     """ Generate synthetic binary classification data with ground truth decision rule explanations. The returned
-    decision rule g.t. explanations are instances of the :code:`DecisionRule` class.
+    decision rule g.t. explanations are instances of the :class:`DecisionRule` class.
 
     Ground truth explanations are generated with the :class:`TransparentRuleClassifier` class. The method was presented
     in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021]. From this class one can also
-    obtain a trained transparent model (instance of :code:`TransparentRuleClassifier`).
+    obtain a trained transparent model (instance of :class:`TransparentRuleClassifier`).
 
     When sliced, this object will return
         - X (ndarray) of shape (nSamples, nFeatures) or (nFeatures). Generated data.
@@ -403,7 +407,7 @@ class SenecaDR(_SyntheticDataset):
         return len(self.y)
 
     def _gen_dataset_seneca_dr(self):
-        """ g.t. explanations generated with the :class:`decisionRule.TransparentRuleClassifier` class. The
+        """ g.t. explanations generated with the :class:`TransparentRuleClassifier` class. The
             method was presented in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021]. """
 
         # generate explanations with rules and binarize
@@ -420,11 +424,11 @@ class SenecaDR(_SyntheticDataset):
 # Utils for data manipulation:
 
 def rule_to_feature_importance(rules, allFeatures) -> list:
-    """  Converts one or more :class:`decisionRule.DecisionRule` objects to feature importance vector/s. For each
+    """  Converts one or more :class:`DecisionRule` objects to feature importance vector/s. For each
     feature in *allFeatures*, the feature importance representation contains a 1 if there is a
-    :class:'decisionRule.Statement' with that particular feature in the decision rule and 0 otherwise.
+    :class:'Statement' with that particular feature in the decision rule and 0 otherwise.
 
-    :param rules: (:class:`decisionRule.DecisionRule` or (1, r) array-like of :class:`decisionRule.DecisionRule`) Rule/s
+    :param rules: (:class:`DecisionRule` or (1, r) array-like of :class:`DecisionRule`) Rule/s
         to convert to feature importance vectors.
     :param allFeatures: (array-like of str) List with mg features (same as the rule features) whose order the returned
         array will follow. The features must match the ones used in the decision rules.

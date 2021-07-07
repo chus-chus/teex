@@ -191,10 +191,10 @@ truth explanations, respectively.</p>
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">teex.decisionRule.data.</span></span><span class="sig-name descname"><span class="pre">DecisionRule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/decisionRule/data.html#DecisionRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.data.DecisionRule" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A conjunction of statements as conditions that imply a result. Internally, the rule is represented as a
-dictionary of <code class="code docutils literal notranslate"><span class="pre">Statement</span></code> with the feature names as unique identifiers. A feature cannot have more than one
-<code class="code docutils literal notranslate"><span class="pre">Statement</span></code> (<code class="code docutils literal notranslate"><span class="pre">Statement`s</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">binary).</span> <span class="pre">This</span> <span class="pre">class</span> <span class="pre">is</span> <span class="pre">capable</span> <span class="pre">of</span> <span class="pre">adapting</span> <span class="pre">previous</span> <span class="pre">:code:`Statement</span></code>
-objects depending on new Statements that are added to it with the upsert method (see <code class="code docutils literal notranslate"><span class="pre">.upsert_statement</span></code>
-method).</p>
+dictionary of <a class="reference internal" href="#teex.decisionRule.data.Statement" title="teex.decisionRule.data.Statement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Statement</span></code></a> with the feature names as unique identifiers. A feature cannot have more than one
+<a class="reference internal" href="#teex.decisionRule.data.Statement" title="teex.decisionRule.data.Statement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Statement</span></code></a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Statements</span></code> can be binary). This class is capable of adapting previous <a class="reference internal" href="#teex.decisionRule.data.Statement" title="teex.decisionRule.data.Statement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Statement</span></code></a>
+objects depending on new Statements that are added to it with the upsert method
+(see <a class="reference internal" href="#teex.decisionRule.data.DecisionRule.upsert_statement" title="teex.decisionRule.data.DecisionRule.upsert_statement"><code class="xref py py-func docutils literal notranslate"><span class="pre">upsert_statement()</span></code></a> method).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Example</dt>
 <dd class="field-odd"><p></p></dd>
@@ -285,6 +285,11 @@ method).</p>
 <dt class="sig sig-object py" id="teex.decisionRule.data.DecisionRule.set_result">
 <span class="sig-name descname"><span class="pre">set_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="_modules/teex/decisionRule/data.html#DecisionRule.set_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.data.DecisionRule.set_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the result for the Decision Rule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>result</strong> (<a class="reference internal" href="#teex.decisionRule.data.Statement" title="teex.decisionRule.data.Statement"><em>Statement</em></a>) – statement as logical implication.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -311,10 +316,10 @@ if the new bound/s != np.inf or -np.inf.</p>
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">teex.decisionRule.data.</span></span><span class="sig-name descname"><span class="pre">SenecaDR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nSamples</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nFeatures</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featureNames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomState</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">888</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/decisionRule/data.html#SenecaDR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.data.SenecaDR" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">teex._baseClasses._baseDatasets._SyntheticDataset</span></code></p>
 <p>Generate synthetic binary classification data with ground truth decision rule explanations. The returned
-decision rule g.t. explanations are instances of the <code class="code docutils literal notranslate"><span class="pre">DecisionRule</span></code> class.</p>
+decision rule g.t. explanations are instances of the <a class="reference internal" href="#teex.decisionRule.data.DecisionRule" title="teex.decisionRule.data.DecisionRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">DecisionRule</span></code></a> class.</p>
 <p>Ground truth explanations are generated with the <a class="reference internal" href="#teex.decisionRule.data.TransparentRuleClassifier" title="teex.decisionRule.data.TransparentRuleClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransparentRuleClassifier</span></code></a> class. The method was presented
 in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021]. From this class one can also
-obtain a trained transparent model (instance of <code class="code docutils literal notranslate"><span class="pre">TransparentRuleClassifier</span></code>).</p>
+obtain a trained transparent model (instance of <a class="reference internal" href="#teex.decisionRule.data.TransparentRuleClassifier" title="teex.decisionRule.data.TransparentRuleClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransparentRuleClassifier</span></code></a>).</p>
 <dl class="simple">
 <dt>When sliced, this object will return</dt><dd><ul class="simple">
 <li><p>X (ndarray) of shape (nSamples, nFeatures) or (nFeatures). Generated data.</p></li>
@@ -341,15 +346,48 @@ feature names will be returned by the function (necessary because the g.t. decis
 <dt class="sig sig-object py" id="teex.decisionRule.data.Statement">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">teex.decisionRule.data.</span></span><span class="sig-name descname"><span class="pre">Statement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowOp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowB</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upperOp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upperB</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/decisionRule/data.html#Statement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.data.Statement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class representing the atomic structure of a rule. A Statement follows the structure of ‘feature’
+&lt;operator&gt; ‘value’. It can also be binary, like so: <code class="docutils literal notranslate"><span class="pre">value1</span> <span class="pre">&lt;lowOp&gt;</span> <span class="pre">feature</span> <span class="pre">&lt;upperOp&gt;</span> <span class="pre">value2</span></code>. Valid 
+operators are {‘=’, ‘!=’, ‘&gt;’, ‘&lt;’, ‘&gt;=’, ‘&lt;=’} or {‘&lt;’, ‘&lt;=’} in the case of a binary statement. The class will
+store upper and lower bound values if the lower and upper operators are specified (both, just 1 is not valid). If
+the upper and lower operators are not specified, a unary Statement will be created.</p>
+<p>Although unary Statements (except ‘!=’) have translation into single binary Statements, they are separately 
+represented for clarity. Moreover, unary Statements with operators ‘=’ and ‘!=’ are able to represent non-numeric
+values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Statement</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span>                                     <span class="c1"># a = 1.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Statement</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="n">op</span><span class="o">=</span><span class="s1">&#39;!=&#39;</span><span class="p">)</span>                             <span class="c1"># a != 1.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Statement</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="n">lowOp</span><span class="o">=</span><span class="s1">&#39;&lt;&#39;</span><span class="p">,</span><span class="n">lowB</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">upperOp</span><span class="o">=</span><span class="s1">&#39;&lt;&#39;</span><span class="p">,</span><span class="n">upperB</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>   <span class="c1"># 2 &lt; a &lt; 5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Statement</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="n">lowOp</span><span class="o">=</span><span class="s1">&#39;&lt;&#39;</span><span class="p">,</span><span class="n">lowB</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>                        <span class="c1"># 2 &lt; a Wrong. Need to explicitly specify upper op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Statement</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="n">lowOp</span><span class="o">=</span><span class="s1">&#39;&lt;&#39;</span><span class="p">,</span><span class="n">lowB</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">upperOp</span><span class="o">=</span><span class="s1">&#39;&lt;&#39;</span><span class="p">)</span>            <span class="c1"># 2 &lt; a &lt; np.inf</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature</strong> (<em>str</em>) – name of the feature for the Statement</p></li>
+<li><p><strong>val</strong> – (float or str) Value for the statement (if not binary). Default <code class="docutils literal notranslate"><span class="pre">np.inf</span></code>.</p></li>
+<li><p><strong>op</strong> (<em>str</em>) – Operator for the statement (if not binary)</p></li>
+<li><p><strong>lowOp</strong> (<em>str</em>) – Operator for the lower bound (if binary)</p></li>
+<li><p><strong>lowB</strong> (<em>float</em>) – Value of the upper bound (if binary). Default <code class="docutils literal notranslate"><span class="pre">-np.inf</span></code>.</p></li>
+<li><p><strong>upperOp</strong> (<em>str</em>) – Operator for the upper bound (if binary)</p></li>
+<li><p><strong>upperB</strong> (<em>float</em>) – Value of the lower bound (if binary). Default <code class="docutils literal notranslate"><span class="pre">np.inf</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="teex.decisionRule.data.TransparentRuleClassifier">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">teex.decisionRule.data.</span></span><span class="sig-name descname"><span class="pre">TransparentRuleClassifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/decisionRule/data.html#TransparentRuleClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.data.TransparentRuleClassifier" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">teex._baseClasses._baseClassifier._BaseClassifier</span></code></p>
-<p>Used on the higher level data generation class <code class="code docutils literal notranslate"><span class="pre">SenecaFI</span></code> (<strong>use that and get it from there preferably</strong>).</p>
+<p>Used on the higher level data generation class <code class="xref py py-class docutils literal notranslate"><span class="pre">SenecaFI</span></code>
+(<strong>use that and get it from there preferably</strong>).</p>
 <p>Transparent, rule-based classifier with decision rules as explanations. For each prediction, the associated
-ground truth explanation is available with the <code class="code docutils literal notranslate"><span class="pre">.explain</span></code> method. Follows the sklean API. Presented in
+ground truth explanation is available with the <a class="reference internal" href="#teex.decisionRule.data.TransparentRuleClassifier.explain" title="teex.decisionRule.data.TransparentRuleClassifier.explain"><code class="xref py py-func docutils literal notranslate"><span class="pre">explain()</span></code></a> method. Follows the sklean API. Presented in
 [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021].</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="teex.decisionRule.data.TransparentRuleClassifier.explain">
@@ -360,7 +398,7 @@ ground truth explanation is available with the <code class="code docutils litera
 <dd class="field-odd"><p><strong>obs</strong> – array of n observations with m features and shape (n, m)</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>list with n <code class="code docutils literal notranslate"><span class="pre">DecisionRule</span></code> objects</p>
+<dd class="field-even"><p>list with n <a class="reference internal" href="#teex.decisionRule.data.DecisionRule" title="teex.decisionRule.data.DecisionRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">DecisionRule</span></code></a> objects</p>
 </dd>
 </dl>
 </dd></dl>
@@ -416,13 +454,13 @@ Stored in <code class="docutils literal notranslate"><span class="pre">self.feat
 <dl class="py function">
 <dt class="sig sig-object py" id="teex.decisionRule.data.rule_to_feature_importance">
 <span class="sig-prename descclassname"><span class="pre">teex.decisionRule.data.</span></span><span class="sig-name descname"><span class="pre">rule_to_feature_importance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allFeatures</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="_modules/teex/decisionRule/data.html#rule_to_feature_importance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.data.rule_to_feature_importance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Converts one or more <code class="xref py py-class docutils literal notranslate"><span class="pre">decisionRule.DecisionRule</span></code> objects to feature importance vector/s. For each
+<dd><p>Converts one or more <a class="reference internal" href="#teex.decisionRule.data.DecisionRule" title="teex.decisionRule.data.DecisionRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">DecisionRule</span></code></a> objects to feature importance vector/s. For each
 feature in <em>allFeatures</em>, the feature importance representation contains a 1 if there is a
-:class:’decisionRule.Statement’ with that particular feature in the decision rule and 0 otherwise.</p>
+:class:’Statement’ with that particular feature in the decision rule and 0 otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>rules</strong> – (<code class="xref py py-class docutils literal notranslate"><span class="pre">decisionRule.DecisionRule</span></code> or (1, r) array-like of <code class="xref py py-class docutils literal notranslate"><span class="pre">decisionRule.DecisionRule</span></code>) Rule/s
+<li><p><strong>rules</strong> – (<a class="reference internal" href="#teex.decisionRule.data.DecisionRule" title="teex.decisionRule.data.DecisionRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">DecisionRule</span></code></a> or (1, r) array-like of <a class="reference internal" href="#teex.decisionRule.data.DecisionRule" title="teex.decisionRule.data.DecisionRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">DecisionRule</span></code></a>) Rule/s
 to convert to feature importance vectors.</p></li>
 <li><p><strong>allFeatures</strong> – (array-like of str) List with mg features (same as the rule features) whose order the returned
 array will follow. The features must match the ones used in the decision rules.</p></li>
@@ -526,9 +564,9 @@ and a similarity threshold <span class="math notranslate nohighlight">\(\varepsi
 <div class="math notranslate nohighlight">
 \[\delta_{\varepsilon}(e_i, \tilde{e}_i) =
         \begin{cases}
-            1 &amp; \wordImportance{if } |e_i - \tilde{e}_i| \leq \varepsilon \wedge |e_i| \neq \infty \wedge
+            1 &amp; \text{if } |e_i - \tilde{e}_i| \leq \varepsilon \wedge |e_i| \neq \infty \wedge
                 |\tilde{e}_i| \neq \infty, \newline
-            0 &amp; \wordImportance{otherwise}
+            0 &amp; \text{otherwise}
         \end{cases}\]</div>
 <p>Where <span class="math notranslate nohighlight">\(N_{\not \infty}\)</span> is the number of lower and upper bounds that are different from <span class="math notranslate nohighlight">\(\infty\)</span> in
 both <span class="math notranslate nohighlight">\(e\)</span> and <span class="math notranslate nohighlight">\(\tilde e\)</span>. More about this metric can be found in [Evaluating local explanation methods
@@ -578,13 +616,14 @@ precision up to 3 decimal places.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="teex.decisionRule.eval.rule_scores">
 <span class="sig-prename descclassname"><span class="pre">teex.decisionRule.eval.</span></span><span class="sig-name descname"><span class="pre">rule_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#teex.decisionRule.data.DecisionRule" title="teex.decisionRule.data.DecisionRule"><span class="pre">teex.decisionRule.data.DecisionRule</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#teex.decisionRule.data.DecisionRule" title="teex.decisionRule.data.DecisionRule"><span class="pre">teex.decisionRule.data.DecisionRule</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">allFeatures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crqParams</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">float</span><a class="reference internal" href="_modules/teex/decisionRule/eval.html#rule_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.decisionRule.eval.rule_scores" title="Permalink to this definition">¶</a></dt>
-<dd><p>Quality metrics for <code class="xref py py-class docutils literal notranslate"><span class="pre">decisionRule.DecisionRule</span></code> objects.</p>
+<dd><p>Quality metrics for <a class="reference internal" href="#teex.decisionRule.data.DecisionRule" title="teex.decisionRule.data.DecisionRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">teex.decisionRule.data.DecisionRule</span></code></a> objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>gts</strong> – (DecisionRule or array-like of DecisionRules) ground truth decision rule/s.</p></li>
 <li><p><strong>rules</strong> – (DecisionRule or array-like of DecisionRules) approximated decision rule/s.</p></li>
-<li><p><strong>allFeatures</strong> – (array-like) names of all of the relevant features (i.e. <code class="code docutils literal notranslate"><span class="pre">SenecaDR.featureNames</span></code>)</p></li>
+<li><p><strong>allFeatures</strong> – (array-like) names of all of the relevant features (i.e. <code class="code docutils literal notranslate"><span class="pre">featureNames</span></code>
+of <a class="reference internal" href="#teex.decisionRule.data.SenecaDR" title="teex.decisionRule.data.SenecaDR"><code class="xref py py-class docutils literal notranslate"><span class="pre">teex.decisionRule.data.SenecaDR</span></code></a> object.)</p></li>
 <li><p><strong>metrics</strong> – <p>(array-like of str, default <code class="code docutils literal notranslate"><span class="pre">['fscore']</span></code>) metris to compute. Available:</p>
 <ul>
 <li><p>’fscore’: Computes the F1 Score between the ground truths and the predicted vectors.</p></li>

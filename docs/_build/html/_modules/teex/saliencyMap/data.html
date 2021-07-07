@@ -178,7 +178,8 @@
 <span class="c1"># Datasets</span>
 
 <div class="viewcode-block" id="TransparentImageClassifier"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier">[docs]</a><span class="k">class</span> <span class="nc">TransparentImageClassifier</span><span class="p">(</span><span class="n">_BaseClassifier</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Used on the higher level data generation class :code:`SenecaSM` (**use that and get it from there preferably**).</span>
+    <span class="sd">&quot;&quot;&quot; Used on the higher level data generation class :class:`SenecaSM` (**use that and get it from there</span>
+<span class="sd">    preferably**).</span>
 
 <span class="sd">    Transparent, pixel-based classifier with pixel (features) importances as explanations. Predicts the</span>
 <span class="sd">    class of the images based on whether they contain a certain specified pattern or not. Class 1 if they contain</span>
@@ -196,7 +197,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_maskedPattern</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="TransparentImageClassifier.fit"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">cellH</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cellW</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="TransparentImageClassifier.fit"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">cellH</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cellW</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pattH</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattW</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pattern</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cellH</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellW</span> <span class="o">=</span> <span class="n">cellH</span><span class="p">,</span> <span class="n">cellW</span>
@@ -206,22 +207,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_maskedPattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="TransparentImageClassifier.predict"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+<div class="viewcode-block" id="TransparentImageClassifier.predict"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Predicts the class for each observation.</span>
 
-<span class="sd">        :param obs: array of n images as ndarrays of np.float32 type.</span>
+<span class="sd">        :param np.ndarray obs: array of n images as ndarrays of np.float32 type.</span>
 <span class="sd">        :return: array of n predicted labels. &quot;&quot;&quot;</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">obs</span><span class="p">:</span>
             <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_pattern</span><span class="p">(</span><span class="n">image</span><span class="p">)</span> <span class="k">else</span> <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ret</span></div>
 
-<div class="viewcode-block" id="TransparentImageClassifier.predict_proba"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.predict_proba">[docs]</a>    <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+<div class="viewcode-block" id="TransparentImageClassifier.predict_proba"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.predict_proba">[docs]</a>    <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Predicts probability that each observation belongs to class 1 or 0. Probability of class 1 will be 1 if</span>
-<span class="sd">            the image contains the pattern and 0 otherwise.</span>
+<span class="sd">        the image contains the pattern and 0 otherwise.</span>
 
-<span class="sd">        :param obs: array of n images as ndarrays.</span>
-<span class="sd">        :return: array of n probability tuples of length 2 &quot;&quot;&quot;</span>
+<span class="sd">        :param np.ndarray obs: array of n images as ndarrays.</span>
+<span class="sd">        :return: array of n probability tuples of length 2. &quot;&quot;&quot;</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">obs</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_pattern</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
@@ -230,10 +231,10 @@
                 <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">ret</span></div>
 
-<div class="viewcode-block" id="TransparentImageClassifier.explain"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.explain">[docs]</a>    <span class="k">def</span> <span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+<div class="viewcode-block" id="TransparentImageClassifier.explain"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.explain">[docs]</a>    <span class="k">def</span> <span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Explain observations&#39; predictions with binary masks (pixel importance arrays).</span>
 
-<span class="sd">        :param obs: array of n images as ndarrays.</span>
+<span class="sd">        :param np.ndarray obs: array of n images as ndarrays.</span>
 <span class="sd">        :return: list with n binary masks as explanations. &quot;&quot;&quot;</span>
         <span class="n">exps</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">obs</span><span class="p">:</span>
@@ -244,7 +245,7 @@
             <span class="n">exps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exp</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">exps</span></div>
 
-    <span class="k">def</span> <span class="nf">_has_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">retIndices</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_has_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">retIndices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Searches for the pattern in the image and returns whether it contains it or not and its upper left indices</span>
 <span class="sd">        if specified. The pattern is contained within an image if the distribution and color of the cells != 0 coincide.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -277,9 +278,10 @@
 <span class="sd">    (cellH, cellW), which in turn compose a certain pattern of shape (patternH, patternW) that is inserted on</span>
 <span class="sd">    some of the generated images.</span>
 
-<span class="sd">    From this class one can also obtain a trained transparent model (instance of :code:`TransparentImageClassifier`).</span>
+<span class="sd">    From this class one can also obtain a trained transparent model (instance of :class:`TransparentImageClassifier`).</span>
 
 <span class="sd">    When sliced, this object will return</span>
+
 <span class="sd">        - X (ndarray) of shape (nSamples, imageH, imageW, 3) or (imageH, imageW, 3). Generated image data.</span>
 <span class="sd">        - y (ndarray) of shape (nSamples,) or int. Image labels. 1 if an image contains the pattern and 0 otherwise.</span>
 <span class="sd">        - explanations (ndarray) of shape (nSamples, imageH, imageW) or (imageH, imageW). Ground truth explanations.</span>
@@ -289,8 +291,8 @@
 <span class="sd">    :param int imageW: width in pixels of the images. Must be multiple of :code:`cellW`.</span>
 <span class="sd">    :param int patternH: height in pixels of the pattern. Must be &lt;= :code:`imageH` and multiple of :code:`cellH`.</span>
 <span class="sd">    :param int patternW: width in pixels of the pattern. Must be &lt;= :code:`imageW` and multiple of :code:`cellW`.</span>
-<span class="sd">    :param int cellH: height in pixels of each cell. Only used for :code:`method=&#39;seneca&#39;`.</span>
-<span class="sd">    :param int cellW: width in pixels of each cell. Only used for :code:`method=&#39;seneca&#39;`.</span>
+<span class="sd">    :param int cellH: height in pixels of each cell.</span>
+<span class="sd">    :param int cellW: width in pixels of each cell.</span>
 <span class="sd">    :param float patternProp: ([0, 1]) percentage of appearance of the pattern in the dataset.</span>
 <span class="sd">    :param float fillPct: ([0, 1]) percentage of cells filled (not black) in each image.</span>
 <span class="sd">    :param float colorDev: ([0, 0.5])</span>
@@ -419,16 +421,14 @@
     <span class="sd">&quot;&quot;&quot; Binary classification dataset from [Y. Jia et al. (2021) Studying and Exploiting the Relationship Between Model</span>
 <span class="sd">    Accuracy and Explanation Quality, ECML-PKDD 2021].</span>
 
-<span class="sd">    This dataset contains images for Kahikatea (an indigenous plant in New Zealand) classification. Positive examples</span>
+<span class="sd">    This dataset contains images for Kahikatea (an endemic tree in New Zealand) classification. Positive examples</span>
 <span class="sd">    (in which Kahikatea trees can be identified) are annotated with true explanations such that the Kahikatea trees are</span>
 <span class="sd">    highlighted. If an image belongs to the negative class, None is provided as an explanation.</span>
 
-<span class="sd">    An example of a returned observation when slicing:</span>
+<span class="sd">    :Example:</span>
 
-<span class="sd">    .. code::</span>
-
-<span class="sd">        kDataset = Kahikatea()</span>
-<span class="sd">        img, label, exp = kDataset[1]</span>
+<span class="sd">    &gt;&gt;&gt; kDataset = Kahikatea()</span>
+<span class="sd">    &gt;&gt;&gt; img, label, exp = kDataset[1]</span>
 
 <span class="sd">    where :code:`img` is a PIL Image, :code:`label` is an int and :code:`exp` is a PIL Image.</span>
 <span class="sd">    When a slice is performed, obs, label and exp are lists of the objects described above.</span>

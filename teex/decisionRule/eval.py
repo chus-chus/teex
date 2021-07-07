@@ -25,9 +25,9 @@ def complete_rule_quality(gts: DecisionRule, rules: DecisionRule, eps: float = 0
 
         \\delta_{\\varepsilon}(e_i, \\tilde{e}_i) =
                 \\begin{cases}
-                    1 & \\wordImportance{if } |e_i - \\tilde{e}_i| \\leq \\varepsilon \\wedge |e_i| \\neq \\infty \wedge
+                    1 & \\text{if } |e_i - \\tilde{e}_i| \\leq \\varepsilon \\wedge |e_i| \\neq \\infty \wedge
                         |\\tilde{e}_i| \\neq \\infty, \\newline
-                    0 & \\wordImportance{otherwise}
+                    0 & \\text{otherwise}
                 \\end{cases}
 
     Where :math:`N_{\\not \\infty}` is the number of lower and upper bounds that are different from :math:`\\infty` in
@@ -90,11 +90,12 @@ def complete_rule_quality(gts: DecisionRule, rules: DecisionRule, eps: float = 0
 
 def rule_scores(gts: DecisionRule, rules: DecisionRule, allFeatures, metrics=None, average=True,
                 crqParams=None) -> float:
-    """ Quality metrics for :class:`decisionRule.DecisionRule` objects.
+    """ Quality metrics for :class:`teex.decisionRule.data.DecisionRule` objects.
 
     :param gts: (DecisionRule or array-like of DecisionRules) ground truth decision rule/s.
     :param rules: (DecisionRule or array-like of DecisionRules) approximated decision rule/s.
-    :param allFeatures: (array-like) names of all of the relevant features (i.e. :code:`SenecaDR.featureNames`)
+    :param allFeatures: (array-like) names of all of the relevant features (i.e. :code:`featureNames`
+        of :class:`teex.decisionRule.data.SenecaDR` object.)
     :param metrics: (array-like of str, default :code:`['fscore']`) metris to compute. Available:
 
         - 'fscore': Computes the F1 Score between the ground truths and the predicted vectors.

@@ -173,13 +173,14 @@
 
 
 <div class="viewcode-block" id="TransparentLinearClassifier"><a class="viewcode-back" href="../../../teex.featureImportance.html#teex.featureImportance.data.TransparentLinearClassifier">[docs]</a><span class="k">class</span> <span class="nc">TransparentLinearClassifier</span><span class="p">(</span><span class="n">_BaseClassifier</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Used on the higher level data generation class :code:`SenecaFI` (**use that and get it from there preferably**).</span>
+    <span class="sd">&quot;&quot;&quot; Used on the higher level data generation class :class:`SenecaFI` (**use that and get it from there</span>
+<span class="sd">    preferably**).</span>
 
 <span class="sd">    Transparent, linear classifier with feature importances as explanations. This class also generates labeled</span>
 <span class="sd">    data according to the generated random linear expression. Presented in [Evaluating local explanation methods on</span>
 <span class="sd">    ground truth, Riccardo Guidotti, 2021]. &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">randomState</span><span class="o">=</span><span class="mi">888</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">randomState</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">888</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">randomState</span> <span class="o">=</span> <span class="n">randomState</span>
         <span class="c1"># SymPy expression</span>
@@ -194,7 +195,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_scalerNeg</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">(</span><span class="n">feature_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_scalerPos</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">(</span><span class="n">feature_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.</span><span class="p">])</span>
 
-<div class="viewcode-block" id="TransparentLinearClassifier.fit"><a class="viewcode-back" href="../../../teex.featureImportance.html#teex.featureImportance.data.TransparentLinearClassifier.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nFeatures</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">featureNames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nSamples</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<div class="viewcode-block" id="TransparentLinearClassifier.fit"><a class="viewcode-back" href="../../../teex.featureImportance.html#teex.featureImportance.data.TransparentLinearClassifier.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nFeatures</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">featureNames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nSamples</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Generates a random linear expression and random data labeled by the linear expression as a binary</span>
 <span class="sd">        dataset.</span>
 
@@ -356,9 +357,9 @@
     <span class="sd">&quot;&quot;&quot; Generate synthetic binary classification tabular data with ground truth feature importance explanations. This</span>
 <span class="sd">    method was presented in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021].</span>
 
-<span class="sd">    From this class one can also obtain a trained transparent model (instance of :code:`TransparentLinearClassifier`).</span>
-
+<span class="sd">    From this class one can also obtain a trained transparent model (instance of :class:`TransparentLinearClassifier`).</span>
 <span class="sd">    When sliced, this object will return</span>
+
 <span class="sd">        - X (ndarray) of shape (nSamples, nFeatures) or (nFeatures). Generated data.</span>
 <span class="sd">        - y (ndarray) of shape (nSamples,) or int. Generated binary data labels.</span>
 <span class="sd">        - explanations (ndarray) of shape (nSamples, nFeatures) or (nFeatures). Generated g.t. feature importance</span>

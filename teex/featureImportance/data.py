@@ -17,13 +17,14 @@ from teex._utils._misc import _generate_feature_names
 
 
 class TransparentLinearClassifier(_BaseClassifier):
-    """ Used on the higher level data generation class :code:`SenecaFI` (**use that and get it from there preferably**).
+    """ Used on the higher level data generation class :class:`SenecaFI` (**use that and get it from there
+    preferably**).
 
     Transparent, linear classifier with feature importances as explanations. This class also generates labeled
     data according to the generated random linear expression. Presented in [Evaluating local explanation methods on
     ground truth, Riccardo Guidotti, 2021]. """
 
-    def __init__(self, randomState=888):
+    def __init__(self, randomState: int = 888):
         super().__init__()
         self.randomState = randomState
         # SymPy expression
@@ -38,7 +39,7 @@ class TransparentLinearClassifier(_BaseClassifier):
         self._scalerNeg = MinMaxScaler(feature_range=[0., 0.5])
         self._scalerPos = MinMaxScaler(feature_range=[0.5, 1.])
 
-    def fit(self, nFeatures=None, featureNames=None, nSamples=100):
+    def fit(self, nFeatures=None, featureNames=None, nSamples=100) -> None:
         """ Generates a random linear expression and random data labeled by the linear expression as a binary
         dataset.
 
@@ -200,9 +201,9 @@ class SenecaFI(_SyntheticDataset):
     """ Generate synthetic binary classification tabular data with ground truth feature importance explanations. This
     method was presented in [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021].
 
-    From this class one can also obtain a trained transparent model (instance of :code:`TransparentLinearClassifier`).
-
+    From this class one can also obtain a trained transparent model (instance of :class:`TransparentLinearClassifier`).
     When sliced, this object will return
+
         - X (ndarray) of shape (nSamples, nFeatures) or (nFeatures). Generated data.
         - y (ndarray) of shape (nSamples,) or int. Generated binary data labels.
         - explanations (ndarray) of shape (nSamples, nFeatures) or (nFeatures). Generated g.t. feature importance

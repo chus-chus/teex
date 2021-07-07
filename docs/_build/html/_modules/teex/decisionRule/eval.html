@@ -181,9 +181,9 @@
 
 <span class="sd">        \\delta_{\\varepsilon}(e_i, \\tilde{e}_i) =</span>
 <span class="sd">                \\begin{cases}</span>
-<span class="sd">                    1 &amp; \\wordImportance{if } |e_i - \\tilde{e}_i| \\leq \\varepsilon \\wedge |e_i| \\neq \\infty \wedge</span>
+<span class="sd">                    1 &amp; \\text{if } |e_i - \\tilde{e}_i| \\leq \\varepsilon \\wedge |e_i| \\neq \\infty \wedge</span>
 <span class="sd">                        |\\tilde{e}_i| \\neq \\infty, \\newline</span>
-<span class="sd">                    0 &amp; \\wordImportance{otherwise}</span>
+<span class="sd">                    0 &amp; \\text{otherwise}</span>
 <span class="sd">                \\end{cases}</span>
 
 <span class="sd">    Where :math:`N_{\\not \\infty}` is the number of lower and upper bounds that are different from :math:`\\infty` in</span>
@@ -246,11 +246,12 @@
 
 <div class="viewcode-block" id="rule_scores"><a class="viewcode-back" href="../../../teex.decisionRule.html#teex.decisionRule.eval.rule_scores">[docs]</a><span class="k">def</span> <span class="nf">rule_scores</span><span class="p">(</span><span class="n">gts</span><span class="p">:</span> <span class="n">DecisionRule</span><span class="p">,</span> <span class="n">rules</span><span class="p">:</span> <span class="n">DecisionRule</span><span class="p">,</span> <span class="n">allFeatures</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">crqParams</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot; Quality metrics for :class:`decisionRule.DecisionRule` objects.</span>
+    <span class="sd">&quot;&quot;&quot; Quality metrics for :class:`teex.decisionRule.data.DecisionRule` objects.</span>
 
 <span class="sd">    :param gts: (DecisionRule or array-like of DecisionRules) ground truth decision rule/s.</span>
 <span class="sd">    :param rules: (DecisionRule or array-like of DecisionRules) approximated decision rule/s.</span>
-<span class="sd">    :param allFeatures: (array-like) names of all of the relevant features (i.e. :code:`SenecaDR.featureNames`)</span>
+<span class="sd">    :param allFeatures: (array-like) names of all of the relevant features (i.e. :code:`featureNames`</span>
+<span class="sd">        of :class:`teex.decisionRule.data.SenecaDR` object.)</span>
 <span class="sd">    :param metrics: (array-like of str, default :code:`[&#39;fscore&#39;]`) metris to compute. Available:</span>
 
 <span class="sd">        - &#39;fscore&#39;: Computes the F1 Score between the ground truths and the predicted vectors.</span>
