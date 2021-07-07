@@ -16,7 +16,7 @@ def _list_images(pathName, returnType='list'):
         raise ValueError('returnType not supported.')
     for filename in scandir(pathName):
         if filename.is_file():
-            # todo non RGB
+            # only RGB for now
             if returnType == 'list':
                 images.append(cvtColor(imread(filename.path), COLOR_BGR2RGB).astype('float32'))
             elif returnType == 'dict':

@@ -1,5 +1,7 @@
 import abc
 
+""" Base classifier used for the seneca data generation methods. """
+
 
 class _BaseClassifier(object):
     def __init__(self):

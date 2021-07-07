@@ -1,11 +1,13 @@
+""" Skeletons for datasets. """
+
 import abc
 from pathlib import Path
 
 
 class _ClassificationDataset(object):
 
-    """ The base class for classification datasets. One must override :code:`__getitem__`, :code:`__len__`,
-    :code:`_get_class_map`, :code:`_check_integrity`, :code:`_get_class_map`
+    """ The base class for real classification datasets. One must override :code:`__getitem__`, :code:`__len__`,
+    :code:`_get_class_map`, :code:`_check_integrity`
 
     :param path: (pathlib.Path) Root directory of the dataset. """
 
@@ -15,7 +17,7 @@ class _ClassificationDataset(object):
         self.classMap = {}
 
     @abc.abstractmethod
-    def __getitem__(self, item: int):
+    def __getitem__(self, item):
         """ Returns image, target and explanation """
         pass
 
@@ -44,3 +46,26 @@ class _ClassificationDataset(object):
 
     def __str__(self) -> str:
         return f'Dataset {self.__class__.__name__} @ {self._path}. \n{self.__len__()} observations.'
+
+
+class _SyntheticDataset(object):
+    """ The base class for synthetic datasets. One must override :code:`__getitem__`, :code:`__len__` """
+
+    @abc.abstractmethod
+    def __init__(self) -> None:
+        pass
+
+    @abc.abstractmethod
+    def __getitem__(self, item):
+        """ Returns image, target and explanation """
+        pass
+
+    @abc.abstractmethod
+    def __len__(self) -> int:
+        pass
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+    def __str__(self) -> str:
+        return f'Synthetic dataset {self.__class__.__name__}.'

@@ -1,0 +1,312 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>teex.wordImportance package &mdash; teex 1.0.0-alpha documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="teex.saliencyMap package" href="teex.saliencyMap.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> teex
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">teex</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="teex.html">teex package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="teex.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="teex.decisionRule.html">teex.decisionRule package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.featureImportance.html">teex.featureImportance package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.saliencyMap.html">teex.saliencyMap package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">teex.wordImportance package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="teex.html#module-teex">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">teex</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">teex</a> &raquo;</li>
+        
+          <li><a href="teex.html">teex package</a> &raquo;</li>
+        
+      <li>teex.wordImportance package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/teex.wordImportance.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="teex-wordimportance-package">
+<h1>teex.wordImportance package<a class="headerlink" href="#teex-wordimportance-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-teex.wordImportance.data">
+<span id="teex-wordimportance-data-module"></span><h2>teex.wordImportance.data module<a class="headerlink" href="#module-teex.wordImportance.data" title="Permalink to this headline">¶</a></h2>
+<p>Module for real datasets with available ground truth word importance explanations. Also contains
+methods and classes for word importance data manipulation.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="teex.wordImportance.data.Newsgroup">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">teex.wordImportance.data.</span></span><span class="sig-name descname"><span class="pre">Newsgroup</span></span><a class="reference internal" href="_modules/teex/wordImportance/data.html#Newsgroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.wordImportance.data.Newsgroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">teex._baseClasses._baseDatasets._ClassificationDataset</span></code></p>
+<p>20 Newsgroup dataset from <a class="reference external" href="https://github.com/SinaMohseni/ML-Interpretability-Evaluation-Benchmark">https://github.com/SinaMohseni/ML-Interpretability-Evaluation-Benchmark</a></p>
+<p>The returned items when indexing are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nDataset</span> <span class="o">=</span> <span class="n">Newsgroup</span><span class="p">()</span>
+<span class="n">obs</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">exp</span> <span class="o">=</span> <span class="n">nDataset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>where <code class="code docutils literal notranslate"><span class="pre">obs</span></code> is a str, <code class="code docutils literal notranslate"><span class="pre">label</span></code> is an int and <code class="code docutils literal notranslate"><span class="pre">exp</span></code> is a dict. containing a score for each important
+word in <code class="code docutils literal notranslate"><span class="pre">obs</span></code>. When a slice is performed, obs, label and exp are lists of the objects described above.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-teex.wordImportance.eval">
+<span id="teex-wordimportance-eval-module"></span><h2>teex.wordImportance.eval module<a class="headerlink" href="#module-teex.wordImportance.eval" title="Permalink to this headline">¶</a></h2>
+<p>Module for evaluation of word importance explanations.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.wordImportance.eval.word_importance_scores">
+<span class="sig-prename descclassname"><span class="pre">teex.wordImportance.eval.</span></span><span class="sig-name descname"><span class="pre">word_importance_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/wordImportance/eval.html#word_importance_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.wordImportance.eval.word_importance_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quality metrics for word importance explanations, where each word is considered as a feature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gts</strong> – (dict, array-like of dicts) ground truth word importance/s, where each BOW is represented as a
+dictionary with words as keys and values as importances. Importances must be</p></li>
+<li><p><strong>preds</strong> – (dict, array-like of dicts) predicted word importance/s, where each BOW is represented in the same
+way as the ground truths.</p></li>
+<li><p><strong>metrics</strong> – <p>(str / array-like of str, default=[‘auc’]) Quality metric/s to compute. Available:</p>
+<ul>
+<li><dl class="simple">
+<dt>Classification scores:</dt><dd><ul>
+<li><p>’auc’: ROC AUC score. The val of each pixel of each saliency map in <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> is considered as a
+prediction probability of the pixel pertaining to the salient class.</p></li>
+<li><p>’fscore’: F1 Score.</p></li>
+<li><p>’prec’: Precision Score.</p></li>
+<li><p>’rec’: Recall score.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Similarity metrics:</dt><dd><ul>
+<li><p>’cs’: Cosine Similarity.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>For ‘fscore’, ‘prec’, ‘rec’ and ‘cs’, the saliency maps in <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> are binarized (see param
+<code class="code docutils literal notranslate"><span class="pre">binThreshold</span></code>).</p>
+</p></li>
+<li><p><strong>binThreshold</strong> – (float in [0, 1]) pixels of images in <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> with a val bigger than this will be set
+to 1 and 0 otherwise when binarizing for the computation of ‘fscore’, ‘prec’, ‘rec’ and ‘auc’.</p></li>
+<li><p><strong>gtBackgroundVals</strong> – (str) Only used when provided ground truth explanations are RGB. Color of the background
+of the g.t. masks ‘low’ if pixels in the mask representing the non-salient class are dark, ‘high’ otherwise).</p></li>
+<li><p><strong>average</strong> – (bool, default <code class="code docutils literal notranslate"><span class="pre">True</span></code>) Used only if <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> contain multiple
+observations. Should the computed metrics be averaged across all of the samples?</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>(ndarray) specified metric/s in the original order. Can be of shape</p>
+<ul class="simple">
+<li><p>(n_metrics,) if only one image has been provided in both <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> or when both are
+contain multiple observations and <code class="code docutils literal notranslate"><span class="pre">average=True</span></code>.</p></li>
+<li><p>(n_metrics, n_samples) if <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> contain multiple observations and
+<code class="code docutils literal notranslate"><span class="pre">average=False</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-teex.wordImportance">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-teex.wordImportance" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="teex.saliencyMap.html" class="btn btn-neutral float-left" title="teex.saliencyMap package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Jesus Antonanzas.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

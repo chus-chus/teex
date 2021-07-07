@@ -23,7 +23,7 @@ copyright = '2021, Jesus Antonanzas'
 author = 'Jesus Antonanzas'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1'
+release = '1.0.0-alpha'
 
 
 # -- General configuration ---------------------------------------------------

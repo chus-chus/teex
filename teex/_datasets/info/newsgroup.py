@@ -3,16 +3,7 @@ from pathlib import Path
 
 random.seed(1)
 
-_newsgroup_explanation_urls = {'electronics': 'https://github.com/SinaMohseni/ML-Interpretability-Evaluation-Benchmark'
-                                              '/tree/master/Text/20news_group/human_attention/sci.electronics',
-                               'med': 'https://github.com/SinaMohseni/ML-Interpretability-Evaluation-Benchmark/tree'
-                                      '/master/Text/20news_group/human_attention/sci.med'}
-
-_newsgroup_data_urls = {'electronics': 'https://github.com/SinaMohseni/ML-Interpretability-Evaluation-Benchmark'
-                                       '/tree/master/Text/20news_group/org_documents/20news-bydate/20news-bydate-test/'
-                                       'sci.electronics',
-                        'med': 'https://github.com/SinaMohseni/ML-Interpretability-Evaluation-Benchmark/tree/master/'
-                               'Text/20news_group/org_documents/20news-bydate/20news-bydate-test/sci.med'}
+_newsgroup_url = "https://drive.google.com/u/0/uc?id=19gANm58-DxrOoFF7TZFfd2RmT8EAUQo4&export=download"
 
 _newsgroupElecNames = ['53994', '53993', '53992', '53995', '53968', '54009', '54036', '54031', '54038', '54007',
                        '54000', '54053', '54065', '54062', '54001', '54039', '54006', '54030', '54008', '54037',
@@ -25,8 +16,6 @@ _newsgroupElecNames = ['53994', '53993', '53992', '53995', '53968', '54009', '54
                        '54020', '54027', '54018', '54073', '54080', '54074', '54042', '54045', '54019', '54021',
                        '54017', '54028', '54010', '54044', '54043', '54075', '54081', '54072', '53984', '53983']
 
-# some indexes from this list do not contain explanations in the github repo (12 of them). They have been manually
-#   removed
 _newsgroupMedNames = ['59263', '59297', '59290', '59264', '59252', '59299', '59255', '59237', '59254', '59253', '59298',
                       '59291', '59296', '59262', '59236', '59231', '59238', '59310', '59328', '59317', '59321', '59319',
                       '59326', '59318', '59327', '59320', '59329', '59316', '59311', '59305',
@@ -46,7 +35,5 @@ random.shuffle(__temp)
 _newsgroupAll, _newsgroupLabels = zip(*__temp)
 
 _newsgroupNEntries = len(_newsgroupAll)
-_newsgroupIndexes = {i: _newsgroupAll[i] for i in range(_newsgroupNEntries)}
-_newsgroupLabels = {i: _newsgroupLabels[i] for i in range(_newsgroupNEntries)}
 
-_newsgroupRoot = Path(__file__).parent.parent.absolute() / 'text/newsgroup/'
+_newsgroupRoot = Path(__file__).parent.parent.absolute() / 'wordImportance/newsgroup/'

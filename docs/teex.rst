@@ -1,48 +1,16 @@
 teex package
 ============
 
-Submodules
-----------
+Subpackages
+-----------
 
-teex.datasets module
---------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: teex.datasets
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-teex.decisionRule module
-------------------------
-
-.. automodule:: teex.decisionRule
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-teex.featureImportance module
------------------------------
-
-.. automodule:: teex.featureImportance
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-teex.saliencyMap module
------------------------
-
-.. automodule:: teex.saliencyMap
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-teex.wordImportance module
---------------------------
-
-.. automodule:: teex.wordImportance
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   teex.decisionRule
+   teex.featureImportance
+   teex.saliencyMap
+   teex.wordImportance
 
 Module contents
 ---------------
