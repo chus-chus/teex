@@ -81,14 +81,14 @@ def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=0.01, gtBackgroun
             return feature_importance_scores(gts.reshape(gts.shape[0], gts.shape[1] * gts.shape[2]),
                                              sMaps.reshape(sMaps.shape[0], sMaps.shape[1] * sMaps.shape[2]),
                                              metrics=metrics, average=average, binThreshold=binThreshold)
+    # multiple RGB masks provided
     elif len(gts.shape) == 4:
         warnings.warn(f'Binarizing {gts.shape[0]} g.t. RGB masks.')
-        newGts = []
+        newGts = np.zeros((gts.shape[0], gts.shape[1], gts.shape[2]))
         for imIndex in range(gts.shape[0]):
-            newGts.append(binarize_rgb_mask(gts[imIndex], bgValue=gtBackgroundVals))
-        gts = np.array(newGts)
-        return feature_importance_scores(gts.reshape(gts.shape[0], gts.shape[1]*gts.shape[2]),
-                                         sMaps.reshape(sMaps.shape[0], sMaps.shape[1]*sMaps.shape[2]), metrics=metrics,
-                                         average=average, binThreshold=binThreshold)
+            newGts[imIndex] = binarize_rgb_mask(gts[imIndex], bgValue=gtBackgroundVals)
+        return feature_importance_scores(newGts.reshape(newGts.shape[0], newGts.shape[1]*newGts.shape[2]),
+                                         sMaps.reshape(sMaps.shape[0], sMaps.shape[1]*sMaps.shape[2]),
+                                         metrics=metrics, average=average, binThreshold=binThreshold)
     else:
         raise ValueError(f'Shape {gts.shape} of ground truth explanations not supported.')

@@ -119,11 +119,11 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
     preds, predsNegative = _check_fix_bounds(preds)
 
     # binarize if necessary
-    if (np.unique(gts) != np.array([0, 1])).any():
+    if not np.array_equal(np.unique(gts), np.array([0, 1])):
         binaryGts = _binarize_arrays(gts, method=thresholdType, threshold=binThreshold)
     else:
         binaryGts = gts.copy()
-    if (np.unique(preds) != np.array([0, 1])).any():
+    if not np.array_equal(np.unique(preds), np.array([0, 1])):
         binaryPreds = _binarize_arrays(preds, method=thresholdType, threshold=binThreshold)
     else:
         binaryPreds = preds.copy()

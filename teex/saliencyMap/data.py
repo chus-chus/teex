@@ -361,12 +361,11 @@ def binarize_rgb_mask(img, bgValue='high') -> np.array:
     imgmod = rgb_to_grayscale(img)
     maxVal = np.max(imgmod)
     minVal = np.min(imgmod)
+    res = np.zeros((img.shape[0], img.shape[1]))
     if bgValue == 'high':
         # assign darker pixels the positive class
-        imgmod[imgmod < maxVal] = 1
-        imgmod[imgmod == maxVal] = 0
+        res[imgmod < maxVal] = 1
     elif bgValue == 'low':
         # assign lighter pixels the positive class
-        imgmod[imgmod > minVal] = 1
-        imgmod[imgmod == minVal] = 0
-    return imgmod
+        res[imgmod > minVal] = 1
+    return res
