@@ -43,10 +43,9 @@ represents a feature's importance for the observation's outcome. Weights are usu
 <p align="center">
     <img src="https://raw.githubusercontent.com/slundberg/shap/master/docs/artwork/boston_instance.png" 
          alt="drawing" width="650"/>
-    <caption align="center">
-        Fig. 1 <a href="https://github.com/slundberg/shap">SHAP</a> values, each representing impact on model output of 
-        each feature.
-    </caption>
+
+Fig. 1 <a href="https://github.com/slundberg/shap">SHAP</a> values, each representing impact on model output of 
+each feature.
 </p>
 
 Popular feature importance model-agnostic explainers are, for example, [SHAP](https://github.com/slundberg/shap) or 
@@ -127,7 +126,7 @@ The full API documentation can be found on [Read The Docs](https://teex.readthed
 
 Here are some sample notebooks with examples:
 
-- [Generating image data with g.t. saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/_demos/notebooks/gen_saliency_maps_seneca.ipynb)
+- [Generating image data with g.t. saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/notebooks/gen_saliency_maps_seneca.ipynb)
 
 ## Contributing
 

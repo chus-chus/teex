@@ -7,7 +7,7 @@ import random
 
 import cv2
 import numpy as np
-import PIL
+from PIL import Image
 
 from teex._utils._misc import _download_extract_zip
 from teex._utils._paths import _check_pathlib_dir
@@ -328,11 +328,11 @@ class Kahikatea(_ClassificationDataset):
 
     @staticmethod
     def _read_items(obsPath: str, expPath: str, obsLabel: int):
-        img = PIL.Image.open(obsPath).convert('RGB')
+        img = Image.open(obsPath).convert('RGB')
         if obsLabel == 0:
             exp = None
         else:
-            exp = PIL.Image.open(expPath).convert('RGB')
+            exp = Image.open(expPath).convert('RGB')
         return img, exp
 
 

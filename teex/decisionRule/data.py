@@ -110,8 +110,8 @@ class Statement(object):
 class DecisionRule(object):
     """ A conjunction of statements as conditions that imply a result. Internally, the rule is represented as a
     dictionary of :class:`Statement` with the feature names as unique identifiers. A feature cannot have more than one
-    :class:`Statement` (:class:`Statements` can be binary). This class is capable of adapting previous :class:`Statement`
-    objects depending on new Statements that are added to it with the upsert method
+    :class:`Statement` (:class:`Statements` can be binary). This class is capable of adapting previous
+    :class:`Statement` objects depending on new Statements that are added to it with the upsert method
     (see :func:`upsert_statement` method).
 
     :Example:
@@ -594,13 +594,16 @@ def rulefit_to_decision_rule(rules, minImportance: float = 0., minSupport: float
     >>> import pandas as pd
     >>> from rulefit import RuleFit
     >>> from teex.decisionRule.eval import rule_scores
+    >>>
     >>> boston_data = pd.read_csv('https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv')
     >>> y = boston_data.medv.values
     >>> features = boston_data.columns
     >>> X = boston_data.drop("medv", axis=1).values
+    >>>
     >>> rf = RuleFit()
     >>> rf.fit(X, y, feature_names=features)
     >>> rf.predict(X)
+    >>>
     >>> dRules, _ = rulefit_to_decision_rule(rf.get_rules())
     >>> rule_scores(dRules, dRules, allFeatures=features, metrics=['crq', 'fscore'])
 
