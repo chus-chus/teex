@@ -3,6 +3,7 @@
 import warnings
 import numpy as np
 
+from teex._utils._errors import MetricNotAvailableError
 from teex.featureImportance.eval import feature_importance_scores
 from teex.saliencyMap.data import binarize_rgb_mask
 
@@ -65,7 +66,7 @@ def saliency_map_scores(gts, sMaps, metrics=None, binThreshold=0.01, gtBackgroun
 
     for metric in metrics:
         if metric not in _AVAILABLE_SALIENCY_MAP_METRICS:
-            raise ValueError(f"'{metric}' metric not valid. Use {_AVAILABLE_SALIENCY_MAP_METRICS}")
+            raise MetricNotAvailableError(metric)
 
     if len(gts.shape) == 2:
         # Single binary g.t. mask

@@ -2,6 +2,7 @@
 
 import numpy as np
 
+from teex._utils._errors import MetricNotAvailableError
 from teex.decisionRule.data import DecisionRule, rule_to_feature_importance, TransparentRuleClassifier, Statement
 from teex.featureImportance.eval import feature_importance_scores
 
@@ -120,11 +121,11 @@ def rule_scores(gts: DecisionRule, rules: DecisionRule, allFeatures, metrics=Non
     isArrayLike = isinstance(metrics, (list, np.ndarray, tuple))
     if not isArrayLike:
         if metrics not in _AVAILABLE_DECISION_RULE_METRICS:
-            raise ValueError(f"'{metrics}' metric not valid. Use {_AVAILABLE_DECISION_RULE_METRICS}")
+            raise MetricNotAvailableError(metrics)
     else:
         for metric in metrics:
             if metric not in _AVAILABLE_DECISION_RULE_METRICS:
-                raise ValueError(f"'{metric}' metric not valid. Use {_AVAILABLE_DECISION_RULE_METRICS}")
+                raise MetricNotAvailableError(metric)
 
     crq, crqIndex = None, None
     crqParams = dict() if crqParams is None else crqParams

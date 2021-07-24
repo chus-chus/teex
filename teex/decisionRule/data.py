@@ -423,7 +423,7 @@ class SenecaDR(_SyntheticDataset):
 
 # Utils for data manipulation:
 
-def rule_to_feature_importance(rules, allFeatures) -> list:
+def rule_to_feature_importance(rules, allFeatures) -> np.ndarray:
     """  Converts one or more :class:`DecisionRule` objects to feature importance vector/s. For each
     feature in *allFeatures*, the feature importance representation contains a 1 if there is a
     :class:'Statement' with that particular feature in the decision rule and 0 otherwise.

@@ -9,6 +9,7 @@ import sklearn.metrics as met
 from scipy.spatial.distance import cdist
 
 from teex._utils._arrays import _binarize_arrays, _check_fix_bounds, _check_correct_array_values
+from teex._utils._errors import MetricNotAvailableError
 
 _AVAILABLE_FEATURE_IMPORTANCE_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc'}
 
@@ -110,7 +111,7 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
 
     for metric in metrics:
         if metric not in _AVAILABLE_FEATURE_IMPORTANCE_METRICS:
-            raise ValueError(f"'{metric}' metric not valid. Use {_AVAILABLE_FEATURE_IMPORTANCE_METRICS}")
+            raise MetricNotAvailableError(metric)
 
     if not isinstance(gts, np.ndarray) or not isinstance(preds, np.ndarray):
         raise TypeError('Ground truths and predictions must be np.ndarrays.')

@@ -3,8 +3,6 @@
 [![PyPI Version](https://img.shields.io/pypi/v/teex)](https://img.shields.io/pypi/v/teex)
 [![Open GitHub Issues](https://img.shields.io/github/issues/chus-chus/teex)](https://img.shields.io/github/issues/chus-chus/teex)
 [![Documentation Status](https://readthedocs.org/projects/teex/badge/?version=latest)](https://teex.readthedocs.io/en/latest/?badge=latest)
-[![Repo Size](https://img.shields.io/github/repo-size/chus-chus/teex)](https://img.shields.io/github/repo-size/chus-chus/teex)
-[![Downloads](https://img.shields.io/pypi/dm/teex)](https://img.shields.io/pypi/dm/teex)
 
 A Python **T**oolbox for the **E**valuation of machine learning **Ex**planations.
 
@@ -19,7 +17,7 @@ The teex package is on [PyPI](https://pypi.org/project/teex/). To install it, si
 pip install teex
 ```
 
-Note that Python >= 3.6 is required.
+teex is compatible with Python >= 3.6.
 
 ## Usage overview
 
@@ -118,7 +116,11 @@ saliency_map_scores(exps[y == 1], exps[y == 1], metrics=['fscore', 'auc'])
 
 ### Decision Rules
 
+WIP!
+
 ### Word Importance
+
+WIP!
 
 ## Tutorials and API
 
@@ -126,7 +128,7 @@ The full API documentation can be found on [Read The Docs](https://teex.readthed
 
 Here are some sample notebooks with examples:
 
-- [Generating image data with g.t. saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/notebooks/gen_saliency_maps_seneca.ipynb)
+- [Generating image data with g.t. saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/gen_saliency_maps_seneca.ipynb)
 
 ## Contributing
 

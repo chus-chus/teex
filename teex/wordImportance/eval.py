@@ -1,39 +1,60 @@
 """ Module for evaluation of word importance explanations. """
 
+from typing import List, Union, Dict
 
-def word_importance_scores(gts, preds, metrics=None, average=True):
+import numpy as np
+
+from teex._utils._errors import MetricNotAvailableError, IncompatibleGTAndPredError
+from teex.featureImportance.eval import feature_importance_scores
+
+_AVAILABLE_WORD_IMPORTANCE_METRICS = {'prec', 'rec', 'fscore'}
+
+
+def word_importance_scores(gts: Union[Dict[str, float], List[Dict[str, float]]],
+                           preds: Union[Dict[str, float], List[Dict[str, float]]],
+                           metrics: Union[str, List[str]] = None,
+                           average: bool = True) -> Union[float, np.ndarray]:
     """ Quality metrics for word importance explanations, where each word is considered as a feature.
 
         :param gts: (dict, array-like of dicts) ground truth word importance/s, where each BOW is represented as a
-            dictionary with words as keys and values as importances. Importances must be
-        :param preds: (dict, array-like of dicts) predicted word importance/s, where each BOW is represented in the same
-            way as the ground truths.
+            dictionary with words as keys and floats as importances. Importances must be in :math:`[0, 1]` or +
+            :math:`[-1, 1]`.
+        :param preds: (dict, array-like of dicts) predicted word importance/s, where each BOW is represented as a
+            dictionary with words as keys and floats as importances. Importances must be in the same scale as param.
+            ``gts``.
         :param metrics: (str / array-like of str, default=['auc']) Quality metric/s to compute. Available:
+            # todo metrics documentation after they are implemented
 
-            - Classification scores:
-                - 'auc': ROC AUC score. The val of each pixel of each saliency map in :code:`sMaps` is considered as a
-                  prediction probability of the pixel pertaining to the salient class.
-                - 'fscore': F1 Score.
-                - 'prec': Precision Score.
-                - 'rec': Recall score.
-
-            - Similarity metrics:
-                - 'cs': Cosine Similarity.
-
-            For 'fscore', 'prec', 'rec' and 'cs', the saliency maps in :code:`sMaps` are binarized (see param
-            :code:`binThreshold`).
-
-        :param binThreshold: (float in [0, 1]) pixels of images in :code:`sMaps` with a val bigger than this will be set
+        :param float binThreshold: (in [0, 1]) pixels of images in :code:`sMaps` with a val bigger than this will be set
             to 1 and 0 otherwise when binarizing for the computation of 'fscore', 'prec', 'rec' and 'auc'.
-        :param gtBackgroundVals: (str) Only used when provided ground truth explanations are RGB. Color of the background
-            of the g.t. masks 'low' if pixels in the mask representing the non-salient class are dark, 'high' otherwise).
-        :param average: (bool, default :code:`True`) Used only if :code:`gts` and :code:`sMaps` contain multiple
-            observations. Should the computed metrics be averaged across all of the samples?
-        :return: (ndarray) specified metric/s in the original order. Can be of shape
-
-            - (n_metrics,) if only one image has been provided in both :code:`gts` and :code:`sMaps` or when both are
+        :param bool average: (default :code:`True`) Used only if :code:`gts` and :code:`preds` contain multiple
+            observations. Should the computed metrics be averaged across all samples?
+        :return: specified metric/s in the original order. Can be of shape
+            - (n_metrics,) if only one image has been provided in both :code:`gts` and :code:`preds` or when both are
               contain multiple observations and :code:`average=True`.
-            - (n_metrics, n_samples) if :code:`gts` and :code:`sMaps` contain multiple observations and
+            - (n_metrics, n_samples) if :code:`gts` and :code:`preds` contain multiple observations and
               :code:`average=False`.
+        :rtype: np.ndarray
 
         """
+
+    if metrics is None:
+        metrics = ['fscore']
+    elif isinstance(metrics, str):
+        metrics = [metrics]
+
+    for metric in metrics:
+        if metric not in _AVAILABLE_WORD_IMPORTANCE_METRICS:
+            raise MetricNotAvailableError(metric)
+
+    if isinstance(gts, dict):
+        if not isinstance(preds, dict):
+            raise IncompatibleGTAndPredError
+        # only 1 observation, return feature importance score or and custom score.
+        return 1
+    elif isinstance(gts, (list, np.ndarray, tuple)):
+        if not isinstance(preds, (list, np.ndarray, tuple)):
+            raise IncompatibleGTAndPredError
+        # multiple obs, return feature importance scores or and custom scores.
+    else:
+        raise TypeError("Ground truth type not supported.")
