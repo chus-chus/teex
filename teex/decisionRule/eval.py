@@ -97,7 +97,7 @@ def rule_scores(gts: DecisionRule, rules: DecisionRule, allFeatures, metrics=Non
     :param rules: (DecisionRule or array-like of DecisionRules) approximated decision rule/s.
     :param allFeatures: (array-like) names of all of the relevant features (i.e. :code:`featureNames`
         of :class:`teex.decisionRule.data.SenecaDR` object.)
-    :param metrics: (array-like of str, default :code:`['fscore']`) metris to compute. Available:
+    :param metrics: (array-like of str, default :code:`['fscore']`) metrics to compute. Available:
 
         - 'fscore': Computes the F1 Score between the ground truths and the predicted vectors.
         - 'prec': Computes the Precision Score between the ground truths and the predicted vectors.

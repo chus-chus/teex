@@ -139,8 +139,14 @@ This work has been made possible by the [University of Waikato](https://www.waik
 the [TAIAO](https://taiao.ai/) project.
 
 <p align="center">
-    <img src="https://taiao.ai/img/Untitled.png" alt="drawing" width="50"/>
-    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/b/bd/University_of_Waikato_logo.svg/1200px-University_of_Waikato_logo.svg.png" alt="drawing" width="45"/>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Logo_UPC.svg/2048px-Logo_UPC.svg.png" alt="drawing" width="50"/>
+    <a href="https://taiao.ai">
+        <img src="https://taiao.ai/img/Untitled.png" alt="drawing" width="50"/>
+    </a>
+    <a href="https://www.waikato.ac.nz/">
+        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/b/bd/University_of_Waikato_logo.svg/1200px-University_of_Waikato_logo.svg.png" alt="drawing" width="45"/>
+    </a> 
+    <a href="https://www.upc.edu/en">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Logo_UPC.svg/2048px-Logo_UPC.svg.png" alt="drawing" width="50"/>
+    </a>
 </p>
 

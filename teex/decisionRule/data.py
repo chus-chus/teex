@@ -430,7 +430,7 @@ def rule_to_feature_importance(rules, allFeatures) -> np.ndarray:
 
     :param rules: (:class:`DecisionRule` or (1, r) array-like of :class:`DecisionRule`) Rule/s
         to convert to feature importance vectors.
-    :param allFeatures: (array-like of str) List with mg features (same as the rule features) whose order the returned
+    :param allFeatures: (array-like of str) List with m features (same as the rule features) whose order the returned
         array will follow. The features must match the ones used in the decision rules.
     :return: (binary ndarray of shape (n_features,) or shape (n_rules, n_features)). """
 
