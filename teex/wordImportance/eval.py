@@ -5,14 +5,16 @@ from typing import List, Union, Dict
 import numpy as np
 
 from teex._utils._errors import MetricNotAvailableError, IncompatibleGTAndPredError
-from teex.featureImportance.eval import feature_importance_scores
+from teex.featureImportance.eval import feature_importance_scores, _AVAILABLE_FEATURE_IMPORTANCE_METRICS
 
 _AVAILABLE_WORD_IMPORTANCE_METRICS = {'prec', 'rec', 'fscore'}
 
 
 def word_importance_scores(gts: Union[Dict[str, float], List[Dict[str, float]]],
                            preds: Union[Dict[str, float], List[Dict[str, float]]],
+                           allWords: List[str],
                            metrics: Union[str, List[str]] = None,
+                           binThreshold: float = .5,
                            average: bool = True) -> Union[float, np.ndarray]:
     """ Quality metrics for word importance explanations, where each word is considered as a feature.
 
@@ -22,11 +24,13 @@ def word_importance_scores(gts: Union[Dict[str, float], List[Dict[str, float]]],
     :param preds: (dict, array-like of dicts) predicted word importance/s, where each BOW is represented as a
         dictionary with words as keys and floats as importances. Importances must be in the same scale as param.
         ``gts``.
+    :param allWords: (array-like of str) Vocabulary words.
     :param metrics: (str / array-like of str, default=['auc']) Quality metric/s to compute. Available:
-        # todo metrics documentation after they are implemented
+        - All metrics found in :func:`teex.featureImportance.eval.feature_importance_scores`.
+        - More to come
 
-    :param float binThreshold: (in [0, 1]) pixels of images in :code:`sMaps` with a val bigger than this will be set
-        to 1 and 0 otherwise when binarizing for the computation of 'fscore', 'prec', 'rec' and 'auc'.
+    :param float binThreshold: (in [0, 1], default .5) pixels of images in :code:`sMaps` with a val bigger than this
+        will be set to 1 and 0 otherwise when binarizing for the computation of 'fscore', 'prec', 'rec' and 'auc'.
     :param bool average: (default :code:`True`) Used only if :code:`gts` and :code:`preds` contain multiple
         observations. Should the computed metrics be averaged across all samples?
     :return: specified metric/s in the original order. Can be of shape
@@ -36,6 +40,9 @@ def word_importance_scores(gts: Union[Dict[str, float], List[Dict[str, float]]],
           :code:`average=False`.
     :rtype: np.ndarray
 
+    Args:
+        allWords:
+
         """
 
     if metrics is None:
@@ -43,25 +50,43 @@ def word_importance_scores(gts: Union[Dict[str, float], List[Dict[str, float]]],
     elif isinstance(metrics, str):
         metrics = [metrics]
 
+    metricTypes = []  # fi, r (regular)
+
     for metric in metrics:
         if metric not in _AVAILABLE_WORD_IMPORTANCE_METRICS:
             raise MetricNotAvailableError(metric)
+        elif metric in _AVAILABLE_FEATURE_IMPORTANCE_METRICS:
+            fiGts = word_to_feature_importance(gts, allWords)
+            fiPreds = word_to_feature_importance(preds, allWords)
+            metricTypes.append('fi')
+        else:
+            metricTypes.append('r')
 
-    if isinstance(gts, dict):
-        if not isinstance(preds, dict):
-            raise IncompatibleGTAndPredError
-        # only 1 observation, return feature importance score or and custom score.
-        return 1
-    elif isinstance(gts, (list, np.ndarray, tuple)):
-        if not isinstance(preds, (list, np.ndarray, tuple)):
-            raise IncompatibleGTAndPredError
-        # multiple obs, return feature importance scores or and custom scores.
-    else:
-        raise TypeError("Ground truth type not supported.")
+    fiMetrics = [metrics[i] for i, metricType in enumerate(metricTypes) if metricType == 'fi']
+    regMetrics = [metrics[i] for i, metricType in enumerate(metricTypes) if metricType == 'r']
+
+    # noinspection PyUnboundLocalVariable
+    res = feature_importance_scores(fiGts, fiPreds, metrics=fiMetrics, average=average, binThreshold=binThreshold)
+
+    if len(regMetrics) != 0:
+        if isinstance(gts, dict):
+            if not isinstance(preds, dict):
+                raise IncompatibleGTAndPredError
+            # only 1 observation, return feature importance score or and custom score.
+            raise NotImplementedError('Custom scores not implemented yet.')
+        elif isinstance(gts, (list, np.ndarray, tuple)):
+            if not isinstance(preds, (list, np.ndarray, tuple)):
+                raise IncompatibleGTAndPredError
+            # multiple obs, return feature importance scores or and custom scores.
+            raise NotImplementedError('Custom scores not implemented yet.')
+        else:
+            raise TypeError("Ground truth type not supported.")
+
+    return res
 
 
 def word_to_feature_importance(words, referenceWords):
-    """ Converts a bag of words with importance weights into a feature importance vector.
+    """ Maps a bag of words with importance weights into a feature importance vector.
 
     :param words: (dict or array-like of dicts) Bag of words with feature importances as values with the same format
        as described in the method :func:`word_importance_scores`.
@@ -73,8 +98,10 @@ def word_to_feature_importance(words, referenceWords):
 
     :Example:
 
-    >>> word_to_feature_importance({'hello': 1, 'my': .5}, ['hello', 'my', 'friend'])
+    >>> word_to_feature_importance({'a': 1, 'b': .5}, ['a', 'b', 'c'])
     >>> [1, .5, 0]
+    >>> word_to_feature_importance([{'a': 1, 'b': .5}, {'b': .5, 'c': .9}], ['a', 'b', 'c'])
+    >>> [[1, .5, 0. ], [0, .5, .9]]
     """
 
     if isinstance(words, (list, np.ndarray, tuple)):

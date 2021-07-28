@@ -108,6 +108,8 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
         metrics = ['fscore']
     elif isinstance(metrics, str):
         metrics = [metrics]
+    elif len(metrics) == 0:
+        return np.array([], dtype=np.float32)
 
     for metric in metrics:
         if metric not in _AVAILABLE_FEATURE_IMPORTANCE_METRICS:
