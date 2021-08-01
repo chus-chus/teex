@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>teex.featureImportance.eval &mdash; teex 1.0.0-alpha documentation</title>
+  <title>teex.featureImportance.eval &mdash; teex 1.0.0 documentation</title>
   
 
   
@@ -85,7 +85,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">teex</a></li>
 </ul>
@@ -165,6 +165,7 @@
 <span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">cdist</span>
 
 <span class="kn">from</span> <span class="nn">teex._utils._arrays</span> <span class="kn">import</span> <span class="n">_binarize_arrays</span><span class="p">,</span> <span class="n">_check_fix_bounds</span><span class="p">,</span> <span class="n">_check_correct_array_values</span>
+<span class="kn">from</span> <span class="nn">teex._utils._errors</span> <span class="kn">import</span> <span class="n">MetricNotAvailableError</span>
 
 <span class="n">_AVAILABLE_FEATURE_IMPORTANCE_METRICS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;fscore&#39;</span><span class="p">,</span> <span class="s1">&#39;prec&#39;</span><span class="p">,</span> <span class="s1">&#39;rec&#39;</span><span class="p">,</span> <span class="s1">&#39;cs&#39;</span><span class="p">,</span> <span class="s1">&#39;auc&#39;</span><span class="p">}</span>
 
@@ -196,7 +197,54 @@
         <span class="k">return</span> <span class="n">met</span><span class="o">.</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">binGt</span><span class="p">,</span> <span class="n">pred</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="feature_importance_scores"><a class="viewcode-back" href="../../../teex.featureImportance.html#teex.featureImportance.eval.feature_importance_scores">[docs]</a><span class="k">def</span> <span class="nf">feature_importance_scores</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">preds</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">thresholdType</span><span class="o">=</span><span class="s1">&#39;abs&#39;</span><span class="p">,</span> <span class="n">binThreshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_compute_feature_importance_scores</span><span class="p">(</span><span class="n">binaryGts</span><span class="p">,</span> <span class="n">binaryPreds</span><span class="p">,</span> <span class="n">gts</span><span class="p">,</span> <span class="n">preds</span><span class="p">,</span> <span class="n">classScores</span><span class="p">,</span> <span class="n">realScores</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span>
+                                       <span class="n">predsNegative</span><span class="p">,</span> <span class="n">thresholdType</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">888</span><span class="p">)</span>
+    <span class="n">someUnifBGt</span><span class="p">,</span> <span class="n">someUnifBPred</span><span class="p">,</span> <span class="n">someEmptyGt</span><span class="p">,</span> <span class="n">someEmptyPred</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">binGt</span><span class="p">,</span> <span class="n">binPred</span><span class="p">,</span> <span class="n">gt</span><span class="p">,</span> <span class="n">pred</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">binaryGts</span><span class="p">,</span> <span class="n">binaryPreds</span><span class="p">,</span> <span class="n">gts</span><span class="p">,</span> <span class="n">preds</span><span class="p">):</span>
+        <span class="n">mets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">uniformBGt</span><span class="p">,</span> <span class="n">uniformBPred</span><span class="p">,</span> <span class="n">emptyGt</span><span class="p">,</span> <span class="n">emptyPred</span> <span class="o">=</span> <span class="n">_check_correct_array_values</span><span class="p">(</span><span class="n">binGt</span><span class="p">,</span> <span class="n">binPred</span><span class="p">,</span> <span class="n">gt</span><span class="p">,</span> <span class="n">pred</span><span class="p">)</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">binGt</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">classScores</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">uniformBGt</span><span class="p">:</span>
+                <span class="n">someUnifBGt</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">binGt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="ow">not</span> <span class="n">binGt</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">uniformBPred</span><span class="p">:</span>
+                <span class="n">someUnifBPred</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">binPred</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="ow">not</span> <span class="n">binPred</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">realScores</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">emptyGt</span><span class="p">:</span>
+                <span class="n">someEmptyGt</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">gt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1e-4</span>
+            <span class="k">if</span> <span class="n">emptyPred</span><span class="p">:</span>
+                <span class="n">someEmptyPred</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">pred</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1e-4</span>
+
+        <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
+            <span class="n">mets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_individual_fi_metrics</span><span class="p">(</span><span class="n">gt</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">binGt</span><span class="p">,</span> <span class="n">binPred</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">predsNegative</span><span class="p">,</span> <span class="n">thresholdType</span><span class="p">))</span>
+
+        <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mets</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">someUnifBGt</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;A binary ground truth contains uniform values, so one entry has been randomly flipped &#39;</span>
+                          <span class="s1">&#39;for the metrics to be defined.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">someUnifBPred</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;A binary prediction contains uniform values, so one entry has been randomly flipped &#39;</span>
+                          <span class="s1">&#39;for the metrics to be defined.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">someEmptyGt</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;A ground truth does not contain values != 0, so 1e-4 has been added to one random entry &#39;</span>
+                          <span class="s1">&#39;in both.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">someEmptyPred</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;A prediction does not contain values != 0, so 1e-4 has been added to one random entry &#39;</span>
+                          <span class="s1">&#39;in both.&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="feature_importance_scores"><a class="viewcode-back" href="../../../teex.featureImportance.html#teex.featureImportance.eval.feature_importance_scores">[docs]</a><span class="k">def</span> <span class="nf">feature_importance_scores</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">preds</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">thresholdType</span><span class="o">=</span><span class="s1">&#39;abs&#39;</span><span class="p">,</span> <span class="n">binThreshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Computes quality metrics between one or more feature importance vectors. The values in the vectors must be</span>
 <span class="sd">    bounded in [0, 1] or [-1, 1] (to indicate negative importances in the second case). If they are not, the values will</span>
 <span class="sd">    be mapped.</span>
@@ -257,29 +305,29 @@
 <span class="sd">        (in [-1, 1]) Threshold for the binarization of the features for the computation of &#39;fscore&#39;, &#39;prec&#39;, &#39;rec&#39; and</span>
 <span class="sd">        &#39;auc&#39;. The binarization depends on both this parameter and :code:`thresholdType`.</span>
 <span class="sd">        If :code:`thresholdType = &#39;abs&#39;`, ``binThreshold`` cannot be negative.</span>
+<span class="sd">    :param int verbose: Verbosity level of warnings. ``1`` will report warnings, else will not.</span>
 <span class="sd">    :return: (ndarray of shape (n_metrics,) or (n_samples, n_metrics)) specified metric/s in the indicated order. &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">metrics</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;fscore&#39;</span><span class="p">]</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">metrics</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">metric</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_AVAILABLE_FEATURE_IMPORTANCE_METRICS</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">&#39; metric not valid. Use </span><span class="si">{</span><span class="n">_AVAILABLE_FEATURE_IMPORTANCE_METRICS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">preds</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Ground truths and predictions must be np.ndarrays.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MetricNotAvailableError</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
 
     <span class="n">gts</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_check_fix_bounds</span><span class="p">(</span><span class="n">gts</span><span class="p">)</span>
     <span class="n">preds</span><span class="p">,</span> <span class="n">predsNegative</span> <span class="o">=</span> <span class="n">_check_fix_bounds</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span>
 
     <span class="c1"># binarize if necessary</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">gts</span><span class="p">)</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">gts</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])):</span>
         <span class="n">binaryGts</span> <span class="o">=</span> <span class="n">_binarize_arrays</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">thresholdType</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">binThreshold</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">binaryGts</span> <span class="o">=</span> <span class="n">gts</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">preds</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])):</span>
         <span class="n">binaryPreds</span> <span class="o">=</span> <span class="n">_binarize_arrays</span><span class="p">(</span><span class="n">preds</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">thresholdType</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">binThreshold</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">binaryPreds</span> <span class="o">=</span> <span class="n">preds</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -289,7 +337,6 @@
         <span class="n">binaryGts</span><span class="p">,</span> <span class="n">binaryPreds</span> <span class="o">=</span> <span class="n">binaryGts</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">binaryPreds</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">gts</span><span class="p">,</span> <span class="n">preds</span> <span class="o">=</span> <span class="n">gts</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">preds</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="c1"># check if we are computing classification scores. This will reduce computations if ground truth vectors are</span>
     <span class="c1"># completely 0</span>
     <span class="n">classScores</span><span class="p">,</span> <span class="n">realScores</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span>
@@ -299,47 +346,8 @@
         <span class="k">elif</span> <span class="n">metric</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;cs&#39;</span><span class="p">]:</span>
             <span class="n">realScores</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">888</span><span class="p">)</span>
-    <span class="n">someUnifBGt</span><span class="p">,</span> <span class="n">someUnifBPred</span><span class="p">,</span> <span class="n">someEmptyGt</span><span class="p">,</span> <span class="n">someEmptyPred</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span>
-    <span class="k">for</span> <span class="n">binGt</span><span class="p">,</span> <span class="n">binPred</span><span class="p">,</span> <span class="n">gt</span><span class="p">,</span> <span class="n">pred</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">binaryGts</span><span class="p">,</span> <span class="n">binaryPreds</span><span class="p">,</span> <span class="n">gts</span><span class="p">,</span> <span class="n">preds</span><span class="p">):</span>
-        <span class="n">mets</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">uniformBGt</span><span class="p">,</span> <span class="n">uniformBPred</span><span class="p">,</span> <span class="n">emptyGt</span><span class="p">,</span> <span class="n">emptyPred</span> <span class="o">=</span> <span class="n">_check_correct_array_values</span><span class="p">(</span><span class="n">binGt</span><span class="p">,</span> <span class="n">binPred</span><span class="p">,</span> <span class="n">gt</span><span class="p">,</span> <span class="n">pred</span><span class="p">)</span>
-
-        <span class="n">i</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">binGt</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">classScores</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">uniformBGt</span><span class="p">:</span>
-                <span class="n">someUnifBGt</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="n">binGt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="ow">not</span> <span class="n">binGt</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="k">if</span> <span class="n">uniformBPred</span><span class="p">:</span>
-                <span class="n">someUnifBPred</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="n">binPred</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="ow">not</span> <span class="n">binPred</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">realScores</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">emptyGt</span><span class="p">:</span>
-                <span class="n">someEmptyGt</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="n">gt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1e-4</span>
-            <span class="k">if</span> <span class="n">emptyPred</span><span class="p">:</span>
-                <span class="n">someEmptyPred</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="n">pred</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1e-4</span>
-
-        <span class="k">if</span> <span class="n">someUnifBGt</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;A binary ground truth contains uniform values, so one entry has been randomly flipped &#39;</span>
-                          <span class="s1">&#39;for the metrics to be defined.&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">someUnifBPred</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;A binary prediction contains uniform values, so one entry has been randomly flipped &#39;</span>
-                          <span class="s1">&#39;for the metrics to be defined.&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">someEmptyGt</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;A ground truth does not contain values != 0, so 1e-4 has been added to one random entry &#39;</span>
-                          <span class="s1">&#39;in both.&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">someEmptyPred</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;A prediction does not contain values != 0, so 1e-4 has been added to one random entry &#39;</span>
-                          <span class="s1">&#39;in both.&#39;</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
-            <span class="n">mets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_individual_fi_metrics</span><span class="p">(</span><span class="n">gt</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">binGt</span><span class="p">,</span> <span class="n">binPred</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">predsNegative</span><span class="p">,</span> <span class="n">thresholdType</span><span class="p">))</span>
-
-        <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mets</span><span class="p">)</span>
-
-    <span class="n">ret</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">_compute_feature_importance_scores</span><span class="p">(</span><span class="n">binaryGts</span><span class="p">,</span> <span class="n">binaryPreds</span><span class="p">,</span> <span class="n">gts</span><span class="p">,</span> <span class="n">preds</span><span class="p">,</span> <span class="n">classScores</span><span class="p">,</span> <span class="n">realScores</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span>
+                                             <span class="n">predsNegative</span><span class="p">,</span> <span class="n">thresholdType</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">average</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">binaryPreds</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>

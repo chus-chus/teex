@@ -52,11 +52,13 @@ def word_importance_scores(gts: Union[Dict[str, float], List[Dict[str, float]]],
         will be set to 1 and 0 otherwise when binarizing for the computation of 'fscore', 'prec', 'rec' and 'auc'.
     :param bool average: (default :code:`True`) Used only if :code:`gts` and :code:`preds` contain multiple
         observations. Should the computed metrics be averaged across all samples?
-    :return: specified metric/s in the original order. Can be of shape
+    :return: specified metric/s in the original order. Can be of shape:
+
         - (n_metrics,) if only one image has been provided in both :code:`gts` and :code:`preds` or when both are
           contain multiple observations and :code:`average=True`.
         - (n_metrics, n_samples) if :code:`gts` and :code:`preds` contain multiple observations and
           :code:`average=False`.
+
     :rtype: np.ndarray """
 
     if metrics is None:
@@ -123,12 +125,11 @@ def word_to_feature_importance(wordImportances, vocabWords) -> list:
         as described in the method :func:`word_importance_scores`.
     :param vocabWords: (array-like of str, 1D or 2D for multiple reference vocabularies) :math:`m` words that
         should be taken into account when transforming into vector representations. Their order will be followed.
+    :return: word importances as feature importance vectors. Return types:
 
-    :return: word importances as feature importance vectors.
-        Return types:
-            - list of np.ndarray, if multiple vocabularies because of the possible difference in size of the reference
-              vocabularies in each explanation.
-            - np.ndarray, if only 1 vocabulary
+        - list of np.ndarray, if multiple vocabularies because of the possible difference in size of the reference
+          vocabularies in each explanation.
+        - np.ndarray, if only 1 vocabulary
 
     :Example:
 

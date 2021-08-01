@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>teex.wordImportance.eval &mdash; teex 1.0.0-alpha documentation</title>
+  <title>teex.wordImportance.eval &mdash; teex 1.0.0 documentation</title>
   
 
   
@@ -85,7 +85,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">teex</a></li>
 </ul>
@@ -156,43 +156,162 @@
   <h1>Source code for teex.wordImportance.eval</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot; Module for evaluation of word importance explanations. &quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span>
 
-<div class="viewcode-block" id="word_importance_scores"><a class="viewcode-back" href="../../../teex.wordImportance.html#teex.wordImportance.eval.word_importance_scores">[docs]</a><span class="k">def</span> <span class="nf">word_importance_scores</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">preds</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Quality metrics for word importance explanations, where each word is considered as a feature.</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="sd">        :param gts: (dict, array-like of dicts) ground truth word importance/s, where each BOW is represented as a</span>
-<span class="sd">            dictionary with words as keys and values as importances. Importances must be</span>
-<span class="sd">        :param preds: (dict, array-like of dicts) predicted word importance/s, where each BOW is represented in the same</span>
-<span class="sd">            way as the ground truths.</span>
-<span class="sd">        :param metrics: (str / array-like of str, default=[&#39;auc&#39;]) Quality metric/s to compute. Available:</span>
+<span class="kn">from</span> <span class="nn">teex._utils._errors</span> <span class="kn">import</span> <span class="n">MetricNotAvailableError</span>
+<span class="kn">from</span> <span class="nn">teex.featureImportance.eval</span> <span class="kn">import</span> <span class="n">feature_importance_scores</span><span class="p">,</span> <span class="n">_AVAILABLE_FEATURE_IMPORTANCE_METRICS</span>
 
-<span class="sd">            - Classification scores:</span>
-<span class="sd">                - &#39;auc&#39;: ROC AUC score. The val of each pixel of each saliency map in :code:`sMaps` is considered as a</span>
-<span class="sd">                  prediction probability of the pixel pertaining to the salient class.</span>
-<span class="sd">                - &#39;fscore&#39;: F1 Score.</span>
-<span class="sd">                - &#39;prec&#39;: Precision Score.</span>
-<span class="sd">                - &#39;rec&#39;: Recall score.</span>
+<span class="n">_AVAILABLE_WORD_IMPORTANCE_METRICS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;prec&#39;</span><span class="p">,</span> <span class="s1">&#39;rec&#39;</span><span class="p">,</span> <span class="s1">&#39;fscore&#39;</span><span class="p">,</span> <span class="s1">&#39;cs&#39;</span><span class="p">,</span> <span class="s1">&#39;auc&#39;</span><span class="p">}</span>
 
-<span class="sd">            - Similarity metrics:</span>
-<span class="sd">                - &#39;cs&#39;: Cosine Similarity.</span>
 
-<span class="sd">            For &#39;fscore&#39;, &#39;prec&#39;, &#39;rec&#39; and &#39;cs&#39;, the saliency maps in :code:`sMaps` are binarized (see param</span>
-<span class="sd">            :code:`binThreshold`).</span>
+<span class="k">def</span> <span class="nf">_get_reference_words</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">preds</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Get reference words as the union of the words in gts and preds. &quot;&quot;&quot;</span>
 
-<span class="sd">        :param binThreshold: (float in [0, 1]) pixels of images in :code:`sMaps` with a val bigger than this will be set</span>
-<span class="sd">            to 1 and 0 otherwise when binarizing for the computation of &#39;fscore&#39;, &#39;prec&#39;, &#39;rec&#39; and &#39;auc&#39;.</span>
-<span class="sd">        :param gtBackgroundVals: (str) Only used when provided ground truth explanations are RGB. Color of the background</span>
-<span class="sd">            of the g.t. masks &#39;low&#39; if pixels in the mask representing the non-salient class are dark, &#39;high&#39; otherwise).</span>
-<span class="sd">        :param average: (bool, default :code:`True`) Used only if :code:`gts` and :code:`sMaps` contain multiple</span>
-<span class="sd">            observations. Should the computed metrics be averaged across all of the samples?</span>
-<span class="sd">        :return: (ndarray) specified metric/s in the original order. Can be of shape</span>
+    <span class="n">vocabWords</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">vocabWords</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="o">**</span><span class="n">gts</span><span class="p">,</span> <span class="o">**</span><span class="n">preds</span><span class="p">}</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+        <span class="n">vocabWords</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">({</span><span class="o">**</span><span class="n">gt</span><span class="p">,</span> <span class="o">**</span><span class="n">pred</span><span class="p">}</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">for</span> <span class="n">gt</span><span class="p">,</span> <span class="n">pred</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">preds</span><span class="p">)]</span>
 
-<span class="sd">            - (n_metrics,) if only one image has been provided in both :code:`gts` and :code:`sMaps` or when both are</span>
-<span class="sd">              contain multiple observations and :code:`average=True`.</span>
-<span class="sd">            - (n_metrics, n_samples) if :code:`gts` and :code:`sMaps` contain multiple observations and</span>
-<span class="sd">              :code:`average=False`.</span>
+    <span class="k">return</span> <span class="n">vocabWords</span>
 
-<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="word_importance_scores"><a class="viewcode-back" href="../../../teex.wordImportance.html#teex.wordImportance.eval.word_importance_scores">[docs]</a><span class="k">def</span> <span class="nf">word_importance_scores</span><span class="p">(</span><span class="n">gts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]],</span>
+                           <span class="n">preds</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]],</span>
+                           <span class="n">vocabWords</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">metrics</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">binThreshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">.5</span><span class="p">,</span>
+                           <span class="n">average</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Quality metrics for word importance explanations, where each word is considered as a feature. An example of</span>
+<span class="sd">    an explanation:</span>
+
+<span class="sd">    &gt;&gt;&gt; {&#39;skate&#39;: 0.7, &#39;to&#39;: 0.2, &#39;me&#39;: 0.5}</span>
+
+<span class="sd">    :param gts: (dict, array-like of dicts) ground truth word importance/s, where each BOW is represented as a</span>
+<span class="sd">        dictionary with words as keys and floats as importances. Importances must be in :math:`[0, 1]` or +</span>
+<span class="sd">        :math:`[-1, 1]`.</span>
+<span class="sd">    :param preds: (dict, array-like of dicts) predicted word importance/s, where each BOW is represented as a</span>
+<span class="sd">        dictionary with words as keys and floats as importances. Importances must be in the same scale as param.</span>
+<span class="sd">        ``gts``.</span>
+<span class="sd">    :param vocabWords: (array-like of str 1D or 2D for multiple reference vocabularies, default None) Vocabulary words.</span>
+<span class="sd">        If ``None``, the union of the words in each ground truth and predicted explanation will be interpreted as the</span>
+<span class="sd">        vocabulary words. This is needed for when explanations are converted to feature importance vectors. If this</span>
+<span class="sd">        parameter is provided as a 1D list, the vocabulary words will be the same for all explanations, but if not</span>
+<span class="sd">        provided or given as a 2D array-like (same number of reference vocabularies as there are explanations),</span>
+<span class="sd">        different vocabulary words will be considered for each explanation.</span>
+<span class="sd">    :param metrics: (str / array-like of str, default=[&#39;prec&#39;]) Quality metric/s to compute. Available:</span>
+<span class="sd">        - All metrics in :func:`teex.featureImportance.eval.feature_importance_scores`.</span>
+
+<span class="sd">    :param float binThreshold: (in [0, 1], default .5) pixels of images in :code:`sMaps` with a val bigger than this</span>
+<span class="sd">        will be set to 1 and 0 otherwise when binarizing for the computation of &#39;fscore&#39;, &#39;prec&#39;, &#39;rec&#39; and &#39;auc&#39;.</span>
+<span class="sd">    :param bool average: (default :code:`True`) Used only if :code:`gts` and :code:`preds` contain multiple</span>
+<span class="sd">        observations. Should the computed metrics be averaged across all samples?</span>
+<span class="sd">    :return: specified metric/s in the original order. Can be of shape:</span>
+
+<span class="sd">        - (n_metrics,) if only one image has been provided in both :code:`gts` and :code:`preds` or when both are</span>
+<span class="sd">          contain multiple observations and :code:`average=True`.</span>
+<span class="sd">        - (n_metrics, n_samples) if :code:`gts` and :code:`preds` contain multiple observations and</span>
+<span class="sd">          :code:`average=False`.</span>
+
+<span class="sd">    :rtype: np.ndarray &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">metrics</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;prec&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">metrics</span><span class="p">]</span>
+
+    <span class="n">fiGts</span><span class="p">,</span> <span class="n">fiPreds</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">metricTypes</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># fi, r (regular)</span>
+    <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">metric</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_AVAILABLE_WORD_IMPORTANCE_METRICS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MetricNotAvailableError</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">_AVAILABLE_FEATURE_IMPORTANCE_METRICS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">vocabWords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">vocabWords</span> <span class="o">=</span> <span class="n">_get_reference_words</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">preds</span><span class="p">)</span>
+            <span class="n">fiGts</span> <span class="o">=</span> <span class="n">word_to_feature_importance</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">vocabWords</span><span class="p">)</span>
+            <span class="n">fiPreds</span> <span class="o">=</span> <span class="n">word_to_feature_importance</span><span class="p">(</span><span class="n">preds</span><span class="p">,</span> <span class="n">vocabWords</span><span class="p">)</span>
+            <span class="n">metricTypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;fi&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">metricTypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
+    <span class="n">fiMetrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">metrics</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">metricType</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">metricTypes</span><span class="p">)</span> <span class="k">if</span> <span class="n">metricType</span> <span class="o">==</span> <span class="s1">&#39;fi&#39;</span><span class="p">]</span>
+    <span class="c1"># regMetrics = [metrics[i] for i, metricType in enumerate(metricTypes) if metricType == &#39;r&#39;]</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fiMetrics</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># multiple vocabularies (gts or preds possibly of different lengths)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vocabWords</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">gt</span><span class="p">,</span> <span class="n">pred</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">fiGts</span><span class="p">,</span> <span class="n">fiPreds</span><span class="p">):</span>
+                <span class="n">verbose</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature_importance_scores</span><span class="p">(</span><span class="n">gt</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">fiMetrics</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                           <span class="n">binThreshold</span><span class="o">=</span><span class="n">binThreshold</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">))</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">average</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># noinspection PyTypeChecker</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">feature_importance_scores</span><span class="p">(</span><span class="n">fiGts</span><span class="p">,</span> <span class="n">fiPreds</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">fiMetrics</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="n">average</span><span class="p">,</span>
+                                            <span class="n">binThreshold</span><span class="o">=</span><span class="n">binThreshold</span><span class="p">)</span>
+
+    <span class="c1"># if len(regMetrics) != 0:</span>
+    <span class="c1">#     if isinstance(gts, dict):</span>
+    <span class="c1">#         if not isinstance(preds, dict):</span>
+    <span class="c1">#             raise IncompatibleGTAndPredError</span>
+    <span class="c1">#         # only 1 observation, return feature importance score or and custom score.</span>
+    <span class="c1">#         raise NotImplementedError(&#39;Custom scores not implemented yet.&#39;)</span>
+    <span class="c1">#     elif isinstance(gts, (list, np.ndarray, tuple)):</span>
+    <span class="c1">#         if not isinstance(preds, (list, np.ndarray, tuple)):</span>
+    <span class="c1">#             raise IncompatibleGTAndPredError</span>
+    <span class="c1">#         # multiple obs, return feature importance scores or and custom scores.</span>
+    <span class="c1">#         raise NotImplementedError(&#39;Custom scores not implemented yet.&#39;)</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         raise TypeError(&quot;Ground truth type not supported.&quot;)</span>
+
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="word_to_feature_importance"><a class="viewcode-back" href="../../../teex.wordImportance.html#teex.wordImportance.eval.word_to_feature_importance">[docs]</a><span class="k">def</span> <span class="nf">word_to_feature_importance</span><span class="p">(</span><span class="n">wordImportances</span><span class="p">,</span> <span class="n">vocabWords</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Maps words with importance weights into a feature importance vector.</span>
+
+<span class="sd">    :param wordImportances: (dict or array-like of dicts) words with feature importances as values with the same format</span>
+<span class="sd">        as described in the method :func:`word_importance_scores`.</span>
+<span class="sd">    :param vocabWords: (array-like of str, 1D or 2D for multiple reference vocabularies) :math:`m` words that</span>
+<span class="sd">        should be taken into account when transforming into vector representations. Their order will be followed.</span>
+<span class="sd">    :return: word importances as feature importance vectors. Return types:</span>
+
+<span class="sd">        - list of np.ndarray, if multiple vocabularies because of the possible difference in size of the reference</span>
+<span class="sd">          vocabularies in each explanation.</span>
+<span class="sd">        - np.ndarray, if only 1 vocabulary</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; word_to_feature_importance({&#39;a&#39;: 1, &#39;b&#39;: .5},[&#39;a&#39;, &#39;b&#39;, &#39;c&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; [1, .5, 0]</span>
+<span class="sd">    &gt;&gt;&gt; word_to_feature_importance([{&#39;a&#39;: 1, &#39;b&#39;: .5}, {&#39;b&#39;: .5, &#39;c&#39;: .9}],[&#39;a&#39;, &#39;b&#39;, &#39;c&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; [[1, .5, 0. ], [0, .5, .9]]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wordImportances</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># check if we have multiple reference vocabularies</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vocabWords</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">wordDict</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wordImportances</span><span class="p">):</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">wordDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">wordDict</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">vocabWords</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span>
+                                    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">wordDict</span> <span class="ow">in</span> <span class="n">wordImportances</span><span class="p">:</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">wordDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">wordDict</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">vocabWords</span><span class="p">],</span>
+                                    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wordImportances</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">wordImportances</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">wordImportances</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">vocabWords</span><span class="p">],</span>
+                       <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The BOW is not a dict or array-like of dicts.&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
 </pre></div>
 
            </div>

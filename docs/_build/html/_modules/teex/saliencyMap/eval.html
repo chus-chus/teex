@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>teex.saliencyMap.eval &mdash; teex 1.0.0-alpha documentation</title>
+  <title>teex.saliencyMap.eval &mdash; teex 1.0.0 documentation</title>
   
 
   
@@ -85,7 +85,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">teex</a></li>
 </ul>
@@ -159,6 +159,7 @@
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
+<span class="kn">from</span> <span class="nn">teex._utils._errors</span> <span class="kn">import</span> <span class="n">MetricNotAvailableError</span>
 <span class="kn">from</span> <span class="nn">teex.featureImportance.eval</span> <span class="kn">import</span> <span class="n">feature_importance_scores</span>
 <span class="kn">from</span> <span class="nn">teex.saliencyMap.data</span> <span class="kn">import</span> <span class="n">binarize_rgb_mask</span>
 
@@ -221,7 +222,7 @@
 
     <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">metric</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_AVAILABLE_SALIENCY_MAP_METRICS</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">&#39; metric not valid. Use </span><span class="si">{</span><span class="n">_AVAILABLE_SALIENCY_MAP_METRICS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MetricNotAvailableError</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="c1"># Single binary g.t. mask</span>
@@ -237,15 +238,15 @@
             <span class="k">return</span> <span class="n">feature_importance_scores</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
                                              <span class="n">sMaps</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">sMaps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sMaps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">sMaps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
                                              <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="n">average</span><span class="p">,</span> <span class="n">binThreshold</span><span class="o">=</span><span class="n">binThreshold</span><span class="p">)</span>
+    <span class="c1"># multiple RGB masks provided</span>
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Binarizing </span><span class="si">{</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1"> g.t. RGB masks.&#39;</span><span class="p">)</span>
-        <span class="n">newGts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">newGts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
         <span class="k">for</span> <span class="n">imIndex</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-            <span class="n">newGts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">binarize_rgb_mask</span><span class="p">(</span><span class="n">gts</span><span class="p">[</span><span class="n">imIndex</span><span class="p">],</span> <span class="n">bgValue</span><span class="o">=</span><span class="n">gtBackgroundVals</span><span class="p">))</span>
-        <span class="n">gts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">newGts</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">feature_importance_scores</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
-                                         <span class="n">sMaps</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">sMaps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sMaps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">sMaps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
-                                         <span class="n">average</span><span class="o">=</span><span class="n">average</span><span class="p">,</span> <span class="n">binThreshold</span><span class="o">=</span><span class="n">binThreshold</span><span class="p">)</span>
+            <span class="n">newGts</span><span class="p">[</span><span class="n">imIndex</span><span class="p">]</span> <span class="o">=</span> <span class="n">binarize_rgb_mask</span><span class="p">(</span><span class="n">gts</span><span class="p">[</span><span class="n">imIndex</span><span class="p">],</span> <span class="n">bgValue</span><span class="o">=</span><span class="n">gtBackgroundVals</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">feature_importance_scores</span><span class="p">(</span><span class="n">newGts</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">newGts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">newGts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">newGts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                                         <span class="n">sMaps</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">sMaps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sMaps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">sMaps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                                         <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="n">average</span><span class="p">,</span> <span class="n">binThreshold</span><span class="o">=</span><span class="n">binThreshold</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Shape </span><span class="si">{</span><span class="n">gts</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1"> of ground truth explanations not supported.&#39;</span><span class="p">)</span></div>
 </pre></div>

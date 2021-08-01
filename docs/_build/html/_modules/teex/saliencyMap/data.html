@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>teex.saliencyMap.data &mdash; teex 1.0.0-alpha documentation</title>
+  <title>teex.saliencyMap.data &mdash; teex 1.0.0 documentation</title>
   
 
   
@@ -85,7 +85,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">teex</a></li>
 </ul>
@@ -163,7 +163,7 @@
 
 <span class="kn">import</span> <span class="nn">cv2</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">PIL</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 
 <span class="kn">from</span> <span class="nn">teex._utils._misc</span> <span class="kn">import</span> <span class="n">_download_extract_zip</span>
 <span class="kn">from</span> <span class="nn">teex._utils._paths</span> <span class="kn">import</span> <span class="n">_check_pathlib_dir</span>
@@ -484,11 +484,11 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_read_items</span><span class="p">(</span><span class="n">obsPath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">expPath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">obsLabel</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="n">img</span> <span class="o">=</span> <span class="n">PIL</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">obsPath</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">)</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">obsPath</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">obsLabel</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">exp</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">exp</span> <span class="o">=</span> <span class="n">PIL</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">expPath</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">)</span>
+            <span class="n">exp</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">expPath</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">img</span><span class="p">,</span> <span class="n">exp</span></div>
 
 
@@ -517,15 +517,14 @@
     <span class="n">imgmod</span> <span class="o">=</span> <span class="n">rgb_to_grayscale</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
     <span class="n">maxVal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">imgmod</span><span class="p">)</span>
     <span class="n">minVal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">imgmod</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
     <span class="k">if</span> <span class="n">bgValue</span> <span class="o">==</span> <span class="s1">&#39;high&#39;</span><span class="p">:</span>
         <span class="c1"># assign darker pixels the positive class</span>
-        <span class="n">imgmod</span><span class="p">[</span><span class="n">imgmod</span> <span class="o">&lt;</span> <span class="n">maxVal</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">imgmod</span><span class="p">[</span><span class="n">imgmod</span> <span class="o">==</span> <span class="n">maxVal</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">res</span><span class="p">[</span><span class="n">imgmod</span> <span class="o">&lt;</span> <span class="n">maxVal</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">elif</span> <span class="n">bgValue</span> <span class="o">==</span> <span class="s1">&#39;low&#39;</span><span class="p">:</span>
         <span class="c1"># assign lighter pixels the positive class</span>
-        <span class="n">imgmod</span><span class="p">[</span><span class="n">imgmod</span> <span class="o">&gt;</span> <span class="n">minVal</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">imgmod</span><span class="p">[</span><span class="n">imgmod</span> <span class="o">==</span> <span class="n">minVal</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">return</span> <span class="n">imgmod</span></div>
+        <span class="n">res</span><span class="p">[</span><span class="n">imgmod</span> <span class="o">&gt;</span> <span class="n">minVal</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">res</span></div>
 </pre></div>
 
            </div>

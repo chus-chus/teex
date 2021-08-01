@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>teex.wordImportance.data &mdash; teex 1.0.0-alpha documentation</title>
+  <title>teex.wordImportance.data &mdash; teex 1.0.0 documentation</title>
   
 
   
@@ -85,7 +85,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">teex</a></li>
 </ul>
@@ -194,16 +194,16 @@
             <span class="n">fileNames</span> <span class="o">=</span> <span class="n">_newsgroupAll</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
             <span class="n">labels</span> <span class="o">=</span> <span class="n">_newsgroupLabels</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">classLabel</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">fileNames</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="p">(</span><span class="s1">&#39;data/&#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="p">(</span><span class="s1">&#39;data/&#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)),</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
                     <span class="n">obs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
                 <span class="n">label</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">classLabel</span><span class="p">)</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="p">(</span><span class="s1">&#39;expl/&#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span><span class="p">)),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="p">(</span><span class="s1">&#39;expl/&#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span><span class="p">)),</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
                     <span class="n">exp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="s1">&#39;words&#39;</span><span class="p">])</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="p">(</span><span class="s1">&#39;data/&#39;</span> <span class="o">+</span> <span class="n">_newsgroupAll</span><span class="p">[</span><span class="n">item</span><span class="p">])),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="p">(</span><span class="s1">&#39;data/&#39;</span> <span class="o">+</span> <span class="n">_newsgroupAll</span><span class="p">[</span><span class="n">item</span><span class="p">])),</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
                 <span class="n">obs</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
             <span class="n">label</span> <span class="o">=</span> <span class="n">_newsgroupLabels</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="p">(</span><span class="s1">&#39;expl/&#39;</span> <span class="o">+</span> <span class="n">_newsgroupAll</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span><span class="p">)),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="p">(</span><span class="s1">&#39;expl/&#39;</span> <span class="o">+</span> <span class="n">_newsgroupAll</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span><span class="p">)),</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
                 <span class="n">exp</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="s1">&#39;words&#39;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Invalid argument type.&#39;</span><span class="p">)</span>
@@ -217,7 +217,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">_check_pathlib_dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s1">&#39;expl&#39;</span><span class="p">)</span> <span class="ow">and</span>
                 <span class="n">_check_pathlib_dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s1">&#39;data&#39;</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_download</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_download</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">_download_extract_zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">_newsgroup_url</span><span class="p">,</span> <span class="s1">&#39;rawNewsgroup.zip&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_class_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>

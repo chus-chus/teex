@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>teex.wordImportance package &mdash; teex 1.0.0-alpha documentation</title>
+  <title>teex.wordImportance package &mdash; teex 1.0.0 documentation</title>
   
 
   
@@ -35,6 +35,7 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -86,7 +87,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">teex</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="teex.html">teex package</a><ul class="current">
@@ -206,58 +207,82 @@ word in <code class="code docutils literal notranslate"><span class="pre">obs</s
 <p>Module for evaluation of word importance explanations.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="teex.wordImportance.eval.word_importance_scores">
-<span class="sig-prename descclassname"><span class="pre">teex.wordImportance.eval.</span></span><span class="sig-name descname"><span class="pre">word_importance_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teex/wordImportance/eval.html#word_importance_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.wordImportance.eval.word_importance_scores" title="Permalink to this definition">¶</a></dt>
-<dd><p>Quality metrics for word importance explanations, where each word is considered as a feature.</p>
+<span class="sig-prename descclassname"><span class="pre">teex.wordImportance.eval.</span></span><span class="sig-name descname"><span class="pre">word_importance_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preds</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vocabWords</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binThreshold</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/teex/wordImportance/eval.html#word_importance_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.wordImportance.eval.word_importance_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quality metrics for word importance explanations, where each word is considered as a feature. An example of
+an explanation:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="s1">&#39;skate&#39;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="s1">&#39;me&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>gts</strong> – (dict, array-like of dicts) ground truth word importance/s, where each BOW is represented as a
-dictionary with words as keys and values as importances. Importances must be</p></li>
-<li><p><strong>preds</strong> – (dict, array-like of dicts) predicted word importance/s, where each BOW is represented in the same
-way as the ground truths.</p></li>
-<li><p><strong>metrics</strong> – <p>(str / array-like of str, default=[‘auc’]) Quality metric/s to compute. Available:</p>
-<ul>
-<li><dl class="simple">
-<dt>Classification scores:</dt><dd><ul>
-<li><p>’auc’: ROC AUC score. The val of each pixel of each saliency map in <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> is considered as a
-prediction probability of the pixel pertaining to the salient class.</p></li>
-<li><p>’fscore’: F1 Score.</p></li>
-<li><p>’prec’: Precision Score.</p></li>
-<li><p>’rec’: Recall score.</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>Similarity metrics:</dt><dd><ul>
-<li><p>’cs’: Cosine Similarity.</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
-<p>For ‘fscore’, ‘prec’, ‘rec’ and ‘cs’, the saliency maps in <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> are binarized (see param
-<code class="code docutils literal notranslate"><span class="pre">binThreshold</span></code>).</p>
-</p></li>
-<li><p><strong>binThreshold</strong> – (float in [0, 1]) pixels of images in <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> with a val bigger than this will be set
-to 1 and 0 otherwise when binarizing for the computation of ‘fscore’, ‘prec’, ‘rec’ and ‘auc’.</p></li>
-<li><p><strong>gtBackgroundVals</strong> – (str) Only used when provided ground truth explanations are RGB. Color of the background
-of the g.t. masks ‘low’ if pixels in the mask representing the non-salient class are dark, ‘high’ otherwise).</p></li>
-<li><p><strong>average</strong> – (bool, default <code class="code docutils literal notranslate"><span class="pre">True</span></code>) Used only if <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> contain multiple
-observations. Should the computed metrics be averaged across all of the samples?</p></li>
+dictionary with words as keys and floats as importances. Importances must be in <span class="math notranslate nohighlight">\([0, 1]\)</span> or +
+<span class="math notranslate nohighlight">\([-1, 1]\)</span>.</p></li>
+<li><p><strong>preds</strong> – (dict, array-like of dicts) predicted word importance/s, where each BOW is represented as a
+dictionary with words as keys and floats as importances. Importances must be in the same scale as param.
+<code class="docutils literal notranslate"><span class="pre">gts</span></code>.</p></li>
+<li><p><strong>vocabWords</strong> – (array-like of str 1D or 2D for multiple reference vocabularies, default None) Vocabulary words.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the union of the words in each ground truth and predicted explanation will be interpreted as the
+vocabulary words. This is needed for when explanations are converted to feature importance vectors. If this
+parameter is provided as a 1D list, the vocabulary words will be the same for all explanations, but if not
+provided or given as a 2D array-like (same number of reference vocabularies as there are explanations),
+different vocabulary words will be considered for each explanation.</p></li>
+<li><p><strong>metrics</strong> – (str / array-like of str, default=[‘prec’]) Quality metric/s to compute. Available:
+- All metrics in <a class="reference internal" href="teex.featureImportance.html#teex.featureImportance.eval.feature_importance_scores" title="teex.featureImportance.eval.feature_importance_scores"><code class="xref py py-func docutils literal notranslate"><span class="pre">teex.featureImportance.eval.feature_importance_scores()</span></code></a>.</p></li>
+<li><p><strong>binThreshold</strong> (<em>float</em>) – (in [0, 1], default .5) pixels of images in <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> with a val bigger than this
+will be set to 1 and 0 otherwise when binarizing for the computation of ‘fscore’, ‘prec’, ‘rec’ and ‘auc’.</p></li>
+<li><p><strong>average</strong> (<em>bool</em>) – (default <code class="code docutils literal notranslate"><span class="pre">True</span></code>) Used only if <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">preds</span></code> contain multiple
+observations. Should the computed metrics be averaged across all samples?</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p>(ndarray) specified metric/s in the original order. Can be of shape</p>
+<dd class="field-even"><p><p>specified metric/s in the original order. Can be of shape:</p>
 <ul class="simple">
-<li><p>(n_metrics,) if only one image has been provided in both <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> or when both are
+<li><p>(n_metrics,) if only one image has been provided in both <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">preds</span></code> or when both are
 contain multiple observations and <code class="code docutils literal notranslate"><span class="pre">average=True</span></code>.</p></li>
-<li><p>(n_metrics, n_samples) if <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> contain multiple observations and
+<li><p>(n_metrics, n_samples) if <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">preds</span></code> contain multiple observations and
 <code class="code docutils literal notranslate"><span class="pre">average=False</span></code>.</p></li>
 </ul>
 </p>
 </dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.wordImportance.eval.word_to_feature_importance">
+<span class="sig-prename descclassname"><span class="pre">teex.wordImportance.eval.</span></span><span class="sig-name descname"><span class="pre">word_to_feature_importance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wordImportances</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vocabWords</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/teex/wordImportance/eval.html#word_to_feature_importance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.wordImportance.eval.word_to_feature_importance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maps words with importance weights into a feature importance vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wordImportances</strong> – (dict or array-like of dicts) words with feature importances as values with the same format
+as described in the method <a class="reference internal" href="#teex.wordImportance.eval.word_importance_scores" title="teex.wordImportance.eval.word_importance_scores"><code class="xref py py-func docutils literal notranslate"><span class="pre">word_importance_scores()</span></code></a>.</p></li>
+<li><p><strong>vocabWords</strong> – (array-like of str, 1D or 2D for multiple reference vocabularies) <span class="math notranslate nohighlight">\(m\)</span> words that
+should be taken into account when transforming into vector representations. Their order will be followed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>word importances as feature importance vectors. Return types:</p>
+<ul class="simple">
+<li><p>list of np.ndarray, if multiple vocabularies because of the possible difference in size of the reference
+vocabularies in each explanation.</p></li>
+<li><p>np.ndarray, if only 1 vocabulary</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">word_to_feature_importance</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">},[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">word_to_feature_importance</span><span class="p">([{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="mf">.9</span><span class="p">}],[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mf">0.</span> <span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mf">.9</span><span class="p">]]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

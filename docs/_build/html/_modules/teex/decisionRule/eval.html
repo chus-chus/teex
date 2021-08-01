@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>teex.decisionRule.eval &mdash; teex 1.0.0-alpha documentation</title>
+  <title>teex.decisionRule.eval &mdash; teex 1.0.0 documentation</title>
   
 
   
@@ -85,7 +85,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">teex</a></li>
 </ul>
@@ -158,7 +158,8 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">teex.decisionRule.data</span> <span class="kn">import</span> <span class="n">DecisionRule</span><span class="p">,</span> <span class="n">rule_to_feature_importance</span><span class="p">,</span> <span class="n">TransparentRuleClassifier</span><span class="p">,</span> <span class="n">Statement</span>
+<span class="kn">from</span> <span class="nn">teex._utils._errors</span> <span class="kn">import</span> <span class="n">MetricNotAvailableError</span>
+<span class="kn">from</span> <span class="nn">teex.decisionRule.data</span> <span class="kn">import</span> <span class="n">DecisionRule</span><span class="p">,</span> <span class="n">rule_to_feature_importance</span><span class="p">,</span> <span class="n">Statement</span>
 <span class="kn">from</span> <span class="nn">teex.featureImportance.eval</span> <span class="kn">import</span> <span class="n">feature_importance_scores</span>
 
 <span class="n">_AVAILABLE_DECISION_RULE_METRICS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;fscore&#39;</span><span class="p">,</span> <span class="s1">&#39;prec&#39;</span><span class="p">,</span> <span class="s1">&#39;rec&#39;</span><span class="p">,</span> <span class="s1">&#39;cs&#39;</span><span class="p">,</span> <span class="s1">&#39;auc&#39;</span><span class="p">,</span> <span class="s1">&#39;crq&#39;</span><span class="p">}</span>
@@ -181,7 +182,7 @@
 
 <span class="sd">        \\delta_{\\varepsilon}(e_i, \\tilde{e}_i) =</span>
 <span class="sd">                \\begin{cases}</span>
-<span class="sd">                    1 &amp; \\text{if } |e_i - \\tilde{e}_i| \\leq \\varepsilon \\wedge |e_i| \\neq \\infty \wedge</span>
+<span class="sd">                    1 &amp; \\text{if } |e_i - \\tilde{e}_i| \\leq \\varepsilon \\wedge |e_i| \\neq \\infty \\wedge</span>
 <span class="sd">                        |\\tilde{e}_i| \\neq \\infty, \\newline</span>
 <span class="sd">                    0 &amp; \\text{otherwise}</span>
 <span class="sd">                \\end{cases}</span>
@@ -252,7 +253,7 @@
 <span class="sd">    :param rules: (DecisionRule or array-like of DecisionRules) approximated decision rule/s.</span>
 <span class="sd">    :param allFeatures: (array-like) names of all of the relevant features (i.e. :code:`featureNames`</span>
 <span class="sd">        of :class:`teex.decisionRule.data.SenecaDR` object.)</span>
-<span class="sd">    :param metrics: (array-like of str, default :code:`[&#39;fscore&#39;]`) metris to compute. Available:</span>
+<span class="sd">    :param metrics: (array-like of str, default :code:`[&#39;fscore&#39;]`) metrics to compute. Available:</span>
 
 <span class="sd">        - &#39;fscore&#39;: Computes the F1 Score between the ground truths and the predicted vectors.</span>
 <span class="sd">        - &#39;prec&#39;: Computes the Precision Score between the ground truths and the predicted vectors.</span>
@@ -276,11 +277,11 @@
     <span class="n">isArrayLike</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">isArrayLike</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">metrics</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_AVAILABLE_DECISION_RULE_METRICS</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">metrics</span><span class="si">}</span><span class="s2">&#39; metric not valid. Use </span><span class="si">{</span><span class="n">_AVAILABLE_DECISION_RULE_METRICS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MetricNotAvailableError</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">metric</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_AVAILABLE_DECISION_RULE_METRICS</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">&#39; metric not valid. Use </span><span class="si">{</span><span class="n">_AVAILABLE_DECISION_RULE_METRICS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">MetricNotAvailableError</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
 
     <span class="n">crq</span><span class="p">,</span> <span class="n">crqIndex</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
     <span class="n">crqParams</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span> <span class="k">if</span> <span class="n">crqParams</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">crqParams</span>
@@ -310,7 +311,6 @@
         <span class="k">if</span> <span class="n">isArrayLike</span><span class="p">:</span>
             <span class="n">metrics</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">crqIndex</span><span class="p">,</span> <span class="s1">&#39;crq&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">res</span></div>
-
 </pre></div>
 
            </div>

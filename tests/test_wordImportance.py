@@ -47,8 +47,8 @@ class TestWIMetrics(unittest.TestCase):
         scores = word_importance_scores(w1, w2, metrics=self.metrics)
         self.assertTrue((scores == np.zeros(len(self.metrics))).all())
 
-        w1 = [{'test': 1, 'this': 0} for i in range(3)]
-        w2 = [{'test': 0, 'this': 1} for i in range(3)]
+        w1 = [{'test': 1, 'this': 0} for _ in range(3)]
+        w2 = [{'test': 0, 'this': 1} for _ in range(3)]
         scores = word_importance_scores(w1, w2, metrics=self.metrics)
         self.assertTrue((scores == np.zeros(len(self.metrics))).all())
 

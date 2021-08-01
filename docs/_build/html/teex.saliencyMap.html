@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>teex.saliencyMap package &mdash; teex 1.0.0-alpha documentation</title>
+  <title>teex.saliencyMap package &mdash; teex 1.0.0 documentation</title>
   
 
   
@@ -87,7 +87,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">teex</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="teex.html">teex package</a><ul class="current">
@@ -261,7 +261,7 @@ the pattern, 0 otherwise. To be trained only a pattern needs to be fed. Follows 
 [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021].</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="teex.saliencyMap.data.TransparentImageClassifier.explain">
-<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#TransparentImageClassifier.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.explain" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#TransparentImageClassifier.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.explain" title="Permalink to this definition">¶</a></dt>
 <dd><p>Explain observations’ predictions with binary masks (pixel importance arrays).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -275,13 +275,13 @@ the pattern, 0 otherwise. To be trained only a pattern needs to be fed. Follows 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="teex.saliencyMap.data.TransparentImageClassifier.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellH</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellW</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#TransparentImageClassifier.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.fit" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellH</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellW</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#TransparentImageClassifier.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fits the model.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="teex.saliencyMap.data.TransparentImageClassifier.predict">
-<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#TransparentImageClassifier.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.predict" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#TransparentImageClassifier.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.predict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Predicts the class for each observation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -295,7 +295,7 @@ the pattern, 0 otherwise. To be trained only a pattern needs to be fed. Follows 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="teex.saliencyMap.data.TransparentImageClassifier.predict_proba">
-<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#TransparentImageClassifier.predict_proba"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.predict_proba" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#TransparentImageClassifier.predict_proba"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.predict_proba" title="Permalink to this definition">¶</a></dt>
 <dd><p>Predicts probability that each observation belongs to class 1 or 0. Probability of class 1 will be 1 if
 the image contains the pattern and 0 otherwise.</p>
 <dl class="field-list simple">
@@ -312,7 +312,7 @@ the image contains the pattern and 0 otherwise.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="teex.saliencyMap.data.binarize_rgb_mask">
-<span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.data.</span></span><span class="sig-name descname"><span class="pre">binarize_rgb_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bgValue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'high'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.array</span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#binarize_rgb_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.binarize_rgb_mask" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.data.</span></span><span class="sig-name descname"><span class="pre">binarize_rgb_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bgValue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'high'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.array</span></span></span><a class="reference internal" href="_modules/teex/saliencyMap/data.html#binarize_rgb_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.binarize_rgb_mask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Binarizes a RGB binary mask, letting the background (negative class) be 0. Use this function when the image to
 binarize has a very defined background.</p>
 <dl class="field-list simple">
