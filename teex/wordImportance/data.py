@@ -38,16 +38,16 @@ class Newsgroup(_ClassificationDataset):
             fileNames = _newsgroupAll[item]
             labels = _newsgroupLabels[item]
             for name, classLabel in zip(fileNames, labels):
-                with open(str(self._path / ('data/' + name)), 'r') as t:
+                with open(str(self._path / ('data/' + name)), 'rb') as t:
                     obs.append(t.read())
                 label.append(classLabel)
-                with open(str(self._path / ('expl/' + name + '.json')), 'r') as t:
+                with open(str(self._path / ('expl/' + name + '.json')), 'rb') as t:
                     exp.append(json.load(t)['words'])
         elif isinstance(item, int):
-            with open(str(self._path / ('data/' + _newsgroupAll[item])), 'r') as t:
+            with open(str(self._path / ('data/' + _newsgroupAll[item])), 'rb') as t:
                 obs = t.read()
             label = _newsgroupLabels[item]
-            with open(str(self._path / ('expl/' + _newsgroupAll[item] + '.json')), 'r') as t:
+            with open(str(self._path / ('expl/' + _newsgroupAll[item] + '.json')), 'rb') as t:
                 exp = json.load(t)['words']
         else:
             raise TypeError('Invalid argument type.')
@@ -61,7 +61,7 @@ class Newsgroup(_ClassificationDataset):
         return (_check_pathlib_dir(self._path / 'expl') and
                 _check_pathlib_dir(self._path / 'data'))
 
-    def _download(self) -> bool:
+    def _download(self) -> None:
         _download_extract_zip(self._path, _newsgroup_url, 'rawNewsgroup.zip')
 
     def _get_class_map(self) -> dict:

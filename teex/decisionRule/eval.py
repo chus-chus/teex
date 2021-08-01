@@ -3,7 +3,7 @@
 import numpy as np
 
 from teex._utils._errors import MetricNotAvailableError
-from teex.decisionRule.data import DecisionRule, rule_to_feature_importance, TransparentRuleClassifier, Statement
+from teex.decisionRule.data import DecisionRule, rule_to_feature_importance, Statement
 from teex.featureImportance.eval import feature_importance_scores
 
 _AVAILABLE_DECISION_RULE_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc', 'crq'}
@@ -26,7 +26,7 @@ def complete_rule_quality(gts: DecisionRule, rules: DecisionRule, eps: float = 0
 
         \\delta_{\\varepsilon}(e_i, \\tilde{e}_i) =
                 \\begin{cases}
-                    1 & \\text{if } |e_i - \\tilde{e}_i| \\leq \\varepsilon \\wedge |e_i| \\neq \\infty \wedge
+                    1 & \\text{if } |e_i - \\tilde{e}_i| \\leq \\varepsilon \\wedge |e_i| \\neq \\infty \\wedge
                         |\\tilde{e}_i| \\neq \\infty, \\newline
                     0 & \\text{otherwise}
                 \\end{cases}
@@ -155,4 +155,3 @@ def rule_scores(gts: DecisionRule, rules: DecisionRule, allFeatures, metrics=Non
         if isArrayLike:
             metrics.insert(crqIndex, 'crq')
     return res
-

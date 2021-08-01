@@ -41,7 +41,54 @@ def _individual_fi_metrics(gt, pred, binGt, binPred, metric, predsNegative, thre
         return met.roc_auc_score(binGt, pred)
 
 
-def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdType='abs', binThreshold=0.5):
+def _compute_feature_importance_scores(binaryGts, binaryPreds, gts, preds, classScores, realScores, metrics,
+                                       predsNegative, thresholdType, verbose):
+    ret = []
+    rng = np.random.default_rng(888)
+    someUnifBGt, someUnifBPred, someEmptyGt, someEmptyPred = False, False, False, False
+    for binGt, binPred, gt, pred in zip(binaryGts, binaryPreds, gts, preds):
+        mets = []
+        uniformBGt, uniformBPred, emptyGt, emptyPred = _check_correct_array_values(binGt, binPred, gt, pred)
+
+        i = rng.integers(0, len(binGt))
+        if classScores:
+            if uniformBGt:
+                someUnifBGt = True
+                binGt[i] = int(not binGt[i])
+            if uniformBPred:
+                someUnifBPred = True
+                binPred[i] = int(not binPred[i])
+        if realScores:
+            if emptyGt:
+                someEmptyGt = True
+                gt[i] += 1e-4
+            if emptyPred:
+                someEmptyPred = True
+                pred[i] += 1e-4
+
+        for metric in metrics:
+            mets.append(_individual_fi_metrics(gt, pred, binGt, binPred, metric, predsNegative, thresholdType))
+
+        ret.append(mets)
+
+    if verbose == 1:
+        if someUnifBGt:
+            warnings.warn('A binary ground truth contains uniform values, so one entry has been randomly flipped '
+                          'for the metrics to be defined.')
+        if someUnifBPred:
+            warnings.warn('A binary prediction contains uniform values, so one entry has been randomly flipped '
+                          'for the metrics to be defined.')
+        if someEmptyGt:
+            warnings.warn('A ground truth does not contain values != 0, so 1e-4 has been added to one random entry '
+                          'in both.')
+        if someEmptyPred:
+            warnings.warn('A prediction does not contain values != 0, so 1e-4 has been added to one random entry '
+                          'in both.')
+
+    return np.array(ret).astype(np.float32)
+
+
+def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdType='abs', binThreshold=0.5, verbose=1):
     """ Computes quality metrics between one or more feature importance vectors. The values in the vectors must be
     bounded in [0, 1] or [-1, 1] (to indicate negative importances in the second case). If they are not, the values will
     be mapped.
@@ -102,6 +149,7 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
         (in [-1, 1]) Threshold for the binarization of the features for the computation of 'fscore', 'prec', 'rec' and
         'auc'. The binarization depends on both this parameter and :code:`thresholdType`.
         If :code:`thresholdType = 'abs'`, ``binThreshold`` cannot be negative.
+    :param int verbose: Verbosity level of warnings. ``1`` will report warnings, else will not.
     :return: (ndarray of shape (n_metrics,) or (n_samples, n_metrics)) specified metric/s in the indicated order. """
 
     if metrics is None:
@@ -114,9 +162,6 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
     for metric in metrics:
         if metric not in _AVAILABLE_FEATURE_IMPORTANCE_METRICS:
             raise MetricNotAvailableError(metric)
-
-    if not isinstance(gts, np.ndarray) or not isinstance(preds, np.ndarray):
-        raise TypeError('Ground truths and predictions must be np.ndarrays.')
 
     gts, _ = _check_fix_bounds(gts)
     preds, predsNegative = _check_fix_bounds(preds)
@@ -136,7 +181,6 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
         binaryGts, binaryPreds = binaryGts.reshape(1, -1), binaryPreds.reshape(1, -1)
         gts, preds = gts.reshape(1, -1), preds.reshape(1, -1)
 
-    ret = []
     # check if we are computing classification scores. This will reduce computations if ground truth vectors are
     # completely 0
     classScores, realScores = False, False
@@ -146,47 +190,8 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
         elif metric in ['cs']:
             realScores = True
 
-    rng = np.random.default_rng(888)
-    someUnifBGt, someUnifBPred, someEmptyGt, someEmptyPred = False, False, False, False
-    for binGt, binPred, gt, pred in zip(binaryGts, binaryPreds, gts, preds):
-        mets = []
-        uniformBGt, uniformBPred, emptyGt, emptyPred = _check_correct_array_values(binGt, binPred, gt, pred)
-
-        i = rng.integers(0, len(binGt))
-        if classScores:
-            if uniformBGt:
-                someUnifBGt = True
-                binGt[i] = int(not binGt[i])
-            if uniformBPred:
-                someUnifBPred = True
-                binPred[i] = int(not binPred[i])
-        if realScores:
-            if emptyGt:
-                someEmptyGt = True
-                gt[i] += 1e-4
-            if emptyPred:
-                someEmptyPred = True
-                pred[i] += 1e-4
-
-        if someUnifBGt:
-            warnings.warn('A binary ground truth contains uniform values, so one entry has been randomly flipped '
-                          'for the metrics to be defined.')
-        if someUnifBPred:
-            warnings.warn('A binary prediction contains uniform values, so one entry has been randomly flipped '
-                          'for the metrics to be defined.')
-        if someEmptyGt:
-            warnings.warn('A ground truth does not contain values != 0, so 1e-4 has been added to one random entry '
-                          'in both.')
-        if someEmptyPred:
-            warnings.warn('A prediction does not contain values != 0, so 1e-4 has been added to one random entry '
-                          'in both.')
-
-        for metric in metrics:
-            mets.append(_individual_fi_metrics(gt, pred, binGt, binPred, metric, predsNegative, thresholdType))
-
-        ret.append(mets)
-
-    ret = np.array(ret).astype(np.float32)
+    ret = _compute_feature_importance_scores(binaryGts, binaryPreds, gts, preds, classScores, realScores, metrics,
+                                             predsNegative, thresholdType, verbose)
 
     if average is True and binaryPreds.shape[0] > 1:
         ret = np.mean(ret, axis=0)

@@ -33,6 +33,12 @@ _newsgroupLabels = [0 for _ in range(len(_newsgroupElecNames))] + [1 for _ in ra
 __temp = list(zip(_newsgroupAll, _newsgroupLabels))
 random.shuffle(__temp)
 _newsgroupAll, _newsgroupLabels = zip(*__temp)
+_newsgroupAll = list(_newsgroupAll)
+_newsgroupLabels = list(_newsgroupLabels)
+
+# empty explanation
+del _newsgroupAll[172]
+del _newsgroupLabels[172]
 
 _newsgroupNEntries = len(_newsgroupAll)
 
