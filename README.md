@@ -53,7 +53,7 @@ This basic syntax is followed by the main evaluation APIs of all 4 explanation t
 - **Decision Rules**: ``decision_rule_scores``
 - **Word Importance**: ``word_importance_scores``
 
-- Other functionalities are included in each evaluation module. More about each explanation type can be found in the example notebooks and the documentation.
+Other functionalities are included in each evaluation module. More about each explanation type can be found in the example notebooks and the documentation.
 
 #### Metrics supported:
 
