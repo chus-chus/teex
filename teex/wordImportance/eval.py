@@ -46,6 +46,7 @@ def word_importance_scores(gts: Union[Dict[str, float], List[Dict[str, float]]],
         provided or given as a 2D array-like (same number of reference vocabularies as there are explanations),
         different vocabulary words will be considered for each explanation.
     :param metrics: (str / array-like of str, default=['prec']) Quality metric/s to compute. Available:
+
         - All metrics in :func:`teex.featureImportance.eval.feature_importance_scores`.
 
     :param float binThreshold: (in [0, 1], default .5) pixels of images in :code:`sMaps` with a val bigger than this
@@ -125,7 +126,7 @@ def word_to_feature_importance(wordImportances, vocabWords) -> list:
         as described in the method :func:`word_importance_scores`.
     :param vocabWords: (array-like of str, 1D or 2D for multiple reference vocabularies) :math:`m` words that
         should be taken into account when transforming into vector representations. Their order will be followed.
-    :return: word importances as feature importance vectors. Return types:
+    :return: Word importances as feature importance vectors. Return types:
 
         - list of np.ndarray, if multiple vocabularies because of the possible difference in size of the reference
           vocabularies in each explanation.
