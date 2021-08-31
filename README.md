@@ -1,4 +1,4 @@
-# teex
+# teex: a toolbox for evaluating XAI explanations
 
 [![PyPI Version](https://img.shields.io/pypi/v/teex)](https://img.shields.io/pypi/v/teex)
 [![Open GitHub Issues](https://img.shields.io/github/issues/chus-chus/teex)](https://img.shields.io/github/issues/chus-chus/teex)
