@@ -122,20 +122,20 @@ Here are some sample notebooks with examples:
 
 ---
 *Saliency maps*
-- [Retrieving image data with g.t. saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/gen_saliency_maps.ipynb)
-- [Evaluating saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/evaluating_saliency_maps.ipynb)
+- [Retrieving image data with g.t. saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/gen_saliency_map.ipynb)
+- [Evaluating saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/eval_saliency_map.ipynb)
 ---
 *Feature importance vectors (TBA)*
-- [Retrieving tabular data with g.t. feature importance explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/evaluating_saliency_maps.ipynb)
-- [Evaluating feature importance explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/evaluating_saliency_maps.ipynb)
+- [Retrieving tabular data with g.t. feature importance explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/gen_feature_importance.ipynb)
+- [Evaluating feature importance explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/eval_feature_importance.ipynb)
 ---
 *Decision rules (TBA)*
-- [Retrieving tabular data with g.t. decision rule explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/evaluating_saliency_maps.ipynb)
-- [Evaluating decision rule explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/evaluating_saliency_maps.ipynb)
+- [Retrieving tabular data with g.t. decision rule explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/gen_decision_rule.ipynb)
+- [Evaluating decision rule explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/eval_decision_rule.ipynb)
 ---
 *Word importance vectors (TBA)*
-- [Retrieving language data with g.t. word importance explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/evaluating_saliency_maps.ipynb)
-- [Evaluating word importance explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/evaluating_saliency_maps.ipynb)
+- [Retrieving language data with g.t. word importance explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/gen_word_importance.ipynb)
+- [Evaluating word importance explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/eval_word_importance.ipynb)
 
 
 ## Contributing
