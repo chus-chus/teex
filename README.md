@@ -99,7 +99,7 @@ Kahikatea trees (a species endemic to New Zealand) in the area or not. Observati
 explanation on the right.
 </p>
 
-Synthetic dataset scan also be generated effortlessly:
+Synthetic datasets can also be generated effortlessly:
 
 ```python
 from teex.saliencyMap.data import SenecaSM
@@ -120,7 +120,9 @@ The full API documentation can be found on [Read The Docs](https://teex.readthed
 
 Here are some sample notebooks with examples:
 
-- [Generating image data with g.t. saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/gen_saliency_maps_seneca.ipynb)
+- [Generating image data with g.t. saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/gen_saliency_maps.ipynb)
+- [Evaluating saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/evaluating_saliency_maps.ipynb)
+
 
 ## Contributing
 

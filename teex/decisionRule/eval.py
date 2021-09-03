@@ -12,7 +12,7 @@ _AVAILABLE_DECISION_RULE_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc', 'crq'}
 def complete_rule_quality(gts: DecisionRule, rules: DecisionRule, eps: float = 0.1) -> float:
     """ Computes the complete rule quality (crq) between two decision rules. All 'Statements' in both rules must be
     binary (have upper and lower bounds). The metric is defined as the proportion of lower and upper bounds in a rule
-    explanation whose that are eps-close to the respective lower and upper bounds (same feature) in the ground truth
+    explanation that are eps-close to the respective lower and upper bounds (same feature) in the ground truth
     rule explanation amongst those that are :math:`\\neq \\infty`. Mathematically, given two rules :math:`e, \\tilde{e}`
     and a similarity threshold :math:`\\varepsilon`, the quality of :math:`e` with respect to :math:`\\tilde{e}` is:
 

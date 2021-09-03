@@ -27,7 +27,7 @@ class TestDecisionRuleClass(unittest.TestCase):
 
 
 class TestDRDataSeneca(unittest.TestCase):
-    """ Tests for the DR seneca artifitial data generation class. """
+    """ Tests for the DR seneca artificial data generation class. """
 
     def setUp(self) -> None:
         self.nSamples = 5
