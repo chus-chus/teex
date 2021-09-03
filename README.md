@@ -50,7 +50,7 @@ This basic syntax is followed by the main evaluation APIs of all 4 explanation t
 
 - **Feature Importance**: ``feature_importance_scores``
 - **Saliency Maps**: ``saliency_map_scores``
-- **Decision Rules**: ``decision_rule_scores``
+- **Decision Rules**: ``rule_scores``
 - **Word Importance**: ``word_importance_scores``
 
 Other functionalities are included in each evaluation module. More about each explanation type can be found in the example notebooks and the documentation.
@@ -120,8 +120,22 @@ The full API documentation can be found on [Read The Docs](https://teex.readthed
 
 Here are some sample notebooks with examples:
 
-- [Generating image data with g.t. saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/gen_saliency_maps.ipynb)
+---
+*Saliency maps*
+- [Retrieving image data with g.t. saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/gen_saliency_maps.ipynb)
 - [Evaluating saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/evaluating_saliency_maps.ipynb)
+---
+*Feature importance vectors (TBA)*
+- [Retrieving tabular data with g.t. feature importance explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/evaluating_saliency_maps.ipynb)
+- [Evaluating feature importance explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/evaluating_saliency_maps.ipynb)
+---
+*Decision rules (TBA)*
+- [Retrieving tabular data with g.t. decision rule explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/evaluating_saliency_maps.ipynb)
+- [Evaluating decision rule explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/evaluating_saliency_maps.ipynb)
+---
+*Word importance vectors (TBA)*
+- [Retrieving language data with g.t. word importance explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/evaluating_saliency_maps.ipynb)
+- [Evaluating word importance explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/evaluating_saliency_maps.ipynb)
 
 
 ## Contributing
