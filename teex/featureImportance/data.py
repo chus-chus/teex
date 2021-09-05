@@ -137,7 +137,12 @@ class TransparentLinearClassifier(_BaseClassifier):
             exp = self._evaluate_derivatives({f: v for f, v in zip(self.featureNames, self.X[closest])})
             explanations.append(exp)
         exps = np.array(explanations, dtype=np.float32)
-        return np.round(np.interp(exps, (np.amin(exps), np.amax(exps)), (-1, +1)), 4)
+
+        for i in range(len(self.featureNames)):
+            # scale to (-1, 1) by feature max. and min. importance values
+            exps[:, i] = np.round(np.interp(exps[:, i], (np.amin(exps[:, i]), np.amax(exps[:, i])), (-1, +1)), 4)
+
+        return exps
 
     def _generate_expression(self):
         """ Generate a random linear expression following the procedure described in ["Evaluating local explanation
@@ -175,8 +180,8 @@ class TransparentLinearClassifier(_BaseClassifier):
         for feature in values.keys():
             try:
                 value = float(re(self.derivatives[feature].evalf(subs=values)))
-            except TypeError:
-                # expression is not defined
+            except TypeError or KeyError:
+                # expression is not defined or feature does not play a role in the expression
                 value = 0
             grad.append(value)
         return grad
