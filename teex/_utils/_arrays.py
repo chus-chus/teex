@@ -5,7 +5,7 @@ import numpy as np
 
 
 def _binarize_arrays(v, method: str, threshold: float) -> np.ndarray:
-    """ Binarize 1 or more array-like object/s of floats to have values :math:`\in \{0, 1\}`.
+    """ Binarize 1 or more array-like object/s of floats to have values :math:`\\in \\{0, 1\\}`.
 
     :param v: (1d array-like or 2d array-like of shape (n_features, n_samples)).
     :param method: (str) binarization method.
@@ -48,7 +48,7 @@ def _normalize_binary_mask(mask: np.array) -> np.array:
 
 def _array_is_binary(array: np.array) -> bool:
     """
-    Checks wether an array contains two or 1 unique values.
+    Checks whether an array contains two or 1 unique values.
     :param array: ndarray
     :return: Bool. True if array is binary.
     """
@@ -91,10 +91,8 @@ def _check_correct_array_values(binGt, binPred, gt, pred):
     return uniformBGt, uniformBPred, emptyGt, emptyPred
 
 
-def _check_fix_bounds(x: np.ndarray):
-    """ Map values of an np.ndarray on certain conditions.
-
-        if values in the range [-1, 1] or [0, 1]       -> do nothing
+def _scale_array(x: np.ndarray):
+    """ if values in the range [-1, 1] or [0, 1]       -> do nothing
         else:
             case 1: if values in the [0, inf] range    -> map to [0, 1]
             case 2: if values in the [-inf, 0] range   -> map to [-1, 1]

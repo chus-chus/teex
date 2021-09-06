@@ -8,8 +8,9 @@ import sklearn.metrics as met
 
 from scipy.spatial.distance import cdist
 
-from teex._utils._arrays import _binarize_arrays, _check_fix_bounds, _check_correct_array_values
+from teex._utils._arrays import _binarize_arrays, _check_correct_array_values
 from teex._utils._errors import MetricNotAvailableError
+from teex.featureImportance.data import scale_fi_bounds
 
 _AVAILABLE_FEATURE_IMPORTANCE_METRICS = {'fscore', 'prec', 'rec', 'cs', 'auc'}
 
@@ -163,8 +164,8 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
         if metric not in _AVAILABLE_FEATURE_IMPORTANCE_METRICS:
             raise MetricNotAvailableError(metric)
 
-    gts, _ = _check_fix_bounds(gts)
-    preds, predsNegative = _check_fix_bounds(preds)
+    gts, _ = scale_fi_bounds(gts)
+    preds, predsNegative = scale_fi_bounds(preds)
 
     # binarize if necessary
     if not np.array_equal(np.unique(gts), np.array([0, 1])):

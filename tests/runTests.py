@@ -1,3 +1,5 @@
+""" One can run all tests from this script if there is not an automated test procedure configured. """
+
 import unittest
 
 import tests.test_featureImportance

@@ -4,6 +4,7 @@ methods and classes for decisionRule data manipulation.
 All of the datasets must be instanced first. Then, when sliced, they all return the observations, labels and ground
 truth explanations, respectively. """
 import re
+from typing import Tuple, List
 
 import numpy as np
 from sklearn.datasets import make_classification
@@ -274,7 +275,7 @@ class TransparentRuleClassifier(_BaseClassifier):
     (**use that and get it from there preferably**).
 
     Transparent, rule-based classifier with decision rules as explanations. For each prediction, the associated
-    ground truth explanation is available with the :func:`explain` method. Follows the sklean API. Presented in
+    ground truth explanation is available with the :func:`explain` method. Follows the sklearn API. Presented in
     [Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021]. """
 
     def __init__(self, **kwargs):
@@ -327,7 +328,7 @@ class TransparentRuleClassifier(_BaseClassifier):
         rules = []
         # for each sample, retrieve its path and navigate it, looking at the precomputed decision splits
         for sampleId in range(len(obs)):
-            nodePath = nodeIndicators.indices[nodeIndicators.indptr[sampleId]:nodeIndicators.indptr[sampleId+1]]
+            nodePath = nodeIndicators.indices[nodeIndicators.indptr[sampleId]:nodeIndicators.indptr[sampleId + 1]]
             rule = DecisionRule()
             for nodeId in nodePath:
                 # node is not a leaf if None
@@ -395,7 +396,7 @@ class SenecaDR(_SyntheticDataset):
         self.featureNames = _generate_feature_names(nFeatures) if featureNames is None else featureNames
         self.randomState = randomState
 
-        self.X, self.y, self.exp, self.transparentClassifier = self._gen_dataset_seneca_dr()
+        self.X, self.y, self.exp, self.transparentModel = self._gen_dataset_seneca_dr()
 
     def __getitem__(self, item):
         if isinstance(item, (slice, int)):
@@ -471,7 +472,7 @@ def _generate_binary_statement(feature, op1, val1, op2, val2):
     return s
 
 
-def _clean_binary_statement(bounds: list):
+def clean_binary_statement(bounds: list):
     """ Parses binary statement edge cases from a list of operators and values. Checks if the edge cases
     occur for any pair of operator and value. Does not fix errors with bounds != or =.
 
@@ -533,11 +534,11 @@ def _get_statements_dict(strRule, statementType='binary') -> dict:
             if len(conditions) == 1:
                 statements[feature] = _induce_binary_statement(feature, conditions[0][0], conditions[0][1])
             elif len(conditions) == 2:
-                op1, val1, op2, val2 = _clean_binary_statement(conditions)  # remove edge cases
+                op1, val1, op2, val2 = clean_binary_statement(conditions)  # remove edge cases
                 statements[feature] = _generate_binary_statement(feature, op1, val1, op2, val2)
             else:
                 try:
-                    op1, val1, op2, val2 = _clean_binary_statement(conditions)
+                    op1, val1, op2, val2 = clean_binary_statement(conditions)
                     statements[feature] = _generate_binary_statement(feature, op1, val1, op2, val2)
                 except ValueError:
                     raise ValueError('Too many statements for one feature.')
@@ -585,7 +586,8 @@ def str_to_decision_rule(strRule: str, ruleType: str = 'binary') -> DecisionRule
     return DecisionRule([statement for statement in statements.values()], resultStatement)
 
 
-def rulefit_to_decision_rule(rules, minImportance: float = 0., minSupport: float = 0.) -> list:
+def rulefit_to_decision_rule(rules, modelOutput=None, minImportance: float = 0., minSupport: float = 0.) -> Tuple[
+        List[DecisionRule], list]:
     """ Transforms rules computed with the RuleFit algorithm (only from
     `this <https://github.com/christophM/rulefit>`_ implementation) into DecisionRule objects.
 
@@ -593,7 +595,6 @@ def rulefit_to_decision_rule(rules, minImportance: float = 0., minSupport: float
 
     >>> import pandas as pd
     >>> from rulefit import RuleFit
-    >>> from teex.decisionRule.eval import rule_scores
     >>>
     >>> boston_data = pd.read_csv('https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv')
     >>> y = boston_data.medv.values
@@ -602,12 +603,11 @@ def rulefit_to_decision_rule(rules, minImportance: float = 0., minSupport: float
     >>>
     >>> rf = RuleFit()
     >>> rf.fit(X, y, feature_names=features)
-    >>> rf.predict(X)
     >>>
-    >>> dRules, _ = rulefit_to_decision_rule(rf.get_rules())
-    >>> rule_scores(dRules, dRules, allFeatures=features, metrics=['crq', 'fscore'])
+    >>> dRules, _ = rulefit_to_decision_rule(rf.get_rules(), rf.predict(X))
 
     :param pd.DataFrame rules: rules computed with the .get_rules() method of RuleFit. Default 0.
+    :param modelOutput: (1D array-like) predicted output for the observations in the rules.
     :param float minImportance: minimum importance for a rule to have to be transformed. Default 0.
     :param float minSupport: minimum support for a rule to have to be transformed.
     :return:
@@ -616,11 +616,18 @@ def rulefit_to_decision_rule(rules, minImportance: float = 0., minSupport: float
 
     skippedRows = []
     decisionRules = []
+    nLinears = 0
+    modelOutputs = False if modelOutput is None else True
     for index, rule in rules.iterrows():
         if rule['type'] == 'rule':
             if rule['importance'] >= minImportance and rule['support'] >= minSupport:
                 try:
-                    decisionRules.append(str_to_decision_rule(rule['rule']))
+                    rule = str_to_decision_rule(rule['rule'])
+                    if modelOutputs:
+                        rule.set_result(Statement('target', modelOutput[index - nLinears]))
+                    decisionRules.append(rule)
                 except ValueError:
                     skippedRows.append(index)
+        else:
+            nLinears += 1
     return decisionRules, skippedRows
