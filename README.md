@@ -140,7 +140,7 @@ Here are some sample notebooks with examples:
 
 ## Contributing
 
-Before contributing to **teex**, please take a moment to read the [manual](https://github.com/chus-chus/teex/blob/main/CONTRIBUTING.md).
+There is still work to do. Before contributing to **teex**, please take a moment to read the [manual](https://github.com/chus-chus/teex/blob/main/CONTRIBUTING.md).
 
 ## Acknowledgements
 This work has been made possible by the [University of Waikato](https://www.waikato.ac.nz/) under the scope of 
