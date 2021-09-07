@@ -586,7 +586,7 @@ def str_to_decision_rule(strRule: str, ruleType: str = 'binary') -> DecisionRule
     return DecisionRule([statement for statement in statements.values()], resultStatement)
 
 
-def rulefit_to_decision_rule(rules, modelOutput=None, minImportance: float = 0., minSupport: float = 0.) -> Tuple[
+def rulefit_to_decision_rule(rules, minImportance: float = 0., minSupport: float = 0.) -> Tuple[
         List[DecisionRule], list]:
     """ Transforms rules computed with the RuleFit algorithm (only from
     `this <https://github.com/christophM/rulefit>`_ implementation) into DecisionRule objects.
@@ -607,7 +607,6 @@ def rulefit_to_decision_rule(rules, modelOutput=None, minImportance: float = 0.,
     >>> dRules, _ = rulefit_to_decision_rule(rf.get_rules(), rf.predict(X))
 
     :param pd.DataFrame rules: rules computed with the .get_rules() method of RuleFit. Default 0.
-    :param modelOutput: (1D array-like) predicted output for the observations in the rules.
     :param float minImportance: minimum importance for a rule to have to be transformed. Default 0.
     :param float minSupport: minimum support for a rule to have to be transformed.
     :return:
@@ -617,14 +616,11 @@ def rulefit_to_decision_rule(rules, modelOutput=None, minImportance: float = 0.,
     skippedRows = []
     decisionRules = []
     nLinears = 0
-    modelOutputs = False if modelOutput is None else True
     for index, rule in rules.iterrows():
         if rule['type'] == 'rule':
             if rule['importance'] >= minImportance and rule['support'] >= minSupport:
                 try:
                     rule = str_to_decision_rule(rule['rule'])
-                    if modelOutputs:
-                        rule.set_result(Statement('target', modelOutput[index - nLinears]))
                     decisionRules.append(rule)
                 except ValueError:
                     skippedRows.append(index)

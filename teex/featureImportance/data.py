@@ -280,7 +280,7 @@ def scale_fi_bounds(x: np.ndarray):
     elif len(x.shape) == 2 and x.shape[0] != 1:
         # 2D
         totalNegVals = False
-        for i in range(x.shape[0]):
+        for i in range(x.shape[1]):
             x[:, i], negVals = _scale_array(x[:, i])
             if negVals is True:
                 totalNegVals = True

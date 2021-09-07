@@ -118,7 +118,7 @@ Fig. 2 Artificial image dataset with g.t. saliency map explanations.
 
 The full API documentation can be found on [Read The Docs](https://teex.readthedocs.io).
 
-Here are some sample notebooks with examples:
+Here are some sample notebooks with examples.
 
 ---
 *Saliency maps*
