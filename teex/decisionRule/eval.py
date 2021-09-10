@@ -103,8 +103,8 @@ def rule_scores(gts: DecisionRule, rules: DecisionRule, allFeatures, metrics=Non
         - 'prec': Computes the Precision Score between the ground truths and the predicted vectors.
         - 'rec': Computes the Recall Score between the ground truths and the predicted vectors.
         - 'crq': Computes the Complete Rule Quality of :code:`rule` w.r.t. :code:`gt`.
-        - 'auc': Computes the ROC AUC Score between the two rules.
-        - 'cs': Computes the Cosine Similarity between the two rules.
+        - 'auc': Computes the ROC AUC Score between the two sets of decision rules.
+        - 'cs': Computes the Cosine Similarity between the two sets of decision rules.
 
         Note that for 'fscore', 'prec', 'rec', 'auc' and 'cs' the rules are transformed to binary vectors where there
         is one entry per possible feature and that entry contains a 1 if the feature is present in the rule, otherwise
