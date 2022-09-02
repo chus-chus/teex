@@ -24,7 +24,7 @@ teex is divided into subpackages, one for each explanation type. Each subpackage
 distinct functionalities:
 
 - **eval**: contains _**evaluation**_ methods for that particular explanation type. For every subpackage, there is one high-level
-  functions to easily compute all the available metrics.
+  function to easily compute all the available metrics for an arbitrary number of explanations.
 - **data**: contains _**data**_ classes with available g.t. explanations of that particular 
             explanation type, both synthetic and real. All of them are objects that need to be instanced and, when sliced,
             will return the data, the target and the ground truth explanations, respectively.
