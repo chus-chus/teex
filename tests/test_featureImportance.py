@@ -1,6 +1,7 @@
 import unittest
 
 import numpy as np
+import os
 
 from teex.featureImportance.data import SenecaFI
 from teex.featureImportance.eval import _AVAILABLE_FEATURE_IMPORTANCE_METRICS, feature_importance_scores
