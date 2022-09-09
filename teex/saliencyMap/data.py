@@ -5,7 +5,7 @@ All of the datasets must be instanced first. Then, when sliced, they all return 
 truth explanations, respectively. """
 import random
 
-import cv2
+# import cv2
 import numpy as np
 from PIL import Image
 
@@ -343,8 +343,10 @@ def rgb_to_grayscale(img):
 
      :param np.ndarray img: of shape (imageH, imageW, 3)
      :return np.ndarray: of shape (imageH, imageW) """
+     
+    # return cv2.cvtColor(img.astype('float32'), cv2.COLOR_RGB2GRAY)
+    return np.dot(img[..., :3], [0.2989, 0.5870, 0.1140])
 
-    return cv2.cvtColor(img.astype('float32'), cv2.COLOR_RGB2GRAY)
 
 
 def binarize_rgb_mask(img, bgValue='high') -> np.array:

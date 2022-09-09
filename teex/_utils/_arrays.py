@@ -1,6 +1,8 @@
 """ Utils for ndarray wrangling """
 import warnings
 
+# TODO reduce verbosity of warnings
+
 import numpy as np
 
 

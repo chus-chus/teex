@@ -1,5 +1,4 @@
 """ Utils for dataset handling """
-from cv2 import imread, COLOR_BGR2RGB, cvtColor
 from teex._utils._paths import _check_dir
 
 from os import scandir

@@ -1,19 +1,9 @@
 import unittest
 
 import numpy as np
-import cv2
 
 from teex.saliencyMap.data import SenecaSM, Kahikatea, binarize_rgb_mask
 from teex.saliencyMap.eval import saliency_map_scores, _AVAILABLE_SALIENCY_MAP_METRICS
-
-
-def _read_rgb_img(imgPath: str) -> np.array:
-    """ Read RGB image from path.
-
-    :param imgPath: relative (from w.d.) or absolute path of the file.
-    :return: np.array as RGB image.
-    """
-    return cv2.cvtColor(cv2.imread(imgPath), cv2.COLOR_BGR2RGB)
 
 
 class TestSMDataSenecea(unittest.TestCase):

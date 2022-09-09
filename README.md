@@ -16,7 +16,7 @@ The teex package is on [PyPI](https://pypi.org/project/teex/). To install it, si
 pip install teex
 ```
 
-**teex** is compatible with Python >= 3.6.
+**teex** is compatible with Python 3.8 and 3.9.
 
 ## Usage overview
 
