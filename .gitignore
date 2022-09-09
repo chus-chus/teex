@@ -5,6 +5,7 @@ venv/
 /*.egg-info
 __pycache__/
 .idea/
+.vscode
 dist/
 .cache/
 # ignore all datasets

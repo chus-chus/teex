@@ -3,7 +3,7 @@ from pathlib import Path
 
 random.seed(1)
 
-_newsgroup_url = "https://drive.google.com/u/0/uc?id=19gANm58-DxrOoFF7TZFfd2RmT8EAUQo4&export=download"
+_newsgroup_url = "https://drive.google.com/uc?export=download&id=17OGZG6-B8Aq-q6Ue3x4MqtY0ceCiwOkN"
 
 _newsgroupElecNames = ['53994', '53993', '53992', '53995', '53968', '54009', '54036', '54031', '54038', '54007',
                        '54000', '54053', '54065', '54062', '54001', '54039', '54006', '54030', '54008', '54037',

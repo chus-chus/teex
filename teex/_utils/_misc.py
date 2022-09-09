@@ -98,7 +98,7 @@ def _download_extract_zip(filePath, fileUrl, fileName):
 
     if _check_pathlib_dir(filePath):
         shutil.rmtree(filePath)
-
+        
     os.makedirs(filePath)
 
     _download_file(fileUrl, filePath, fileName)
