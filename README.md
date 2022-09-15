@@ -120,6 +120,7 @@ The full API documentation can be found on [Read The Docs](https://teex.readthed
 
 Here are some sample notebooks with examples.
 
+- [Improving model selection with explanation quality](https://github.com/chus-chus/teex/blob/main/docs/demos/)
 ---
 *Saliency maps*
 - [Retrieving image data with g.t. saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/gen_saliency_map.ipynb)

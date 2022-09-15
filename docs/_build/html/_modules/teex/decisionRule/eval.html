@@ -1,0 +1,359 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>teex.decisionRule.eval &mdash; teex 1.0.2 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> teex
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">teex</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">teex</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>teex.decisionRule.eval</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for teex.decisionRule.eval</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; Module for evaluation of decision rule explanations. &quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">teex._utils._errors</span> <span class="kn">import</span> <span class="n">MetricNotAvailableError</span>
+<span class="kn">from</span> <span class="nn">teex.decisionRule.data</span> <span class="kn">import</span> <span class="n">DecisionRule</span><span class="p">,</span> <span class="n">rule_to_feature_importance</span><span class="p">,</span> <span class="n">Statement</span>
+<span class="kn">from</span> <span class="nn">teex.featureImportance.eval</span> <span class="kn">import</span> <span class="n">feature_importance_scores</span>
+
+<span class="n">_AVAILABLE_DECISION_RULE_METRICS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;fscore&#39;</span><span class="p">,</span> <span class="s1">&#39;prec&#39;</span><span class="p">,</span> <span class="s1">&#39;rec&#39;</span><span class="p">,</span> <span class="s1">&#39;cs&#39;</span><span class="p">,</span> <span class="s1">&#39;auc&#39;</span><span class="p">,</span> <span class="s1">&#39;crq&#39;</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="complete_rule_quality"><a class="viewcode-back" href="../../../teex.decisionRule.html#teex.decisionRule.eval.complete_rule_quality">[docs]</a><span class="k">def</span> <span class="nf">complete_rule_quality</span><span class="p">(</span><span class="n">gts</span><span class="p">:</span> <span class="n">DecisionRule</span><span class="p">,</span> <span class="n">rules</span><span class="p">:</span> <span class="n">DecisionRule</span><span class="p">,</span> <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Computes the complete rule quality (crq) between two decision rules. All &#39;Statements&#39; in both rules must be</span>
+<span class="sd">    binary (have upper and lower bounds). The metric is defined as the proportion of lower and upper bounds in a rule</span>
+<span class="sd">    explanation that are eps-close to the respective lower and upper bounds (same feature) in the ground truth</span>
+<span class="sd">    rule explanation amongst those that are :math:`\\neq \\infty`. Mathematically, given two rules :math:`e, \\tilde{e}`</span>
+<span class="sd">    and a similarity threshold :math:`\\varepsilon`, the quality of :math:`e` with respect to :math:`\\tilde{e}` is:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        q(e, \\tilde{e}) = \\frac{1}{N_{\\not\\infty}} \\sum_{i=1}^{|e|}{\\delta_{\\varepsilon}(e_i, \\tilde e_i)},</span>
+
+<span class="sd">    where</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \\delta_{\\varepsilon}(e_i, \\tilde{e}_i) =</span>
+<span class="sd">                \\begin{cases}</span>
+<span class="sd">                    1 &amp; \\text{if } |e_i - \\tilde{e}_i| \\leq \\varepsilon \\wedge |e_i| \\neq \\infty \\wedge</span>
+<span class="sd">                        |\\tilde{e}_i| \\neq \\infty, \\newline</span>
+<span class="sd">                    0 &amp; \\text{otherwise}</span>
+<span class="sd">                \\end{cases}</span>
+
+<span class="sd">    Where :math:`N_{\\not \\infty}` is the number of lower and upper bounds that are different from :math:`\\infty` in</span>
+<span class="sd">    both :math:`e` and :math:`\\tilde e`. More about this metric can be found in [Evaluating local explanation methods</span>
+<span class="sd">    on ground truth, Riccardo Guidotti, 2021].</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; c1 = Statement(&#39;a&#39;,lowB=2,upperB=1)</span>
+<span class="sd">    &gt;&gt;&gt; c2 = Statement(&#39;a&#39;,lowB=2.2,upperB=1.1)</span>
+<span class="sd">    &gt;&gt;&gt; r1 = DecisionRule([c1])</span>
+<span class="sd">    &gt;&gt;&gt; r2 = DecisionRule([c2])  # both rules contain the feature &#39;a&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; print(complete_rule_quality(r1, r2, eps=0.01))</span>
+<span class="sd">    &gt;&gt;&gt; print(complete_rule_quality(r1, r2, eps=0.1))</span>
+<span class="sd">    &gt;&gt;&gt; print(complete_rule_quality(r1, r2, eps=0.2))</span>
+
+<span class="sd">    &gt;&gt;&gt; c3 = Statement(&#39;b&#39;,lowB=2.2,upperB=1.1)</span>
+<span class="sd">    &gt;&gt;&gt; r3 = DecisionRule([c3])</span>
+
+<span class="sd">    &gt;&gt;&gt; print(complete_rule_quality(r1, r3, eps=0.2))</span>
+
+<span class="sd">    &gt;&gt;&gt; # The metric does not take the absence of a feature into account</span>
+<span class="sd">    &gt;&gt;&gt; r3 = DecisionRule([c3, c2])</span>
+<span class="sd">    &gt;&gt;&gt; print(complete_rule_quality(r1, r3, eps=0.2))</span>
+
+<span class="sd">    :param gts: (DecisionRule or array-like of DecisionRules) ground truth rule w.r.t. which to compute the quality</span>
+<span class="sd">    :param rules: (DecisionRule or array-like of DecisionRules) rule to compute the quality for</span>
+<span class="sd">    :param eps: (float) threshold :math:`\\varepsilon` for the bounds to be taken into account in the metric, with</span>
+<span class="sd">        precision up to 3 decimal places.</span>
+<span class="sd">    :return: (float or ndarray of shape (n_samples,)) Complete rule quality. &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">DecisionRule</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">DecisionRule</span><span class="p">):</span>
+        <span class="n">gts</span><span class="p">,</span> <span class="n">rules</span> <span class="o">=</span> <span class="p">[</span><span class="n">gts</span><span class="p">],</span> <span class="p">[</span><span class="n">rules</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Rules format not supported.&#39;</span><span class="p">)</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">gt</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">rules</span><span class="p">):</span>
+        <span class="n">nBounded</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">epsCloseBounds</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">rule</span><span class="o">.</span><span class="n">get_features</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">gt</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">gt</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">binary</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">rule</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">binary</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Statements must be binary.&#39;</span><span class="p">)</span>
+                <span class="c1"># compare upper bounds</span>
+                <span class="k">if</span> <span class="n">gt</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">upperB</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="ow">and</span> <span class="n">rule</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">upperB</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                    <span class="n">nBounded</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="nb">round</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">gt</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">upperB</span> <span class="o">-</span> <span class="n">rule</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">upperB</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">eps</span><span class="p">:</span>
+                        <span class="n">epsCloseBounds</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c1"># compare lower bounds</span>
+                <span class="k">if</span> <span class="n">gt</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">lowB</span> <span class="o">!=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="ow">and</span> <span class="n">rule</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">lowB</span> <span class="o">!=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                    <span class="n">nBounded</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="nb">round</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">gt</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">lowB</span> <span class="o">-</span> <span class="n">rule</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">lowB</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">eps</span><span class="p">:</span>
+                        <span class="n">epsCloseBounds</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epsCloseBounds</span> <span class="o">/</span> <span class="n">nBounded</span> <span class="k">if</span> <span class="n">nBounded</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">res</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="rule_scores"><a class="viewcode-back" href="../../../teex.decisionRule.html#teex.decisionRule.eval.rule_scores">[docs]</a><span class="k">def</span> <span class="nf">rule_scores</span><span class="p">(</span><span class="n">gts</span><span class="p">:</span> <span class="n">DecisionRule</span><span class="p">,</span> <span class="n">rules</span><span class="p">:</span> <span class="n">DecisionRule</span><span class="p">,</span> <span class="n">allFeatures</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">crqParams</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Quality metrics for :class:`teex.decisionRule.data.DecisionRule` objects.</span>
+
+<span class="sd">    :param gts: (DecisionRule or array-like of DecisionRules) ground truth decision rule/s.</span>
+<span class="sd">    :param rules: (DecisionRule or array-like of DecisionRules) approximated decision rule/s.</span>
+<span class="sd">    :param allFeatures: (array-like) names of all of the relevant features (i.e. :code:`featureNames`</span>
+<span class="sd">        of :class:`teex.decisionRule.data.SenecaDR` object.)</span>
+<span class="sd">    :param metrics: (array-like of str, default :code:`[&#39;fscore&#39;]`) metrics to compute. Available:</span>
+
+<span class="sd">        - &#39;fscore&#39;: Computes the F1 Score between the ground truths and the predicted vectors.</span>
+<span class="sd">        - &#39;prec&#39;: Computes the Precision Score between the ground truths and the predicted vectors.</span>
+<span class="sd">        - &#39;rec&#39;: Computes the Recall Score between the ground truths and the predicted vectors.</span>
+<span class="sd">        - &#39;crq&#39;: Computes the Complete Rule Quality of :code:`rule` w.r.t. :code:`gt`.</span>
+<span class="sd">        - &#39;auc&#39;: Computes the ROC AUC Score between the two rules.</span>
+<span class="sd">        - &#39;cs&#39;: Computes the Cosine Similarity between the two rules.</span>
+
+<span class="sd">        Note that for &#39;fscore&#39;, &#39;prec&#39;, &#39;rec&#39;, &#39;auc&#39; and &#39;cs&#39; the rules are transformed to binary vectors where there</span>
+<span class="sd">        is one entry per possible feature and that entry contains a 1 if the feature is present in the rule, otherwise</span>
+<span class="sd">        0.</span>
+<span class="sd">    :param average: (bool, default :code:`True`) Used only if :code:`gts` and :code:`rule` are array-like. Should the</span>
+<span class="sd">        computed metrics be averaged across all of the samples?</span>
+<span class="sd">    :param dict crqParams: Extra parameters complete rule quality.</span>
+<span class="sd">    :return: (ndarray) specified metric/s in the original order. Can be of shape</span>
+
+<span class="sd">        - (n_metrics,) if only one DecisionRule has been provided in both :code:`gts` and :code:`rules` or when both are</span>
+<span class="sd">          array-like and :code:`average=True`.</span>
+<span class="sd">        - (n_metrics, n_samples) if :code:`gts` and :code:`rules` are array-like and :code:`average=False`. &quot;&quot;&quot;</span>
+
+    <span class="n">isArrayLike</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isArrayLike</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">metrics</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_AVAILABLE_DECISION_RULE_METRICS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MetricNotAvailableError</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">metric</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_AVAILABLE_DECISION_RULE_METRICS</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MetricNotAvailableError</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
+
+    <span class="n">crq</span><span class="p">,</span> <span class="n">crqIndex</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">crqParams</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span> <span class="k">if</span> <span class="n">crqParams</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">crqParams</span>
+    <span class="k">if</span> <span class="n">metrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">metrics</span> <span class="o">==</span> <span class="s1">&#39;crq&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">complete_rule_quality</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="o">**</span><span class="n">crqParams</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">isArrayLike</span> <span class="ow">and</span> <span class="s1">&#39;crq&#39;</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
+            <span class="n">crq</span> <span class="o">=</span> <span class="n">complete_rule_quality</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="o">**</span><span class="n">crqParams</span><span class="p">)</span>
+            <span class="n">crqIndex</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;crq&#39;</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">metrics</span><span class="p">[</span><span class="n">crqIndex</span><span class="p">]</span>
+
+    <span class="n">binaryGts</span> <span class="o">=</span> <span class="n">rule_to_feature_importance</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">allFeatures</span><span class="p">)</span>
+    <span class="n">binaryRules</span> <span class="o">=</span> <span class="n">rule_to_feature_importance</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">allFeatures</span><span class="p">)</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">feature_importance_scores</span><span class="p">(</span><span class="n">binaryGts</span><span class="p">,</span> <span class="n">binaryRules</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="n">average</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">crq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">average</span><span class="p">:</span>
+            <span class="n">crq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">crq</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crq</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="c1"># multiple observations, insert as a column</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">crqIndex</span><span class="p">,</span> <span class="n">crq</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crq</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)):</span>
+            <span class="c1"># one observation</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">crqIndex</span><span class="p">,</span> <span class="n">crq</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">isArrayLike</span><span class="p">:</span>
+            <span class="n">metrics</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">crqIndex</span><span class="p">,</span> <span class="s1">&#39;crq&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Jesus Antonanzas.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
