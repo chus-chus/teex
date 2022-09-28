@@ -1,6 +1,7 @@
 import unittest
 from teex.wordImportance.data import Newsgroup
-from teex.wordImportance.eval import _AVAILABLE_WORD_IMPORTANCE_METRICS, word_importance_scores
+from teex.wordImportance.eval import _AVAILABLE_WORD_IMPORTANCE_METRICS, \
+    word_importance_scores
 import numpy as np
 
 

@@ -263,7 +263,7 @@ def lime_to_feature_importance(exp, nFeatures, label=1):
     return fiExp
 
 
-def scale_fi_bounds(x: np.ndarray):
+def scale_fi_bounds(x: np.ndarray, verbose: bool = False):
     """ Map values of an 1D or 2D np.ndarray on certain conditions. The mapping is on a by-column basis. That is, each
     column will be separately scaled.::
 
@@ -276,12 +276,12 @@ def scale_fi_bounds(x: np.ndarray):
 
     if len(x.shape) == 1 or (len(x.shape) == 2 and x.shape[0] == 1):
         # 1D
-        return _scale_array(x)
+        return _scale_array(x, verbose)
     elif len(x.shape) == 2 and x.shape[0] != 1:
         # 2D
         totalNegVals = False
         for i in range(x.shape[1]):
-            x[:, i], negVals = _scale_array(x[:, i])
+            x[:, i], negVals = _scale_array(x[:, i], verbose)
             if negVals is True:
                 totalNegVals = True
         return x, totalNegVals

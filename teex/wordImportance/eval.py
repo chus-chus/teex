@@ -5,7 +5,8 @@ from typing import List, Union, Dict
 import numpy as np
 
 from teex._utils._errors import MetricNotAvailableError
-from teex.featureImportance.eval import feature_importance_scores, _AVAILABLE_FEATURE_IMPORTANCE_METRICS
+from teex.featureImportance.eval import feature_importance_scores, \
+    _AVAILABLE_FEATURE_IMPORTANCE_METRICS
 
 _AVAILABLE_WORD_IMPORTANCE_METRICS = {'prec', 'rec', 'fscore', 'cs', 'auc'}
 
@@ -27,7 +28,8 @@ def word_importance_scores(gts: Union[Dict[str, float], List[Dict[str, float]]],
                            vocabWords: Union[List[str], List[List[str]]] = None,
                            metrics: Union[str, List[str]] = None,
                            binThreshold: float = .5,
-                           average: bool = True) -> np.ndarray:
+                           average: bool = True,
+                           verbose: bool = False) -> np.ndarray:
     """ Quality metrics for word importance explanations, where each word is considered as a feature. An example of
     an explanation:
 
@@ -53,6 +55,7 @@ def word_importance_scores(gts: Union[Dict[str, float], List[Dict[str, float]]],
         will be set to 1 and 0 otherwise when binarizing for the computation of 'fscore', 'prec', 'rec' and 'auc'.
     :param bool average: (default :code:`True`) Used only if :code:`gts` and :code:`preds` contain multiple
         observations. Should the computed metrics be averaged across all samples?
+    :param bool verbose: Will the call be verbose?
     :return: specified metric/s in the original order. Can be of shape:
 
         - (n_metrics,) if only one image has been provided in both :code:`gts` and :code:`preds` or when both are
@@ -90,16 +93,23 @@ def word_importance_scores(gts: Union[Dict[str, float], List[Dict[str, float]]],
         if not isinstance(vocabWords[0], str):
             i = 0
             for gt, pred in zip(fiGts, fiPreds):
-                verbose = 1 if i == 0 else 0
-                res.append(feature_importance_scores(gt, pred, metrics=fiMetrics, average=False,
-                           binThreshold=binThreshold, verbose=verbose))
+                if i == 0 and verbose:
+                    verbose = True 
+                else:
+                    verbose = False
+                res.append(feature_importance_scores(gt, pred,
+                                                     metrics=fiMetrics,
+                                                     average=False,
+                                                     binThreshold=binThreshold,
+                                                     verbose=verbose))
                 i = 1
             res = np.array(res)
             if average is True:
                 res = np.mean(res, axis=0)
         else:
             # noinspection PyTypeChecker
-            res = feature_importance_scores(fiGts, fiPreds, metrics=fiMetrics, average=average,
+            res = feature_importance_scores(fiGts, fiPreds, metrics=fiMetrics,
+                                            average=average,
                                             binThreshold=binThreshold)
 
     # if len(regMetrics) != 0:

@@ -5,7 +5,11 @@ venv/
 /*.egg-info
 __pycache__/
 .idea/
+.vscode
 dist/
 .cache/
-datasets/saliencyMap/
-datasets/wordImportance/
+# ignore all datasets
+teex/_datasets/*
+# except info
+teex/!_datasets/info
+teex.code-workspace

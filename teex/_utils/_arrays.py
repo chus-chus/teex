@@ -91,7 +91,7 @@ def _check_correct_array_values(binGt, binPred, gt, pred):
     return uniformBGt, uniformBPred, emptyGt, emptyPred
 
 
-def _scale_array(x: np.ndarray):
+def _scale_array(x: np.ndarray, verbose: bool = False):
     """ if values in the range [-1, 1] or [0, 1]       -> do nothing
         else:
             case 1: if values in the [0, inf] range    -> map to [0, 1]
@@ -118,8 +118,9 @@ def _scale_array(x: np.ndarray):
             newMin, newMax = -1, 1
 
     if newMax is not None:
-        warnings.warn(f'Some g.t. feature importance vectors are not correctly bounded. Performing map to'
-                      f' [{newMin}, {newMax}].')
+        if verbose:
+            warnings.warn(f'Some g.t. feature importance vectors are not correctly bounded. Performing map to'
+                        f' [{newMin}, {newMax}].')
         x = np.round(np.interp(x, (np.amin(x), np.amax(x)), (newMin, newMax)), 4)
 
     negativeVals = True if newMin == -1 else False

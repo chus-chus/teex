@@ -16,7 +16,7 @@ The teex package is on [PyPI](https://pypi.org/project/teex/). To install it, si
 pip install teex
 ```
 
-**teex** is compatible with Python >= 3.6.
+**teex** is compatible with Python 3.8 and 3.9.
 
 ## Usage overview
 
@@ -120,6 +120,7 @@ The full API documentation can be found on [Read The Docs](https://teex.readthed
 
 Here are some sample notebooks with examples.
 
+- [Improving model selection with explanation quality](https://github.com/chus-chus/teex/blob/main/docs/demos/)
 ---
 *Saliency maps*
 - [Retrieving image data with g.t. saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/gen_saliency_map.ipynb)
@@ -148,7 +149,7 @@ the [TAIAO](https://taiao.ai/) project.
 
 <p align="center">
     <a href="https://taiao.ai">
-        <img src="https://taiao.ai/img/Untitled.png" alt="drawing" width="50"/>
+        <img src="https://taiao.ai/assets/TAIAO_logo.png" alt="drawing" width="150"/>
     </a>
     <a href="https://www.waikato.ac.nz/">
         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/b/bd/University_of_Waikato_logo.svg/1200px-University_of_Waikato_logo.svg.png" alt="drawing" width="45"/>

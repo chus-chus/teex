@@ -72,7 +72,7 @@ def _compute_feature_importance_scores(binaryGts, binaryPreds, gts, preds, class
 
         ret.append(mets)
 
-    if verbose == 1:
+    if verbose:
         if someUnifBGt:
             warnings.warn('A binary ground truth contains uniform values, so one entry has been randomly flipped '
                           'for the metrics to be defined.')
@@ -89,7 +89,7 @@ def _compute_feature_importance_scores(binaryGts, binaryPreds, gts, preds, class
     return np.array(ret).astype(np.float32)
 
 
-def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdType='abs', binThreshold=0.5, verbose=1):
+def feature_importance_scores(gts, preds, metrics=None, average: bool = True, thresholdType: str = 'abs', binThreshold: float = 0.5, verbose: bool = True):
     """ Computes quality metrics between one or more feature importance vectors. The values in the vectors must be
     bounded in [0, 1] or [-1, 1] (to indicate negative importances in the second case). If they are not, the values will
     be mapped.
@@ -150,7 +150,7 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
         (in [-1, 1]) Threshold for the binarization of the features for the computation of 'fscore', 'prec', 'rec' and
         'auc'. The binarization depends on both this parameter and :code:`thresholdType`.
         If :code:`thresholdType = 'abs'`, ``binThreshold`` cannot be negative.
-    :param int verbose: Verbosity level of warnings. ``1`` will report warnings, else will not.
+    :param bool verbose: Verbosity of warnings. ``True`` will report warnings, ```False``` will not.
     :return: (ndarray of shape (n_metrics,) or (n_samples, n_metrics)) specified metric/s in the indicated order. """
 
     if metrics is None:
@@ -164,8 +164,8 @@ def feature_importance_scores(gts, preds, metrics=None, average=True, thresholdT
         if metric not in _AVAILABLE_FEATURE_IMPORTANCE_METRICS:
             raise MetricNotAvailableError(metric)
 
-    gts, _ = scale_fi_bounds(gts)
-    preds, predsNegative = scale_fi_bounds(preds)
+    gts, _ = scale_fi_bounds(gts, verbose)
+    preds, predsNegative = scale_fi_bounds(preds, verbose)
 
     # binarize if necessary
     if not np.array_equal(np.unique(gts), np.array([0, 1])):
