@@ -66,4 +66,3 @@ class Newsgroup(_ClassificationDataset):
 
     def _get_class_map(self) -> dict:
         return {0: 'electronics', 1: 'medicine'}
-
