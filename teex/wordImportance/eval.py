@@ -90,7 +90,10 @@ def word_importance_scores(gts: Union[Dict[str, float], List[Dict[str, float]]],
         if not isinstance(vocabWords[0], str):
             i = 0
             for gt, pred in zip(fiGts, fiPreds):
-                verbose = 1 if i == 0 else 0
+                if i == 0 and verbose:
+                    verbose = True 
+                else:
+                    verbose = False
                 res.append(feature_importance_scores(gt, pred, metrics=fiMetrics, average=False,
                            binThreshold=binThreshold, verbose=verbose))
                 i = 1
