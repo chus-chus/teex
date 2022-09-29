@@ -8,6 +8,8 @@ __pycache__/
 .vscode
 dist/
 .cache/
+.DS_Store
+
 # ignore all datasets
 teex/_datasets/*
 # except info
