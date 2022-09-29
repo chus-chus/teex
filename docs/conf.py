@@ -22,10 +22,6 @@ project = 'teex'
 copyright = '2021, Jesus Antonanzas'
 author = 'Jesus Antonanzas'
 
-# The full version, including alpha/beta/rc tags
-release = '1.0.3'
-
-
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
