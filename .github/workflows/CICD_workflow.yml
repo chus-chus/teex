@@ -1,11 +1,10 @@
-name: CI-CD
+name: ci-cd
 
 on: [push, pull_request]
 
 jobs:
-  build:
-
-    runs-on: [ubuntu-latest, macos-latest, windows-latest]
+  ci:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.8", "3.9"]
