@@ -3,6 +3,7 @@
 [![PyPI Version](https://img.shields.io/pypi/v/teex)](https://img.shields.io/pypi/v/teex)
 [![Open GitHub Issues](https://img.shields.io/github/issues/chus-chus/teex)](https://img.shields.io/github/issues/chus-chus/teex)
 [![Documentation Status](https://readthedocs.org/projects/teex/badge/?version=latest)](https://teex.readthedocs.io/en/latest/?badge=latest)
+[![codecov](https://codecov.io/gh/chus-chus/teex/branch/main/graph/badge.svg?token=PWSRR5NZTQ)](https://codecov.io/gh/chus-chus/teex)
 
 A Python **T**oolbox for the **E**valuation of machine learning **Ex**planations.
 
