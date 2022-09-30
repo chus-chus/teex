@@ -3,7 +3,7 @@ methods and classes for word importance data manipulation. """
 
 import json
 
-from teex._utils._misc import _download_extract_zip
+from teex._utils._misc import _download_extract_file
 from teex._utils._paths import _check_pathlib_dir
 from teex._datasets.info.newsgroup import _newsgroupRoot, _newsgroupLabels, _newsgroupNEntries, _newsgroupAll, \
     _newsgroup_url
@@ -62,7 +62,7 @@ class Newsgroup(_ClassificationDataset):
                 _check_pathlib_dir(self._path / 'data'))
 
     def _download(self) -> None:
-        _download_extract_zip(self._path, _newsgroup_url, 'rawNewsgroup.zip')
+        _download_extract_file(self._path, _newsgroup_url, 'rawNewsgroup.zip')
 
     def _get_class_map(self) -> dict:
         return {0: 'electronics', 1: 'medicine'}
