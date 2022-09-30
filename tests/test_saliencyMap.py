@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from teex.saliencyMap.data import SenecaSM, Kahikatea, binarize_rgb_mask
+from teex.saliencyMap.data import CUB200, SenecaSM, Kahikatea, binarize_rgb_mask
 from teex.saliencyMap.eval import saliency_map_scores, _AVAILABLE_SALIENCY_MAP_METRICS
 
 
@@ -38,6 +38,33 @@ class TestSMDataSenecea(unittest.TestCase):
 
     def test_seneca_label_proportion(self):
         self.assertEqual(np.sum(self.y)/len(self.y), self.patternProp)
+        
+
+class TestSMCUB200(unittest.TestCase):
+    """ Test for saliency map data generation with seneca """
+
+    def setUp(self) -> None:
+        self.data = CUB200()
+
+    def test_slices(self):
+        self.assertIsNotNone(self.data[:10])
+        self.assertIsNotNone(self.data[1:10])
+        self.assertIsNotNone(self.data[:10:2])
+
+    def test_class_loading(self):
+        for c in self.data.classMap.keys():
+            self.assertIsNotNone(self.data.get_class_observations(c))
+            
+class TestSMKahikatea(unittest.TestCase):
+    """ Test for saliency map data generation with seneca """
+
+    def setUp(self) -> None:
+        self.data = Kahikatea()
+
+    def test_slices(self):
+        self.assertIsNotNone(self.data[:10])
+        self.assertIsNotNone(self.data[1:10])
+        self.assertIsNotNone(self.data[:10:2])
 
 
 class TestSMMetrics(unittest.TestCase):

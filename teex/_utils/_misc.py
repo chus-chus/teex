@@ -72,7 +72,7 @@ def _download_file(url: str, root: str, filename: str) -> None:
 
     fpath = os.path.join(root, filename)
     try:
-        print('Downloading ' + url + ' to ' + fpath)
+        print('Downloading ' + url + '\nto ' + fpath)
         _url_retrieve(url, fpath)
     except (urllib.error.URLError, IOError) as exc:
         if url[:5] == 'https':
@@ -84,27 +84,29 @@ def _download_file(url: str, root: str, filename: str) -> None:
             raise exc
 
 
-def _download_extract_zip(filePath, fileUrl, fileName):
+def _download_extract_file(filePath, fileUrl, fileName, format='zip', deletePrevDir = True):
     """
     1. checks if the path exists and:
-        1.1 Deletes the contents if it exists
-        1.2 Creates the path
+        1.1 Deletes the contents if it exists (and if specified)
+        1.2 Creates the path (if specified)
     2. Downloads the zip file into the path
     3. Extracts the contents and deletes the zip file
+    
+    It supports zip and tgz extensions
 
     :param Path filePath: file path
     :param str fileUrl: file url
-    :param str fileName: file name """
+    :param str fileName: file name 
+    :param str format: file format"""
 
-    if _check_pathlib_dir(filePath):
+    if not _check_pathlib_dir(filePath):
+        os.makedirs(filePath)
+    elif deletePrevDir:
         shutil.rmtree(filePath)
-        
-    os.makedirs(filePath)
+        os.makedirs(filePath)
 
     _download_file(fileUrl, filePath, fileName)
-
-    with ZipFile(filePath / fileName, 'r') as zipObj:
-        for elem in zipObj.namelist():
-            zipObj.extract(elem, filePath)
+    
+    shutil.unpack_archive(filePath / fileName, filePath, format)
 
     os.remove(filePath / fileName)
