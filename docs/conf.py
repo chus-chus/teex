@@ -19,9 +19,16 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'teex'
-copyright = '2021, Jesus Antonanzas'
+copyright = '2022, Jesus Antonanzas'
 author = 'Jesus Antonanzas'
 
+<<<<<<< HEAD
+=======
+# The full version, including alpha/beta/rc tags
+release = '1.0.4'
+
+
+>>>>>>> 49322bdfb600686fbd3489ec41367202c3759b03
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
