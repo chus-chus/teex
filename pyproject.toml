@@ -11,4 +11,4 @@ version_variable = [
     'docs/conf.py:release',
     'setup.cfg:version'
 ]
-version_source = 'commit'
+version_source = 'tag'
