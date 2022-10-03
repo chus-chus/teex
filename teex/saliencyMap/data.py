@@ -434,9 +434,7 @@ class CUB200(_ClassificationDataset):
         return _cub_length
         
     def _download(self) -> bool:
-        print("This download will take 1.2GB of disk.")
-        queryResponse = True
-        # queryResponse = query_yes_no('This download will take ~1.2GB of disk. Procede?', default=None)
+        queryResponse = query_yes_no('This download will take ~1.2GB of disk. Procede?')
         try:
             if queryResponse:
                 _download_extract_file(self._path.parent.absolute(), _cub_url, 'cubImages.tgz', 'tar')
