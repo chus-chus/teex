@@ -47,13 +47,15 @@ class TestSMCUB200(unittest.TestCase):
         self.data = CUB200()
 
     def test_slices(self):
-        self.assertIsNotNone(self.data[:10])
-        self.assertIsNotNone(self.data[1:10])
-        self.assertIsNotNone(self.data[:10:2])
+        d = self.data[:11]
+        self.assertIsNotNone(d[:10])
+        self.assertIsNotNone(d[1:10])
+        self.assertIsNotNone(d[:10:2])
 
     def test_class_loading(self):
         for c in self.data.classMap.keys():
-            self.assertIsNotNone(self.data.get_class_observations(c))
+            obs = self.data.get_class_observations(c)
+            self.assertIsNotNone(obs)
             
 class TestSMKahikatea(unittest.TestCase):
     """ Test for saliency map data generation with seneca """
