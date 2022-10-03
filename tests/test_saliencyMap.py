@@ -51,11 +51,21 @@ class TestSMCUB200(unittest.TestCase):
         self.assertIsNotNone(d[:10])
         self.assertIsNotNone(d[1:10])
         self.assertIsNotNone(d[:10:2])
+        for i, t in enumerate(d):
+            if i != 1:
+                for e in t:
+                    e.close()
 
     def test_class_loading(self):
         for c in self.data.classMap.keys():
             obs = self.data.get_class_observations(c)
             self.assertIsNotNone(obs)
+            # close pointers, as they generate alloc warnings in -Wall calls
+            for i, t in enumerate(obs):
+                if i != 1:
+                    for e in t:
+                        e.close()
+            
             
 class TestSMKahikatea(unittest.TestCase):
     """ Test for saliency map data generation with seneca """
