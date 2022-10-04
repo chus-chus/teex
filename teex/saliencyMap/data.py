@@ -25,6 +25,8 @@ from teex._datasets.info.kahikatea import _kahikateaLabels, _kahikateaNEntries, 
     _kahikatea_root, _kahikatea_url, _kahikateaAll
 from teex._datasets.info.CUB200 import _cub_root, _cub_segmentations_url, _cub_url, \
     _cub_length
+from teex._datasets.info.OxfordIIT_Pet import _oxford_iit_root, _oxford_iit_url, \
+    _oxford_iit_masks_url, _oxford_iit_length
 # Datasets
 
 class TransparentImageClassifier(_BaseClassifier):
@@ -291,7 +293,10 @@ class Kahikatea(_ClassificationDataset):
 
         if self._check_integrity() is False:
             print('Files do not exist or are corrupted. Building dataset...')
-            self._download()
+            if self._download():
+                self._isDownloaded = True
+        else:
+            self._isDownloaded = True
 
         self.classMap = self._get_class_map()
 
@@ -327,7 +332,11 @@ class Kahikatea(_ClassificationDataset):
                 _check_pathlib_dir(self._path / 'data/ve_negative'))
 
     def _download(self) -> bool:
-        _download_extract_file(self._path, _kahikatea_url, 'rawKahikatea.zip')
+        try:
+            _download_extract_file(self._path, _kahikatea_url, 'rawKahikatea.zip')
+        except:
+            warnings.warn("Download interruped.")
+            shutil.rmtree(self._path)
 
     def _get_class_map(self) -> dict:
         return {0: 'Not in image', 1: 'In image'}
@@ -357,7 +366,10 @@ class CUB200(_ClassificationDataset):
         if self._check_integrity() is False:
             print('Files do not exist or are corrupted. Building dataset...')
             if self._download():
+                self._isDownloaded = True
                 self._organize()
+        else:
+            self._isDownloaded = True
 
         self.classMap = self._get_class_map()
         self._imNames = self._read_image_names()
@@ -377,13 +389,17 @@ class CUB200(_ClassificationDataset):
             exps (list): Explanations pertaining to the specified class.
         """
         
+        if classId not in self.classMap:
+            raise ValueError("Invalid class id (see self.classMap).")
+        
         imgs = []
         exps = []
         
-        for img in Path(self._path / "images" / self.classMap[classId]).glob("*"):
-            imgs.append(Image.open(img).convert("RGB"))
-        for exp in Path(self._path / "segmentations" / self.classMap[classId]).glob("*"):
-            exps.append(Image.open(exp))
+        for lab, img, exp in zip(self._imLabels, self._imNames, self._expNames):
+            if lab == classId:
+                imgs.append(Image.open(self._path / "images" / img).convert("RGB"))
+                exps.append(Image.open(self._path / "segmentations" / exp))
+
         labels = [classId for _ in range(len(imgs))]
         
         return imgs, labels, exps
@@ -446,6 +462,7 @@ class CUB200(_ClassificationDataset):
                 warnings.warn("Dataset download aborted.")
                 return False
         except:
+            warnings.warn("Download interruped.")
             shutil.rmtree(self._path)
             
         
@@ -477,6 +494,159 @@ class CUB200(_ClassificationDataset):
         return classMap
             
         
+        
+class OxfordIIIT(_ClassificationDataset):
+    """ The Oxford-IIIT Pet Dataset. 7347 images from 37 categories with 
+    approximately 200 images per class. From
+    
+    O. M. Parkhi, A. Vedaldi, A. Zisserman and C. V. Jawahar, "Cats and dogs," 
+    2012 IEEE Conference on Computer Vision and Pattern Recognition, 2012, 
+    pp. 3498-3505, doi: 10.1109/CVPR.2012.6248092.
+    """
+    
+    def __init__(self):
+
+        super(OxfordIIIT, self).__init__(path=_oxford_iit_root)
+
+        if self._check_integrity() is False:
+            print('Files do not exist or are corrupted. Building dataset...')
+            if self._download():
+                self._isDownloaded = True
+                self._organize()
+        else:
+            self._isDownloaded = True
+
+        self.classMap, self._labelMap = self._get_class_map()
+        self._imNames, self._imLabels, self._expNames = self._read_image_info()
+        
+    def _read_image_info(self):
+        imgNames = []
+        expNames = []
+        for filename in os.scandir(self._path / "images"):
+            # missing explanations for these 2 files
+            if filename.is_file() and filename.name[0] != "." \
+                and filename.name[:-4] != "Egyptian_Mau_165" \
+                and filename.name[:-4] != "Egyptian_Mau_167" \
+                and filename.name[-3:] != "mat":
+                imgNames.append(filename.name)
+                expNames.append(filename.name[:-4] + ".png")
+        
+        # get labels from labelMap
+        imgLabels = []
+        for name in imgNames:
+            imgLabels.append(self._labelMap[name[:-4].rsplit("_", 1)[0]])
+        
+        return imgNames, imgLabels, expNames
+        
+    def get_class_observations(self, classId: int):
+        """Get all observations from a particular class given its index.
+
+        Args:
+            classId (int): Class index. It can be consulted from the attribute 
+             :attr:`.OxfordIIIT.classMap`
+
+        Returns:
+            imgs (list): Images pertaining to the specified class.
+            labels (list): Int labels pertaining to the specified class.
+            exps (list): Explanations pertaining to the specified class.
+        """
+        
+        if classId not in self.classMap:
+            raise ValueError("Invalid class id (see self.classMap).")
+        
+        imgs = []
+        exps = []
+        
+        for lab, img, exp in zip(self._imLabels, self._imNames, self._expNames):
+            if lab == classId:
+                imgs.append(Image.open(self._path / "images" / img).convert("RGB"))
+                exps.append(Image.open(self._path / "annotations" / exp))
+            
+        labels = [classId for _ in range(len(imgs))]
+        
+        return imgs, labels, exps
+
+    def __getitem__(self, item):
+        if isinstance(item, slice):
+            img, label, exp = [], [], []
+            
+            for imName, expName in zip(self._imNames[item], self._expNames[item]):
+                img.append(Image.open(self._path / "images" / imName).convert('RGB'))
+                exp.append(Image.open(self._path / "annotations" / expName))
+                
+        elif isinstance(item, int):
+            img = Image.open(self._path / "images" / self._imNames[item]).convert('RGB')
+            exp = Image.open(self._path / "annotations" / self._expNames[item])
+        else:
+            raise TypeError('Invalid argument type.')
+        
+        label = self._imLabels[item]
+
+        return img, label, exp
+
+    def __len__(self) -> int:
+        return _oxford_iit_length
+        
+    def _download(self) -> bool:
+        queryResponse = query_yes_no('This download will take ~800MB of disk. Procede?')
+        try:
+            if queryResponse:
+                _download_extract_file(self._path, _oxford_iit_url, 'images.tar.gz', 'tar')
+                _download_extract_file(self._path, _oxford_iit_masks_url, 'annotations.tar.gz', 'tar',
+                                       deletePrevDir = False)
+                return True
+            else:
+                shutil.rmtree(self._path)
+                warnings.warn("Dataset download aborted.")
+                return False
+        except:
+            warnings.warn("Download interruped.")
+            shutil.rmtree(self._path)
+        
+    def _check_integrity(self) -> bool:
+        return (_check_pathlib_dir(self._path / 'images') and
+                _check_pathlib_dir(self._path / 'annotations'))
+        
+    def _organize(self) -> None:
+        """ Given the extracted files, deletes folders that 
+        are not used and performs other preparation instructions.
+        """
+        os.remove(self._path / 'annotations/README')
+        os.remove(self._path / 'annotations/test.txt')
+        os.remove(self._path / 'annotations/trainval.txt')
+        os.remove(self._path / 'annotations/._trimaps')
+        os.rename(self._path / "annotations/list.txt", 
+                  self._path / "list.txt")
+        
+        shutil.rmtree(self._path / "annotations/xmls")
+        
+        # convert annotations to ..255 images, where 0 is background
+        # not annotated and 255 is foreground
+        for filename in os.scandir(self._path / "annotations/trimaps"):
+            if filename.is_file() and filename.name[0] != ".":
+                arr = np.array(Image.open(self._path / "annotations/trimaps" / filename))
+                corrImg = Image.fromarray(np.uint8(np.where(arr == 1, 255, 0)))
+                corrImg.save(self._path / "annotations" / filename.name)
+                os.remove(self._path / "annotations/trimaps" / filename)
+        shutil.rmtree(self._path / "annotations/trimaps")
+        return
+            
+    def _get_class_map(self) -> dict:
+        with open(self._path / "list.txt", "r") as file:
+            lines = file.readlines()[6:]
+            
+        classMap = {}
+        for c in lines:
+            r = c.split(" ")
+            species = "cat" if r[0][0].isupper() else "dog"
+            index = r[0].rfind("_")
+            className = f"{species}_{r[0][:index]}"
+            classId = int(r[1]) - 1
+            if not classId in classMap:
+                classMap[classId] = className
+            
+        labelMap = {v[4:]: k for k, v in classMap.items()}
+        return classMap, labelMap
 
 
 # Data utils
