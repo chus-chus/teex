@@ -3,16 +3,17 @@ methods and classes for saliency map data manipulation.
 
 All of the datasets must be instanced first. Then, when sliced, they all return the observations, labels and ground
 truth explanations, respectively. Note that all real-world datasets implement the 
-:code:`delete_data` method, which allows to delete all of their downloaded internal data."""
+:code:`delete_data` method, which allows to delete all of their downloaded internal data. In this module, images
+and explanations are represented by the :code:`PIL.Image.Image` class. """
 
 import os
-from pathlib import Path
 import random
 import shutil
 import warnings
-
 import numpy as np
+
 from PIL import Image
+from pathlib import Path
 
 from teex._utils._misc import _download_extract_file
 from teex._utils._paths import _check_pathlib_dir
@@ -20,7 +21,6 @@ from teex._utils._data import query_yes_no
 
 from teex._baseClasses._baseDatasets import _ClassificationDataset, \
     _SyntheticDataset
-
 from teex._baseClasses._baseClassifier import _BaseClassifier
 
 from teex._datasets.info.kahikatea import _kahikateaLabels, _kahikateaNEntries, \
@@ -324,6 +324,34 @@ class Kahikatea(_ClassificationDataset):
             raise TypeError('Invalid argument type.')
 
         return img, label, exp
+    
+    def get_class_observations(self, classId: int) -> list:
+        """Get observations of a particular class.
+
+        :param classId: Class ID. See attribute :code:`classMap`.
+        :type classId: int
+        :return: Observations of the specified type.
+        :rtype: list
+        """
+        if classId not in self.classMap:
+            raise ValueError("Class ID not valid.")
+        
+        imgs = []
+        exps = []
+
+        classPath = "ve_positive" if classId == 1 else "ve_negative"
+        
+        for filename in os.scandir(self._path / "data" / classPath):
+            if filename.is_file() and filename.name[0] != ".":
+                imgs.append(Image.open(self._path / "data" / classPath / filename).convert("RGB"))
+                
+        for filename in os.scandir(self._path / "expl" / classPath):
+            if filename.is_file() and filename.name[0] != ".":
+                exps.append(Image.open(self._path / "expl" / classPath / filename).convert("RGB"))
+            
+        labels = [classId for _ in range(len(imgs))]
+        
+        return imgs, labels, exps
 
     def __len__(self) -> int:
         return _kahikateaNEntries
@@ -540,17 +568,17 @@ class OxfordIIIT(_ClassificationDataset):
         
         return imgNames, imgLabels, expNames
         
-    def get_class_observations(self, classId: int):
+    def get_class_observations(self, classId: int) -> list:
         """Get all observations from a particular class given its index.
 
         Args:
             classId (int): Class index. It can be consulted from the attribute 
-             :attr:`.OxfordIIIT.classMap`
+             :attr:`classMap`.
 
         Returns:
-            imgs (list): Images pertaining to the specified class.
-            labels (list): Int labels pertaining to the specified class.
-            exps (list): Explanations pertaining to the specified class.
+            imgs (np.ndarray): Images pertaining to the specified class.
+            labels (np.ndarray): Int labels pertaining to the specified class.
+            exps (np.ndarray): Explanations pertaining to the specified class.
         """
         
         if classId not in self.classMap:
@@ -654,13 +682,16 @@ class OxfordIIIT(_ClassificationDataset):
 # Data utils
 
 def delete_sm_data() -> None:
-    """Removes from internal storage all downloaded Saliency Map datasets
+    """Removes from internal storage all downloaded Saliency Map datasets. 
+    See the :code:`delete_data` method of all Saliency Map datasets to delete only 
+    their corresponding data.
     """
     smPath = Path(__file__).parent.parent.absolute() / "_datasets/saliencyMap/"
     try:
         shutil.rmtree(smPath)
     except FileNotFoundError:
         warnings.warn("There is no data downloaded.")
+        raise FileNotFoundError
 
 def rgb_to_grayscale(img):
     """ Transforms a 3 channel RGB image into a grayscale image (1 channel).
@@ -668,7 +699,6 @@ def rgb_to_grayscale(img):
      :param np.ndarray img: of shape (imageH, imageW, 3)
      :return np.ndarray: of shape (imageH, imageW) """
     return np.dot(img[..., :3], [0.2989, 0.5870, 0.1140])
-
 
 def binarize_rgb_mask(img, bgValue='high') -> np.array:
     """ Binarizes a RGB binary mask, letting the background (negative class) be 0. Use this function when the image to
@@ -692,3 +722,6 @@ def binarize_rgb_mask(img, bgValue='high') -> np.array:
         # assign lighter pixels the positive class
         res[imgmod > minVal] = 1
     return res
+
+def pil_to_numpy(img: Image) -> np.ndarray:
+    pass

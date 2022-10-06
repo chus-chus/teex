@@ -1,9 +1,6 @@
 teex.decisionRule package
 =========================
 
-Submodules
-----------
-
 teex.decisionRule.data module
 -----------------------------
 
@@ -20,10 +17,3 @@ teex.decisionRule.eval module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: teex.decisionRule
-   :members:
-   :undoc-members:
-   :show-inheritance:

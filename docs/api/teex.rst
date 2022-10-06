@@ -11,11 +11,3 @@ Subpackages
    teex.featureImportance
    teex.saliencyMap
    teex.wordImportance
-
-Module contents
----------------
-
-.. automodule:: teex
-   :members:
-   :undoc-members:
-   :show-inheritance:

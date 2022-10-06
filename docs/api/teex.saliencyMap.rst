@@ -1,9 +1,6 @@
 teex.saliencyMap package
 ========================
 
-Submodules
-----------
-
 teex.saliencyMap.data module
 ----------------------------
 
@@ -20,10 +17,3 @@ teex.saliencyMap.eval module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: teex.saliencyMap
-   :members:
-   :undoc-members:
-   :show-inheritance:

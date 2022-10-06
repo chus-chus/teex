@@ -1,9 +1,6 @@
 teex.featureImportance package
 ==============================
 
-Submodules
-----------
-
 teex.featureImportance.data module
 ----------------------------------
 
@@ -20,10 +17,3 @@ teex.featureImportance.eval module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: teex.featureImportance
-   :members:
-   :undoc-members:
-   :show-inheritance:

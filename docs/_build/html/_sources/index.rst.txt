@@ -13,7 +13,7 @@
 teex
 ================================
 
-A Python Toolbox for the Evaluation of machine learning Explanations.
+A Python Toolbox for the evaluation of machine learning explanations.
 
 This project aims to provide a simple way of evaluating individual black box
 explanations. Moreover, it contains a collection of easy-to-access datasets with available ground truth explanations.
@@ -23,7 +23,7 @@ explanations. Moreover, it contains a collection of easy-to-access datasets with
    - ``eval``: with methods for explanation evaluation.
    - ``data``: with methods for data generation, loading and manipulation.
 
-Visit our `GitHub <https://github.com/chus-chus/teex>`_ for source, tutorials and more.
+Visit our `GitHub <https://github.com/chus-chus/teex>`_ for source.
 
 .. toctree:: 
    :maxdepth: 2
