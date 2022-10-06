@@ -8,7 +8,6 @@ build-backend = "setuptools.build_meta"
 [tool.semantic_release] 
 version_variable = [
     'teex/__version__.py:__version__',
-    'docs/conf.py:release',
-    'setup.cfg:version'
+    'docs/conf.py:release'
 ]
 version_source = 'tag'
