@@ -135,18 +135,23 @@ X, y, exps = SenecaSM()[:]
 ```
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/artificial_sm.png" 
-         alt="drawing" width="400"/>
-
-Fig. 2 Artificial image dataset with g.t. saliency map explanations.
+    <img src="docs/images/seneca_sm_sample.png" 
+         alt="drawing" width="200"/>
+    <img src="docs/images/seneca_sm_gt.png" alt="drawing" width="200"/>
 </p>
+<body>
+  <p align="center">Fig. 4 Artificial image and its g.t. saliency map explanation.
+ </p>
+</body>
+
 
 ## Tutorials and API
 
-The full API documentation can be found on [Read The Docs](https://teex.readthedocs.io).
+**teex**'s documentation can be found on [Read The Docs](https://teex.readthedocs.io).
 
-Here are some sample notebooks with examples.
+Here are some examples and tutorials:
 
+---
 - [Improving model selection with explanation quality](https://github.com/chus-chus/teex/blob/main/docs/demos/)
 ---
 *Saliency maps*
