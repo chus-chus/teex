@@ -8,8 +8,12 @@ __pycache__/
 .vscode
 dist/
 .cache/
-# ignore all datasets
-teex/_datasets/*
-# except info
-teex/!_datasets/info
-teex.code-workspace
+.DS_Store
+
+# ignore all datasets except info.py
+teex/_datasets/saliencyMap
+teex/_datasets/wordImportance
+teex/_datasets/featureImportance
+teex/_datasets/decisionRule
+
+./teex.code-workspace

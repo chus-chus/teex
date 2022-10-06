@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from teex.saliencyMap.data import SenecaSM, Kahikatea, binarize_rgb_mask
+from teex.saliencyMap.data import CUB200, OxfordIIIT, SenecaSM, Kahikatea, binarize_rgb_mask
 from teex.saliencyMap.eval import saliency_map_scores, _AVAILABLE_SALIENCY_MAP_METRICS
 
 
@@ -38,7 +38,73 @@ class TestSMDataSenecea(unittest.TestCase):
 
     def test_seneca_label_proportion(self):
         self.assertEqual(np.sum(self.y)/len(self.y), self.patternProp)
+        
 
+class TestSMCUB200(unittest.TestCase):
+    """ Test for the CUB-200-2011 dataset """
+
+    def setUp(self) -> None:
+        self.data = CUB200()
+
+    def test_slices(self):
+        d = self.data[:11]
+        self.assertIsNotNone(d[:10])
+        self.assertIsNotNone(d[1:10])
+        self.assertIsNotNone(d[:10:2])
+        for i, t in enumerate(d):
+            if i != 1:
+                for e in t:
+                    e.close()
+
+    def test_class_loading(self):
+        for c in self.data.classMap.keys():
+            obs = self.data.get_class_observations(c)
+            self.assertIsNotNone(obs)
+            # close pointers, as they generate alloc warnings in -Wall calls
+            for i, t in enumerate(obs):
+                if i != 1:
+                    for e in t:
+                        e.close()
+                        
+
+class TestSMOxfordIIIT(unittest.TestCase):
+    """ Test for the Oxford IIIT Pet Dataset """
+
+    def setUp(self) -> None:
+        self.data = OxfordIIIT()
+
+    def test_slices(self):
+        d = self.data[:11]
+        self.assertIsNotNone(d[:10])
+        self.assertIsNotNone(d[1:10])
+        self.assertIsNotNone(d[:10:2])
+        for i, t in enumerate(d):
+            if i != 1:
+                for e in t:
+                    e.close()
+
+    def test_class_loading(self):
+        for c in self.data.classMap.keys():
+            obs = self.data.get_class_observations(c)
+            self.assertIsNotNone(obs)
+            # close pointers, as they generate alloc warnings in -Wall calls
+            for i, t in enumerate(obs):
+                if i != 1:
+                    for e in t:
+                        e.close()
+
+
+class TestSMKahikatea(unittest.TestCase):
+    """ Test for saliency map data generation with seneca """
+
+    def setUp(self) -> None:
+        self.data = Kahikatea()
+
+    def test_slices(self):
+        self.assertIsNotNone(self.data[:10])
+        self.assertIsNotNone(self.data[1:10])
+        self.assertIsNotNone(self.data[:10:2])
+        
 
 class TestSMMetrics(unittest.TestCase):
 

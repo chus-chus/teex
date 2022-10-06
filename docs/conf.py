@@ -19,8 +19,8 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'teex'
-copyright = '2022, Jesus Antonanzas'
-author = 'Jesus Antonanzas'
+copyright = '2022, Chus Antonanzas'
+author = 'Chus Antonanzas'
 
 # The full version, including alpha/beta/rc tags
 release = '1.0.4'
@@ -31,7 +31,9 @@ release = '1.0.4'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
+extensions = ['sphinx.ext.autodoc', 
+              'sphinx.ext.viewcode',
+              'nbsphinx']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -47,9 +49,16 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'furo'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+html_logo = 'images/rsz_teex_logo__.png'
+html_favicon = 'images/favicon-32x32.ico'
+
+html_theme_options = {
+        'logo_only': False
+    }

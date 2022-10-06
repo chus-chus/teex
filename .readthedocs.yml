@@ -20,3 +20,8 @@ python:
       - path: .
         method: pip
       - requirements: docs/requirements.txt
+
+build:
+   image: latest
+   apt_packages:
+      - pandoc

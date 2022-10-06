@@ -1,10 +1,16 @@
+<p align="center">
+    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/teex_logo__.png" 
+         alt="Our AI generated logo. Comes from the prompt: 'logo of a t, inspired by an AI that is fair and responsible.'" width="115"/>
+
 # teex: a toolbox for evaluating XAI explanations
 
 [![PyPI Version](https://img.shields.io/pypi/v/teex)](https://img.shields.io/pypi/v/teex)
 [![Open GitHub Issues](https://img.shields.io/github/issues/chus-chus/teex)](https://img.shields.io/github/issues/chus-chus/teex)
+[![codecov](https://codecov.io/gh/chus-chus/teex/branch/main/graph/badge.svg?token=PWSRR5NZTQ)](https://codecov.io/gh/chus-chus/teex)
+![Build Status](https://github.com/chus-chus/teex/workflows/CI/badge.svg?branch=main)
 [![Documentation Status](https://readthedocs.org/projects/teex/badge/?version=latest)](https://teex.readthedocs.io/en/latest/?badge=latest)
 
-A Python **T**oolbox for the **E**valuation of machine learning **Ex**planations.
+A Python **t**oolbox for the **e**valuation of machine learning **ex**planations.
 
 This project aims to provide a simple way of **evaluating** individual black box explanations against ground truth. Moreover, it contains a collection of easy-to-access datasets with available g.t. explanations.
 
@@ -74,7 +80,7 @@ Metrics available as of v1.0.0 are
   - All metrics in feature importance, where a vocabulary is considered the feature space and a word importance explanation may or may not contain words from the vocabulary.
 
 Note how in **teex**, feature importance vectors are a universal representation: we 'translate' all other explanation types
-to feature importance vectors to allow a wider metric space.
+to feature importance vectors to allow a wider metric space.  
 
 
 ### Data
@@ -88,18 +94,39 @@ from teex.saliencyMap.data import Kahikatea
 X, y, exps = Kahikatea()[:]
 ```
 
-downloads and assigns data from the Kahikatea [1] dataset:
+downloads and assigns data from the Kahikatea dataset:    
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/kahikatea.png" 
-         alt="drawing" width="450"/>
-
-Fig. 1 The <a href="https://zenodo.org/record/5059769#.YN7KKegzZPZ">Kahikatea</a> dataset. Contains aerial images with the task of identifying whether there are 
-Kahikatea trees (a species endemic to New Zealand) in the area or not. Observation on the left, ground truth 
-explanation on the right.
+    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/kahikatea_sample.png" 
+         alt="drawing" width="200"/>
+    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/kahikatea_gt.png" alt="drawing" width="200"/>
 </p>
+<body>
+  <p align="center">Fig. 1 A <a href="https://zenodo.org/record/5059769#.YN7KKegzZPZ">Kahikatea</a> dataset sample. </p>
+</body>
 
-Synthetic datasets can also be generated effortlessly:
+Other datasets, such as [CUB-200-2011](https://www.vision.caltech.edu/datasets/cub_200_2011/) and the [Oxford-IIIT Pet Dataset](https://www.robots.ox.ac.uk/~vgg/data/pets/), are available on **teex**, with over 19000 images and 230 distinct classes:
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/cub_sample.jpg" 
+         alt="drawing" width="200"/>
+    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/cub_gt.png" alt="drawing" width="200"/>
+</p>
+<body>
+  <p align="center">Fig. 2 A <a href="https://www.vision.caltech.edu/datasets/cub_200_2011/">CUB-200-2011</a> dataset sample.  </p>
+</body>
+    
+<p align="center">
+    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/ox_sample.jpg" 
+         alt="drawing" width="200"/>
+    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/ox_gt.png" alt="drawing" width="200"/>
+</p>
+<body>
+  <p align="center">Fig. 3 An <a href="https://www.robots.ox.ac.uk/~vgg/data/pets/">Oxford-IIIT Pet Dataset</a> sample. </p>
+</body>
+
+
+Synthetic datasets can also be easily generated:
 
 ```python
 from teex.saliencyMap.data import SenecaSM
@@ -108,18 +135,21 @@ X, y, exps = SenecaSM()[:]
 ```
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/artificial_sm.png" 
-         alt="drawing" width="400"/>
-
-Fig. 2 Artificial image dataset with g.t. saliency map explanations.
+    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/seneca_sm_sample.png" 
+         alt="drawing" width="200"/>
+    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/seneca_sm_gt.png" alt="drawing" width="200"/>
 </p>
+<body>
+  <p align="center">Fig. 4 Artificial image and its g.t. saliency map explanation.
+ </p>
+</body>
+
 
 ## Tutorials and API
 
-The full API documentation can be found on [Read The Docs](https://teex.readthedocs.io).
+**teex**'s documentation can be found on [Read The Docs](https://teex.readthedocs.io).
 
-Here are some sample notebooks with examples.
-
+---
 - [Improving model selection with explanation quality](https://github.com/chus-chus/teex/blob/main/docs/demos/)
 ---
 *Saliency maps*
@@ -158,10 +188,3 @@ the [TAIAO](https://taiao.ai/) project.
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Logo_UPC.svg/2048px-Logo_UPC.svg.png" alt="drawing" width="50"/>
     </a>
 </p>
-
-## References
-
-[1] Y. Jia et al. (2021) 
-Studying and Exploiting the Relationship Between Model Accuracy and Explanation Quality, 
-ECML-PKDD 2021
-

@@ -1,8 +1,12 @@
 """ Skeletons for datasets. """
 
 import abc
-from pathlib import Path
+import warnings
 
+from pathlib import Path
+from shutil import rmtree
+
+from teex._utils._data import query_yes_no
 
 class _ClassificationDataset(object):
 
@@ -40,12 +44,29 @@ class _ClassificationDataset(object):
     def _get_class_map(self) -> dict:
         """ Returns single level dict. that maps class numbers to a relevant str. representation, if any. """
         pass
-
+    
+    def delete_data(self):
+        """ Deletes downloaded data from disk. """
+        
+        warnings.warn("This will remove all downloaded data associated "
+                      "with this class from disk and invalidate this Dataset "
+                      "instance. Procede?")
+        
+        if query_yes_no(""):
+            try:
+                rmtree(self._path)
+                self._isDownloaded = False
+            except FileNotFoundError:
+                warnings.warn("There is no data downloaded.")
+    
     def __repr__(self) -> str:
         return self.__str__()
 
     def __str__(self) -> str:
-        return f'Dataset {self.__class__.__name__} @ {self._path}. \n{self.__len__()} observations.'
+        if self._isDownloaded:
+            return f'Dataset {self.__class__.__name__} @ {self._path}. \n{self.__len__()} observations.'
+        else:
+            return f'Dataset missing from disk. Re-instantiate to download.'
 
 
 class _SyntheticDataset(object):
