@@ -722,6 +722,3 @@ def binarize_rgb_mask(img, bgValue='high') -> np.array:
         # assign lighter pixels the positive class
         res[imgmod > minVal] = 1
     return res
-
-def pil_to_numpy(img: Image) -> np.ndarray:
-    pass

@@ -97,9 +97,9 @@ X, y, exps = Kahikatea()[:]
 downloads and assigns data from the Kahikatea dataset:    
 
 <p align="center">
-    <img src="docs/images/kahikatea_sample.png" 
+    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/kahikatea_sample.png" 
          alt="drawing" width="200"/>
-    <img src="docs/images/kahikatea_gt.png" alt="drawing" width="200"/>
+    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/kahikatea_gt.png" alt="drawing" width="200"/>
 </p>
 <body>
   <p align="center">Fig. 1 A <a href="https://zenodo.org/record/5059769#.YN7KKegzZPZ">Kahikatea</a> dataset sample. </p>
@@ -108,18 +108,18 @@ downloads and assigns data from the Kahikatea dataset:
 Other datasets, such as [CUB-200-2011](https://www.vision.caltech.edu/datasets/cub_200_2011/) and the [Oxford-IIIT Pet Dataset](https://www.robots.ox.ac.uk/~vgg/data/pets/), are available on **teex**, with over 19000 images and 230 distinct classes:
 
 <p align="center">
-    <img src="docs/images/cub_sample.jpg" 
+    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/cub_sample.jpg" 
          alt="drawing" width="200"/>
-    <img src="docs/images/cub_gt.png" alt="drawing" width="200"/>
+    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/cub_gt.png" alt="drawing" width="200"/>
 </p>
 <body>
   <p align="center">Fig. 2 A <a href="https://www.vision.caltech.edu/datasets/cub_200_2011/">CUB-200-2011</a> dataset sample.  </p>
 </body>
     
 <p align="center">
-    <img src="docs/images/ox_sample.jpg" 
+    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/ox_sample.jpg" 
          alt="drawing" width="200"/>
-    <img src="docs/images/ox_gt.png" alt="drawing" width="200"/>
+    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/ox_gt.png" alt="drawing" width="200"/>
 </p>
 <body>
   <p align="center">Fig. 3 An <a href="https://www.robots.ox.ac.uk/~vgg/data/pets/">Oxford-IIIT Pet Dataset</a> sample. </p>
@@ -135,9 +135,9 @@ X, y, exps = SenecaSM()[:]
 ```
 
 <p align="center">
-    <img src="docs/images/seneca_sm_sample.png" 
+    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/seneca_sm_sample.png" 
          alt="drawing" width="200"/>
-    <img src="docs/images/seneca_sm_gt.png" alt="drawing" width="200"/>
+    <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/seneca_sm_gt.png" alt="drawing" width="200"/>
 </p>
 <body>
   <p align="center">Fig. 4 Artificial image and its g.t. saliency map explanation.
@@ -148,8 +148,6 @@ X, y, exps = SenecaSM()[:]
 ## Tutorials and API
 
 **teex**'s documentation can be found on [Read The Docs](https://teex.readthedocs.io).
-
-Here are some examples and tutorials:
 
 ---
 - [Improving model selection with explanation quality](https://github.com/chus-chus/teex/blob/main/docs/demos/)

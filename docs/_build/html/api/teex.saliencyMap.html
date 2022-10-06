@@ -241,7 +241,8 @@
 methods and classes for saliency map data manipulation.</p>
 <p>All of the datasets must be instanced first. Then, when sliced, they all return the observations, labels and ground
 truth explanations, respectively. Note that all real-world datasets implement the 
-<code class="code docutils literal notranslate"><span class="pre">delete_data</span></code>, which allows to delete all of their downloaded internal data.</p>
+<code class="code docutils literal notranslate"><span class="pre">delete_data</span></code> method, which allows to delete all of their downloaded internal data. In this module, images
+and explanations are represented by the <code class="code docutils literal notranslate"><span class="pre">PIL.Image.Image</span></code> class.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="teex.saliencyMap.data.CUB200">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.data.</span></span><span class="sig-name descname"><span class="pre">CUB200</span></span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#CUB200"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.CUB200" title="Permalink to this definition">#</a></dt>
@@ -288,6 +289,23 @@ highlighted. If an image belongs to the negative class, None is provided as an e
 </div>
 <p>where <code class="code docutils literal notranslate"><span class="pre">img</span></code> is a PIL Image, <code class="code docutils literal notranslate"><span class="pre">label</span></code> is an int and <code class="code docutils literal notranslate"><span class="pre">exp</span></code> is a PIL Image.
 When a slice is performed, obs, label and exp are lists of the objects described above.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.saliencyMap.data.Kahikatea.get_class_observations">
+<span class="sig-name descname"><span class="pre">get_class_observations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#Kahikatea.get_class_observations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.Kahikatea.get_class_observations" title="Permalink to this definition">#</a></dt>
+<dd><p>Get observations of a particular class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>classId</strong> (<em>int</em>) – Class ID. See attribute <code class="code docutils literal notranslate"><span class="pre">classMap</span></code>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Observations of the specified type.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -301,17 +319,17 @@ approximately 200 images per class. From</p>
 pp. 3498-3505, doi: 10.1109/CVPR.2012.6248092.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="teex.saliencyMap.data.OxfordIIIT.get_class_observations">
-<span class="sig-name descname"><span class="pre">get_class_observations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#OxfordIIIT.get_class_observations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.OxfordIIIT.get_class_observations" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_class_observations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#OxfordIIIT.get_class_observations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.OxfordIIIT.get_class_observations" title="Permalink to this definition">#</a></dt>
 <dd><p>Get all observations from a particular class given its index.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><dl class="simple">
-<dt>classId (int): Class index. It can be consulted from the attribute </dt><dd><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">OxfordIIIT.classMap</span></code></p>
+<dt>classId (int): Class index. It can be consulted from the attribute </dt><dd><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">classMap</span></code>.</p>
 </dd>
 </dl>
 </dd>
-<dt>Returns:</dt><dd><p>imgs (list): Images pertaining to the specified class.
-labels (list): Int labels pertaining to the specified class.
-exps (list): Explanations pertaining to the specified class.</p>
+<dt>Returns:</dt><dd><p>imgs (np.ndarray): Images pertaining to the specified class.
+labels (np.ndarray): Int labels pertaining to the specified class.
+exps (np.ndarray): Explanations pertaining to the specified class.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -443,7 +461,9 @@ binarize has a very defined background.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="teex.saliencyMap.data.delete_sm_data">
 <span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.data.</span></span><span class="sig-name descname"><span class="pre">delete_sm_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#delete_sm_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.delete_sm_data" title="Permalink to this definition">#</a></dt>
-<dd><p>Removes from internal storage all downloaded Saliency Map datasets</p>
+<dd><p>Removes from internal storage all downloaded Saliency Map datasets. 
+See the <code class="code docutils literal notranslate"><span class="pre">delete_data</span></code> method of all Saliency Map datasets to delete only 
+their corresponding data.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -596,7 +616,10 @@ contain multiple observations and <code class="code docutils literal notranslate
 <li><a class="reference internal" href="#teex.saliencyMap.data.CUB200.get_class_observations"><code class="docutils literal notranslate"><span class="pre">CUB200.get_class_observations()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#teex.saliencyMap.data.Kahikatea"><code class="docutils literal notranslate"><span class="pre">Kahikatea</span></code></a></li>
+<li><a class="reference internal" href="#teex.saliencyMap.data.Kahikatea"><code class="docutils literal notranslate"><span class="pre">Kahikatea</span></code></a><ul>
+<li><a class="reference internal" href="#teex.saliencyMap.data.Kahikatea.get_class_observations"><code class="docutils literal notranslate"><span class="pre">Kahikatea.get_class_observations()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#teex.saliencyMap.data.OxfordIIIT"><code class="docutils literal notranslate"><span class="pre">OxfordIIIT</span></code></a><ul>
 <li><a class="reference internal" href="#teex.saliencyMap.data.OxfordIIIT.get_class_observations"><code class="docutils literal notranslate"><span class="pre">OxfordIIIT.get_class_observations()</span></code></a></li>
 </ul>
