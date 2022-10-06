@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>teex package &mdash; teex 1.0.4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="teex.decisionRule package" href="teex.decisionRule.html" />
+    <link rel="prev" title="API reference" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> teex
+            <img src="../_static/rsz_teex_logo__.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../demos/examples.html">Notebook demos</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">teex package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="teex.decisionRule.html">teex.decisionRule package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.featureImportance.html">teex.featureImportance package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.saliencyMap.html">teex.saliencyMap package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.wordImportance.html">teex.wordImportance package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-teex">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">teex</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">API reference</a> &raquo;</li>
+      <li>teex package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/teex.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="teex-package">
+<h1>teex package<a class="headerlink" href="#teex-package" title="Permalink to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="teex.decisionRule.html">teex.decisionRule package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="teex.decisionRule.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="teex.decisionRule.html#module-teex.decisionRule.data">teex.decisionRule.data module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.DecisionRule"><code class="docutils literal notranslate"><span class="pre">DecisionRule</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.DecisionRule.delete_statement"><code class="docutils literal notranslate"><span class="pre">DecisionRule.delete_statement()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.DecisionRule.get_features"><code class="docutils literal notranslate"><span class="pre">DecisionRule.get_features()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.DecisionRule.insert_statement"><code class="docutils literal notranslate"><span class="pre">DecisionRule.insert_statement()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.DecisionRule.rename_statement"><code class="docutils literal notranslate"><span class="pre">DecisionRule.rename_statement()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.DecisionRule.replace_statement"><code class="docutils literal notranslate"><span class="pre">DecisionRule.replace_statement()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.DecisionRule.set_result"><code class="docutils literal notranslate"><span class="pre">DecisionRule.set_result()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.DecisionRule.upsert_statement"><code class="docutils literal notranslate"><span class="pre">DecisionRule.upsert_statement()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.SenecaDR"><code class="docutils literal notranslate"><span class="pre">SenecaDR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.Statement"><code class="docutils literal notranslate"><span class="pre">Statement</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.TransparentRuleClassifier"><code class="docutils literal notranslate"><span class="pre">TransparentRuleClassifier</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.TransparentRuleClassifier.explain"><code class="docutils literal notranslate"><span class="pre">TransparentRuleClassifier.explain()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.TransparentRuleClassifier.fit"><code class="docutils literal notranslate"><span class="pre">TransparentRuleClassifier.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.TransparentRuleClassifier.predict"><code class="docutils literal notranslate"><span class="pre">TransparentRuleClassifier.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.TransparentRuleClassifier.predict_proba"><code class="docutils literal notranslate"><span class="pre">TransparentRuleClassifier.predict_proba()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.clean_binary_statement"><code class="docutils literal notranslate"><span class="pre">clean_binary_statement()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.rule_to_feature_importance"><code class="docutils literal notranslate"><span class="pre">rule_to_feature_importance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.rulefit_to_decision_rule"><code class="docutils literal notranslate"><span class="pre">rulefit_to_decision_rule()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.data.str_to_decision_rule"><code class="docutils literal notranslate"><span class="pre">str_to_decision_rule()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="teex.decisionRule.html#module-teex.decisionRule.eval">teex.decisionRule.eval module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.eval.complete_rule_quality"><code class="docutils literal notranslate"><span class="pre">complete_rule_quality()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="teex.decisionRule.html#teex.decisionRule.eval.rule_scores"><code class="docutils literal notranslate"><span class="pre">rule_scores()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="teex.decisionRule.html#module-teex.decisionRule">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="teex.featureImportance.html">teex.featureImportance package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="teex.featureImportance.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="teex.featureImportance.html#module-teex.featureImportance.data">teex.featureImportance.data module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="teex.featureImportance.html#teex.featureImportance.data.SenecaFI"><code class="docutils literal notranslate"><span class="pre">SenecaFI</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="teex.featureImportance.html#teex.featureImportance.data.TransparentLinearClassifier"><code class="docutils literal notranslate"><span class="pre">TransparentLinearClassifier</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="teex.featureImportance.html#teex.featureImportance.data.TransparentLinearClassifier.explain"><code class="docutils literal notranslate"><span class="pre">TransparentLinearClassifier.explain()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.featureImportance.html#teex.featureImportance.data.TransparentLinearClassifier.fit"><code class="docutils literal notranslate"><span class="pre">TransparentLinearClassifier.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.featureImportance.html#teex.featureImportance.data.TransparentLinearClassifier.predict"><code class="docutils literal notranslate"><span class="pre">TransparentLinearClassifier.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.featureImportance.html#teex.featureImportance.data.TransparentLinearClassifier.predict_proba"><code class="docutils literal notranslate"><span class="pre">TransparentLinearClassifier.predict_proba()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="teex.featureImportance.html#teex.featureImportance.data.lime_to_feature_importance"><code class="docutils literal notranslate"><span class="pre">lime_to_feature_importance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="teex.featureImportance.html#teex.featureImportance.data.scale_fi_bounds"><code class="docutils literal notranslate"><span class="pre">scale_fi_bounds()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="teex.featureImportance.html#module-teex.featureImportance.eval">teex.featureImportance.eval module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="teex.featureImportance.html#teex.featureImportance.eval.cosine_similarity"><code class="docutils literal notranslate"><span class="pre">cosine_similarity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="teex.featureImportance.html#teex.featureImportance.eval.feature_importance_scores"><code class="docutils literal notranslate"><span class="pre">feature_importance_scores()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="teex.featureImportance.html#module-teex.featureImportance">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="teex.saliencyMap.html">teex.saliencyMap package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="teex.saliencyMap.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="teex.saliencyMap.html#module-teex.saliencyMap.data">teex.saliencyMap.data module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="teex.saliencyMap.html#teex.saliencyMap.data.CUB200"><code class="docutils literal notranslate"><span class="pre">CUB200</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="teex.saliencyMap.html#teex.saliencyMap.data.CUB200.get_class_observations"><code class="docutils literal notranslate"><span class="pre">CUB200.get_class_observations()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="teex.saliencyMap.html#teex.saliencyMap.data.Kahikatea"><code class="docutils literal notranslate"><span class="pre">Kahikatea</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="teex.saliencyMap.html#teex.saliencyMap.data.OxfordIIIT"><code class="docutils literal notranslate"><span class="pre">OxfordIIIT</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="teex.saliencyMap.html#teex.saliencyMap.data.OxfordIIIT.get_class_observations"><code class="docutils literal notranslate"><span class="pre">OxfordIIIT.get_class_observations()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="teex.saliencyMap.html#teex.saliencyMap.data.SenecaSM"><code class="docutils literal notranslate"><span class="pre">SenecaSM</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier"><code class="docutils literal notranslate"><span class="pre">TransparentImageClassifier</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.explain"><code class="docutils literal notranslate"><span class="pre">TransparentImageClassifier.explain()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.fit"><code class="docutils literal notranslate"><span class="pre">TransparentImageClassifier.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.predict"><code class="docutils literal notranslate"><span class="pre">TransparentImageClassifier.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.predict_proba"><code class="docutils literal notranslate"><span class="pre">TransparentImageClassifier.predict_proba()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="teex.saliencyMap.html#teex.saliencyMap.data.binarize_rgb_mask"><code class="docutils literal notranslate"><span class="pre">binarize_rgb_mask()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="teex.saliencyMap.html#teex.saliencyMap.data.delete_sm_data"><code class="docutils literal notranslate"><span class="pre">delete_sm_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="teex.saliencyMap.html#teex.saliencyMap.data.rgb_to_grayscale"><code class="docutils literal notranslate"><span class="pre">rgb_to_grayscale()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="teex.saliencyMap.html#module-teex.saliencyMap.eval">teex.saliencyMap.eval module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="teex.saliencyMap.html#teex.saliencyMap.eval.saliency_map_scores"><code class="docutils literal notranslate"><span class="pre">saliency_map_scores()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="teex.saliencyMap.html#module-teex.saliencyMap">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="teex.wordImportance.html">teex.wordImportance package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="teex.wordImportance.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="teex.wordImportance.html#module-teex.wordImportance.data">teex.wordImportance.data module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="teex.wordImportance.html#teex.wordImportance.data.Newsgroup"><code class="docutils literal notranslate"><span class="pre">Newsgroup</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="teex.wordImportance.html#module-teex.wordImportance.eval">teex.wordImportance.eval module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="teex.wordImportance.html#teex.wordImportance.eval.word_importance_scores"><code class="docutils literal notranslate"><span class="pre">word_importance_scores()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="teex.wordImportance.html#teex.wordImportance.eval.word_to_feature_importance"><code class="docutils literal notranslate"><span class="pre">word_to_feature_importance()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="teex.wordImportance.html#module-teex.wordImportance">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="module-teex">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-teex" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="API reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="teex.decisionRule.html" class="btn btn-neutral float-right" title="teex.decisionRule package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Chus Antonanzas.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>teex &mdash; teex 1.0.4 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> teex
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">teex API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">teex</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>teex</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/demos/decision_rule/gen_decision_rule.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+.jp-RenderedHTMLCommon thead,
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+.jp-RenderedHTMLCommon th,
+div.rendered_html th {
+  font-weight: bold;
+}
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+.jp-RenderedHTMLCommon tbody tr:hover,
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="teex">
+<h1>teex<a class="headerlink" href="#teex" title="Permalink to this heading"></a></h1>
+<section id="Generating-data-with-available-g.t.-decision-rule-explanations">
+<h2>Generating data with available g.t. decision rule explanations<a class="headerlink" href="#Generating-data-with-available-g.t.-decision-rule-explanations" title="Permalink to this heading"></a></h2>
+<p>We are going to see the available options for data generation with g.t. decision rule explanations and related methods.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[68]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">teex.decisionRule.data</span> <span class="kn">import</span> <span class="n">Statement</span><span class="p">,</span> <span class="n">DecisionRule</span><span class="p">,</span> <span class="n">SenecaDR</span><span class="p">,</span> <span class="n">str_to_decision_rule</span><span class="p">,</span> <span class="n">rulefit_to_decision_rule</span>
+
+<span class="kn">from</span> <span class="nn">rulefit</span> <span class="kn">import</span> <span class="n">RuleFit</span>
+</pre></div>
+</div>
+</div>
+<p>#### 1. <code class="docutils literal notranslate"><span class="pre">DecisionRule</span></code> objects in <strong>teex</strong></p>
+<p>To represent decision rules, <em>teex</em> provides a custom class. In short, we consider the atomic structure of a rule, a <code class="docutils literal notranslate"><span class="pre">Statement</span></code>, that represents an ‘if’ clause. Then, a <code class="docutils literal notranslate"><span class="pre">DecisionRule</span></code> object is comprised of a collection of <code class="docutils literal notranslate"><span class="pre">Statement</span></code> objects, which, if all held true, imply a result, also represented as a <code class="docutils literal notranslate"><span class="pre">Statement</span></code>.</p>
+<p>For example, given the Statements:</p>
+<ul class="simple">
+<li><p>‘white_feathers’ == true</p></li>
+<li><p>‘quacks’ == true</p></li>
+</ul>
+<p>we can build the decision rule that says:</p>
+<ul class="simple">
+<li><p><strong>if</strong> (<code class="docutils literal notranslate"><span class="pre">white_feathers</span></code> == true) <strong>and</strong> (<code class="docutils literal notranslate"><span class="pre">quacks</span></code> == true) <strong>then</strong> (<code class="docutils literal notranslate"><span class="pre">is_duck</span></code> == true)</p></li>
+</ul>
+<p>In code, we can build this exact example:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[69]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s1</span> <span class="o">=</span> <span class="n">Statement</span><span class="p">(</span><span class="s1">&#39;white_feathers&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">Statement</span><span class="p">(</span><span class="s1">&#39;quacks&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="n">Statement</span><span class="p">(</span><span class="s1">&#39;is_duck&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="n">dr</span> <span class="o">=</span> <span class="n">DecisionRule</span><span class="p">([</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">],</span> <span class="n">s3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dr</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+IF &#39;white_feathers&#39; = True, &#39;quacks&#39; = True THEN &#39;is_duck&#39; = True
+</pre></div></div>
+</div>
+<p>or, more human-like:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[70]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">strRule</span> <span class="o">=</span> <span class="s1">&#39;white_feathers = True &amp; quacks = True -&gt; is_duck = True&#39;</span>
+<span class="n">dr</span> <span class="o">=</span> <span class="n">str_to_decision_rule</span><span class="p">(</span><span class="n">strRule</span><span class="p">,</span> <span class="n">ruleType</span><span class="o">=</span><span class="s1">&#39;unary&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">dr</span><span class="p">),</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">dr</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;teex.decisionRule.data.DecisionRule object at 0x128cb9970&gt;
+ IF &#39;white_feathers&#39; = True, &#39;quacks&#39; = True THEN &#39;is_duck&#39; = True
+</pre></div></div>
+</div>
+<p>Statements are flexible and can represent multiple operators (<code class="docutils literal notranslate"><span class="pre">{'=',</span> <span class="pre">'!=',</span> <span class="pre">'&gt;',</span> <span class="pre">'&lt;',</span> <span class="pre">'&gt;=',</span> <span class="pre">'&lt;='}</span></code>) and be binary for numeric features (<code class="docutils literal notranslate"><span class="pre">0.5</span> <span class="pre">&lt;</span> <span class="pre">feature</span> <span class="pre">&lt;</span> <span class="pre">1</span></code>, for example). Both <strong>teex</strong> and the methods themselves provide methods for easy manipulation of <code class="docutils literal notranslate"><span class="pre">Statement</span></code> and <code class="docutils literal notranslate"><span class="pre">DecisionRule</span></code> objects, such as insertion, deletion or upsertion of new statements into a decision rule object. We urge the keen user to take a look at the API documentation for more on this.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">DecisionRule</span></code> class provides a unified way of dealing with this kind of data, which allows for easier implementation of related methods, be it data generation or evaluation. So, all DecisionRule metrics work only with DecisionRule objects. Not to worry, because <strong>teex</strong> provides methods for transforming from common decision rule representations to DecisionRule objects.</p>
+<p>#### 2. Generating artificial data with SenecaDR</p>
+<p><strong>note</strong> This method in particular was not originally conceived as a data generation procedure, but rather as a way to generate transparent classifiers (i.e. a classifier with available ground truth explanations). We use that generated classifier and some artificially generated data to return a dataset with observations, labels and ground truth explanations. The dataset generated contains numerical features with a binary classification.</p>
+<p>As with all data generation procedures in <strong>teex</strong>, first an object needs to be instanced and then the data can be retrieved. We can adjust the number of samples we want, the number of features in the observations, the feature names and the random seed.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[71]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataGen</span> <span class="o">=</span> <span class="n">SenecaDR</span><span class="p">(</span><span class="n">nSamples</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">nFeatures</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">exps</span> <span class="o">=</span> <span class="n">dataGen</span><span class="p">[:]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Observation: </span><span class="si">{</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1"> </span><span class="se">\n</span><span class="s1">Label: </span><span class="si">{</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1"> </span><span class="se">\n</span><span class="s1">Explanation: </span><span class="si">{</span><span class="n">exps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Observation: [1.25824083 1.37756901 0.4123272 ]
+Label: 0
+Explanation: IF 0.111 &lt; &#39;c&#39;, -0.015 &lt; &#39;a&#39;, 0.901 &lt; &#39;b&#39; &lt;= 2.31 THEN &#39;Class&#39; = 0
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[72]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataGen</span><span class="o">.</span><span class="n">featureNames</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[72]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]
+</pre></div></div>
+</div>
+<p>See how the explanations generated are actually <code class="docutils literal notranslate"><span class="pre">DecisionRule</span></code> objects, with Statements for each class (not in all cases, though).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[73]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">exps</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[73]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&lt;teex.decisionRule.data.DecisionRule at 0x128cc7940&gt;,
+ &lt;teex.decisionRule.data.DecisionRule at 0x128cc7ac0&gt;,
+ &lt;teex.decisionRule.data.DecisionRule at 0x128cc7be0&gt;,
+ &lt;teex.decisionRule.data.DecisionRule at 0x128cc7d00&gt;,
+ &lt;teex.decisionRule.data.DecisionRule at 0x128cc7e20&gt;]
+</pre></div></div>
+</div>
+<p>See how the explanations generated are actually <code class="docutils literal notranslate"><span class="pre">DecisionRule</span></code> objects, with Statements for each class (not in all cases, though). Note that we can also specify the feature names instead of letting them be automatically generated. As with all of <strong>teex</strong>’s <code class="docutils literal notranslate"><span class="pre">Seneca</span></code> methods, the underlying data generated procedure is carried out by a transparent model that follows the <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> API (has <code class="docutils literal notranslate"><span class="pre">.predict</span></code>, <code class="docutils literal notranslate"><span class="pre">.predict_proba</span></code> and <code class="docutils literal notranslate"><span class="pre">.fit</span></code> methods). In this case, the model is a Decision Tree
+classifier, and the explanations are the decision paths that the trained model takes when performing predictions. We believe this class can be of utility to users for easily extracting explanations.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[74]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">teex.decisionRule.data</span> <span class="kn">import</span> <span class="n">TransparentRuleClassifier</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">TransparentRuleClassifier</span><span class="p">()</span>
+
+<span class="c1"># it can fit any binary classification data, not just this example</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">featureNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;f1&#39;</span><span class="p">,</span> <span class="s1">&#39;f2&#39;</span><span class="p">,</span> <span class="s1">&#39;f3&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[75]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="mi">5</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0 1 1 1 1]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[76]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[76]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([[1., 0.],
+       [0., 1.],
+       [0., 1.],
+       [0., 1.],
+       [0., 1.]])
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[77]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[77]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&lt;teex.decisionRule.data.DecisionRule at 0x128cb90a0&gt;,
+ &lt;teex.decisionRule.data.DecisionRule at 0x128cb92e0&gt;,
+ &lt;teex.decisionRule.data.DecisionRule at 0x128cb9ee0&gt;,
+ &lt;teex.decisionRule.data.DecisionRule at 0x128eaf9a0&gt;,
+ &lt;teex.decisionRule.data.DecisionRule at 0x128eaffa0&gt;]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[78]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">dr</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="mi">5</span><span class="p">]):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">dr</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+IF 0.111 &lt; &#39;f3&#39;, -0.015 &lt; &#39;f1&#39;, 0.901 &lt; &#39;f2&#39; &lt;= 2.31 THEN &#39;Class&#39; = 0
+IF &#39;f3&#39; &lt;= -0.324, 0.672 &lt; &#39;f1&#39;, &#39;f2&#39; &lt;= -0.37 THEN &#39;Class&#39; = 1
+IF &#39;f3&#39; &lt;= -0.324, 0.672 &lt; &#39;f1&#39;, &#39;f2&#39; &lt;= -0.37 THEN &#39;Class&#39; = 1
+IF -1.705 &lt; &#39;f3&#39; &lt;= 0.111, &#39;f1&#39; &lt;= -0.041, 0.428 &lt; &#39;f2&#39; &lt;= 0.63 THEN &#39;Class&#39; = 1
+IF -1.705 &lt; &#39;f3&#39; &lt;= 0.111, &#39;f1&#39; &lt;= -0.041, 0.635 &lt; &#39;f2&#39; THEN &#39;Class&#39; = 1
+</pre></div></div>
+</div>
+<p>For more information on the transparent model, please see the notebook on Feature Importance data generation or visit <strong>teex</strong>’s API documentation.</p>
+<p>#### 3. Transforming common representations into <code class="docutils literal notranslate"><span class="pre">DecisionRule</span></code> objects</p>
+<p>If we want to evaluate common decision rule explanation methods and the evaluation methods in <strong>teex</strong> work only with <code class="docutils literal notranslate"><span class="pre">DecisionRule</span></code> objects, we need methods for transforming representations. We have seen how we can transform string representations with <code class="docutils literal notranslate"><span class="pre">str_to_decision_rule</span></code>, but another useful method is <code class="docutils literal notranslate"><span class="pre">rulefit_to_decision_rule</span></code>. It transforms the rules computed by the <a class="reference external" href="https://github.com/christophM/rulefit">RuleFit</a> algorithm:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[79]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># first, find some data</span>
+<span class="n">boston_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv&#39;</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">boston_data</span><span class="o">.</span><span class="n">medv</span><span class="o">.</span><span class="n">values</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">boston_data</span><span class="o">.</span><span class="n">columns</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">boston_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;medv&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[99]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># instance a rule fit object and get explanations</span>
+<span class="n">rf</span> <span class="o">=</span> <span class="n">RuleFit</span><span class="p">()</span>
+<span class="n">rf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">feature_names</span><span class="o">=</span><span class="n">features</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/master/Google Drive/U/4t/TFG/teex/venv/lib/python3.8/site-packages/sklearn/linear_model/_coordinate_descent.py:530: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 2.20433295631139, tolerance: 2.1169160949554895
+  model = cd_fast.enet_coordinate_descent(
+/Users/master/Google Drive/U/4t/TFG/teex/venv/lib/python3.8/site-packages/sklearn/linear_model/_coordinate_descent.py:530: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 2.268052878131016, tolerance: 2.1169160949554895
+  model = cd_fast.enet_coordinate_descent(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[99]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+RuleFit(tree_generator=GradientBoostingRegressor(learning_rate=0.01,
+                                                 max_depth=100,
+                                                 max_leaf_nodes=5,
+                                                 n_estimators=560,
+                                                 random_state=559,
+                                                 subsample=0.46436099318265595))
+</pre></div></div>
+</div>
+<p>The rules from RuleFit can be extracted from here:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[102]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rf</span><span class="o">.</span><span class="n">get_rules</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[102]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>rule</th>
+      <th>type</th>
+      <th>coef</th>
+      <th>support</th>
+      <th>importance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>crim</td>
+      <td>linear</td>
+      <td>-0.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>zn</td>
+      <td>linear</td>
+      <td>0.002153</td>
+      <td>1.000000</td>
+      <td>0.048604</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>indus</td>
+      <td>linear</td>
+      <td>-0.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>chas</td>
+      <td>linear</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>nox</td>
+      <td>linear</td>
+      <td>-0.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>1720</th>
+      <td>ptratio &lt;= 18.75 &amp; rm &lt;= 7.452499866485596</td>
+      <td>rule</td>
+      <td>-0.000000</td>
+      <td>0.401709</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>1721</th>
+      <td>dis &gt; 6.341400146484375</td>
+      <td>rule</td>
+      <td>-0.000000</td>
+      <td>0.145299</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>1722</th>
+      <td>lstat &gt; 5.184999942779541 &amp; ptratio &gt; 13.84999...</td>
+      <td>rule</td>
+      <td>-0.000000</td>
+      <td>0.829060</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>1723</th>
+      <td>tax &lt;= 298.0</td>
+      <td>rule</td>
+      <td>0.000000</td>
+      <td>0.333333</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>1724</th>
+      <td>crim &gt; 18.737899780273438</td>
+      <td>rule</td>
+      <td>-0.000000</td>
+      <td>0.029915</td>
+      <td>0.000000</td>
+    </tr>
+  </tbody>
+</table>
+<p>1725 rows × 5 columns</p>
+</div></div>
+</div>
+<p>and we can convert them into <code class="docutils literal notranslate"><span class="pre">DecisionRule</span></code> objects with a single line. Note that only the rules are transform, not the base coefficients (<strong>type</strong> = linear). Our method also provides parameters for the minimum support and importance for a rule to be transformed.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[103]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># and transform into decision rule objects</span>
+<span class="n">dRules</span><span class="p">,</span> <span class="n">skippedRows</span> <span class="o">=</span> <span class="n">rulefit_to_decision_rule</span><span class="p">(</span><span class="n">rules</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[104]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dRules</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[104]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&lt;teex.decisionRule.data.DecisionRule at 0x12efcbfa0&gt;,
+ &lt;teex.decisionRule.data.DecisionRule at 0x12ef1b100&gt;,
+ &lt;teex.decisionRule.data.DecisionRule at 0x12a32ad00&gt;,
+ &lt;teex.decisionRule.data.DecisionRule at 0x12a32a970&gt;,
+ &lt;teex.decisionRule.data.DecisionRule at 0x12a32a940&gt;]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[105]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">dRules</span><span class="p">[:</span><span class="mi">5</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+IF &#39;nox&#39; &lt;= 0.6694999933242798, &#39;dis&#39; &lt;= 1.3980499505996704 THEN None
+IF &#39;ptratio&#39; &lt;= 18.65000057220459, 7.423499822616577 &lt; &#39;rm&#39; THEN None
+IF 1.1736000180244446 &lt; &#39;dis&#39;, 21.489999771118164 &lt; &#39;lstat&#39;, &#39;rm&#39; &lt;= 7.423500061035156 THEN None
+IF 7.433000087738037 &lt; &#39;rm&#39;, &#39;lstat&#39; &lt;= 14.805000305175781 THEN None
+IF 20.19499969482422 &lt; &#39;lstat&#39; THEN None
+</pre></div></div>
+</div>
+<p float="left"><p><img alt="drawing" src="https://taiao.ai/img/6825_TAIAO_logo_1000x320.jpg" /> <img alt="drawing" src="https://www.bourses-etudiants.ma/wp-content/uploads/2018/06/University-of-Waikato-logo.png" /> <img alt="drawing" src="https://www.upc.edu/comunicacio/ca/identitat/descarrega-arxius-grafics/fitxers-marca-principal/upc-positiu-p3005.png" /></p>
+</p></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Jesus Antonanzas.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -3,12 +3,19 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to teex's documentation!
+.. image:: images/teex_logo__.png
+   :width: 115
+   :align: center
+   :alt: Our AI generated logo. Comes from the prompt: 
+      'logo of a t, inspired by an AI that is fair and responsible.
+
+
+teex
 ================================
 
 A Python Toolbox for the Evaluation of machine learning Explanations.
 
-This project aims to provide a simple way of evaluating all kinds of individual black box
+This project aims to provide a simple way of evaluating individual black box
 explanations. Moreover, it contains a collection of easy-to-access datasets with available ground truth explanations.
 
 **teex** contains a subpackage for each explanation type, and each subpackage contains two modules:
@@ -18,15 +25,14 @@ explanations. Moreover, it contains a collection of easy-to-access datasets with
 
 Visit our `GitHub <https://github.com/chus-chus/teex>`_ for source, tutorials and more.
 
-.. toctree::
+.. toctree:: 
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Examples
 
-   modules
+   demos/examples
 
-Indices and tables
-==================
+.. toctree::
+   :maxdepth: 1
+   :caption: API reference
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   api/modules

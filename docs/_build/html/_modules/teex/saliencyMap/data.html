@@ -1,71 +1,35 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>teex.saliencyMap.data &mdash; teex 1.0.2 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>teex.saliencyMap.data &mdash; teex 1.0.4 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
-    
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../../../index.html" class="icon icon-home"> teex
-          
-
-          
+            <img src="../../../_static/rsz_teex_logo__.png" class="logo" alt="Logo"/>
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -73,111 +37,75 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">teex</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../demos/examples.html">Notebook demos</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">API reference</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">teex</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../../index.html">Module code</a> &raquo;</li>
-        
       <li>teex.saliencyMap.data</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <h1>Source code for teex.saliencyMap.data</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot; Module for synthetic and real datasets with available ground truth saliency map explanations. Also contains</span>
 <span class="sd">methods and classes for saliency map data manipulation.</span>
 
 <span class="sd">All of the datasets must be instanced first. Then, when sliced, they all return the observations, labels and ground</span>
-<span class="sd">truth explanations, respectively. &quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">random</span>
+<span class="sd">truth explanations, respectively. Note that all real-world datasets implement the </span>
+<span class="sd">:code:`delete_data`, which allows to delete all of their downloaded internal data.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 
-<span class="kn">from</span> <span class="nn">teex._utils._misc</span> <span class="kn">import</span> <span class="n">_download_extract_zip</span>
+<span class="kn">from</span> <span class="nn">teex._utils._misc</span> <span class="kn">import</span> <span class="n">_download_extract_file</span>
 <span class="kn">from</span> <span class="nn">teex._utils._paths</span> <span class="kn">import</span> <span class="n">_check_pathlib_dir</span>
+<span class="kn">from</span> <span class="nn">teex._utils._data</span> <span class="kn">import</span> <span class="n">query_yes_no</span>
 
-<span class="kn">from</span> <span class="nn">teex._baseClasses._baseDatasets</span> <span class="kn">import</span> <span class="n">_ClassificationDataset</span><span class="p">,</span> <span class="n">_SyntheticDataset</span>
+<span class="kn">from</span> <span class="nn">teex._baseClasses._baseDatasets</span> <span class="kn">import</span> <span class="n">_ClassificationDataset</span><span class="p">,</span> \
+    <span class="n">_SyntheticDataset</span>
 
 <span class="kn">from</span> <span class="nn">teex._baseClasses._baseClassifier</span> <span class="kn">import</span> <span class="n">_BaseClassifier</span>
+
 <span class="kn">from</span> <span class="nn">teex._datasets.info.kahikatea</span> <span class="kn">import</span> <span class="n">_kahikateaLabels</span><span class="p">,</span> <span class="n">_kahikateaNEntries</span><span class="p">,</span> \
     <span class="n">_kahikatea_root</span><span class="p">,</span> <span class="n">_kahikatea_url</span><span class="p">,</span> <span class="n">_kahikateaAll</span>
-
-
+<span class="kn">from</span> <span class="nn">teex._datasets.info.CUB200</span> <span class="kn">import</span> <span class="n">_cub_root</span><span class="p">,</span> <span class="n">_cub_segmentations_url</span><span class="p">,</span> <span class="n">_cub_url</span><span class="p">,</span> \
+    <span class="n">_cub_length</span>
+<span class="kn">from</span> <span class="nn">teex._datasets.info.OxfordIIT_Pet</span> <span class="kn">import</span> <span class="n">_oxford_iit_root</span><span class="p">,</span> <span class="n">_oxford_iit_url</span><span class="p">,</span> \
+    <span class="n">_oxford_iit_masks_url</span><span class="p">,</span> <span class="n">_oxford_iit_length</span>
 <span class="c1"># Datasets</span>
 
-<div class="viewcode-block" id="TransparentImageClassifier"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier">[docs]</a><span class="k">class</span> <span class="nc">TransparentImageClassifier</span><span class="p">(</span><span class="n">_BaseClassifier</span><span class="p">):</span>
+<div class="viewcode-block" id="TransparentImageClassifier"><a class="viewcode-back" href="../../../api/teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier">[docs]</a><span class="k">class</span> <span class="nc">TransparentImageClassifier</span><span class="p">(</span><span class="n">_BaseClassifier</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Used on the higher level data generation class :class:`SenecaSM` (**use that and get it from there</span>
 <span class="sd">    preferably**).</span>
 
@@ -197,7 +125,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_maskedPattern</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="TransparentImageClassifier.fit"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">cellH</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cellW</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="TransparentImageClassifier.fit"><a class="viewcode-back" href="../../../api/teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">cellH</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cellW</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pattH</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattW</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pattern</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cellH</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellW</span> <span class="o">=</span> <span class="n">cellH</span><span class="p">,</span> <span class="n">cellW</span>
@@ -207,7 +135,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_maskedPattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_patternMask</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="TransparentImageClassifier.predict"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="TransparentImageClassifier.predict"><a class="viewcode-back" href="../../../api/teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Predicts the class for each observation.</span>
 
 <span class="sd">        :param np.ndarray obs: array of n images as ndarrays of np.float32 type.</span>
@@ -217,7 +145,7 @@
             <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_pattern</span><span class="p">(</span><span class="n">image</span><span class="p">)</span> <span class="k">else</span> <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ret</span></div>
 
-<div class="viewcode-block" id="TransparentImageClassifier.predict_proba"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.predict_proba">[docs]</a>    <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="TransparentImageClassifier.predict_proba"><a class="viewcode-back" href="../../../api/teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.predict_proba">[docs]</a>    <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Predicts probability that each observation belongs to class 1 or 0. Probability of class 1 will be 1 if</span>
 <span class="sd">        the image contains the pattern and 0 otherwise.</span>
 
@@ -231,7 +159,7 @@
                 <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">ret</span></div>
 
-<div class="viewcode-block" id="TransparentImageClassifier.explain"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.explain">[docs]</a>    <span class="k">def</span> <span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="TransparentImageClassifier.explain"><a class="viewcode-back" href="../../../api/teex.saliencyMap.html#teex.saliencyMap.data.TransparentImageClassifier.explain">[docs]</a>    <span class="k">def</span> <span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Explain observations&#39; predictions with binary masks (pixel importance arrays).</span>
 
 <span class="sd">        :param np.ndarray obs: array of n images as ndarrays.</span>
@@ -267,7 +195,7 @@
             <span class="k">return</span> <span class="n">hasPat</span></div>
 
 
-<div class="viewcode-block" id="SenecaSM"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.SenecaSM">[docs]</a><span class="k">class</span> <span class="nc">SenecaSM</span><span class="p">(</span><span class="n">_SyntheticDataset</span><span class="p">):</span>
+<div class="viewcode-block" id="SenecaSM"><a class="viewcode-back" href="../../../api/teex.saliencyMap.html#teex.saliencyMap.data.SenecaSM">[docs]</a><span class="k">class</span> <span class="nc">SenecaSM</span><span class="p">(</span><span class="n">_SyntheticDataset</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Synthetic dataset with available saliency map explanations.</span>
 
 <span class="sd">    Images and g.t. explanations generated following the procedure presented in [Evaluating local</span>
@@ -417,7 +345,7 @@
         <span class="k">return</span> <span class="n">colors</span></div>
 
 
-<div class="viewcode-block" id="Kahikatea"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.Kahikatea">[docs]</a><span class="k">class</span> <span class="nc">Kahikatea</span><span class="p">(</span><span class="n">_ClassificationDataset</span><span class="p">):</span>
+<div class="viewcode-block" id="Kahikatea"><a class="viewcode-back" href="../../../api/teex.saliencyMap.html#teex.saliencyMap.data.Kahikatea">[docs]</a><span class="k">class</span> <span class="nc">Kahikatea</span><span class="p">(</span><span class="n">_ClassificationDataset</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Binary classification dataset from [Y. Jia et al. (2021) Studying and Exploiting the Relationship Between Model</span>
 <span class="sd">    Accuracy and Explanation Quality, ECML-PKDD 2021].</span>
 
@@ -440,8 +368,11 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">Kahikatea</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">_kahikatea_root</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_integrity</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Files do not exist or are corrupted:&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_download</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Files do not exist or are corrupted. Building dataset...&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_isDownloaded</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_isDownloaded</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">classMap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_class_map</span><span class="p">()</span>
 
@@ -477,7 +408,11 @@
                 <span class="n">_check_pathlib_dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s1">&#39;data/ve_negative&#39;</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_download</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="n">_download_extract_zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">_kahikatea_url</span><span class="p">,</span> <span class="s1">&#39;rawKahikatea.zip&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_download_extract_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">_kahikatea_url</span><span class="p">,</span> <span class="s1">&#39;rawKahikatea.zip&#39;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Download interruped.&quot;</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_class_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;Not in image&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;In image&#39;</span><span class="p">}</span>
@@ -492,18 +427,324 @@
         <span class="k">return</span> <span class="n">img</span><span class="p">,</span> <span class="n">exp</span></div>
 
 
+<div class="viewcode-block" id="CUB200"><a class="viewcode-back" href="../../../api/teex.saliencyMap.html#teex.saliencyMap.data.CUB200">[docs]</a><span class="k">class</span> <span class="nc">CUB200</span><span class="p">(</span><span class="n">_ClassificationDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; The CUB-200-2011 Classification Dataset. 11788 observations with </span>
+<span class="sd">    200 different classes. From </span>
+<span class="sd">    </span>
+<span class="sd">    Wah, Branson, Welinder, Perona, &amp; Belongie. (2022). CUB-200-2011 (1.0) [Data set]. </span>
+<span class="sd">    CaltechDATA. https://doi.org/10.22002/D1.20098</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">CUB200</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">_cub_root</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_integrity</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Files do not exist or are corrupted. Building dataset...&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_isDownloaded</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_organize</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_isDownloaded</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">classMap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_class_map</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imNames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_image_names</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expNames</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;png&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imNames</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imLabels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_image_labels</span><span class="p">()</span>
+        
+<div class="viewcode-block" id="CUB200.get_class_observations"><a class="viewcode-back" href="../../../api/teex.saliencyMap.html#teex.saliencyMap.data.CUB200.get_class_observations">[docs]</a>    <span class="k">def</span> <span class="nf">get_class_observations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classId</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get all observations from a particular class given its index.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            classId (int): Class index. It can be consulted from the attribute </span>
+<span class="sd">             :attr:`.CUB200.classMap`</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            imgs (list): Images pertaining to the specified class.</span>
+<span class="sd">            labels (list): Int labels pertaining to the specified class.</span>
+<span class="sd">            exps (list): Explanations pertaining to the specified class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="n">classId</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classMap</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid class id (see self.classMap).&quot;</span><span class="p">)</span>
+        
+        <span class="n">imgs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">exps</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">lab</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">exp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imLabels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imNames</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expNames</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">lab</span> <span class="o">==</span> <span class="n">classId</span><span class="p">:</span>
+                <span class="n">imgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;images&quot;</span> <span class="o">/</span> <span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">))</span>
+                <span class="n">exps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;segmentations&quot;</span> <span class="o">/</span> <span class="n">exp</span><span class="p">))</span>
+
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">classId</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">imgs</span><span class="p">))]</span>
+        
+        <span class="k">return</span> <span class="n">imgs</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">exps</span></div>
+
+                
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="n">img</span><span class="p">,</span> <span class="n">exp</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+            
+            <span class="k">for</span> <span class="n">imName</span><span class="p">,</span> <span class="n">expName</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imNames</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expNames</span><span class="p">[</span><span class="n">item</span><span class="p">]):</span>
+                <span class="n">img</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;images&quot;</span> <span class="o">/</span> <span class="n">imName</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">))</span>
+                <span class="n">exp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;segmentations&quot;</span> <span class="o">/</span> <span class="n">expName</span><span class="p">))</span>
+                
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;images&quot;</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imNames</span><span class="p">[</span><span class="n">item</span><span class="p">])</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">)</span>
+            <span class="n">exp</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;segmentations&quot;</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expNames</span><span class="p">[</span><span class="n">item</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Invalid argument type.&#39;</span><span class="p">)</span>
+        
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imLabels</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">img</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">exp</span>
+    
+    <span class="k">def</span> <span class="nf">_read_image_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;images.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            
+        <span class="n">imNames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">imNames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+        
+        <span class="k">return</span> <span class="n">imNames</span>
+    
+    <span class="k">def</span> <span class="nf">_read_image_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;image_class_labels.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            
+        <span class="n">imLabels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">imLabels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">imLabels</span>
+        
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_cub_length</span>
+        
+    <span class="k">def</span> <span class="nf">_download</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">queryResponse</span> <span class="o">=</span> <span class="n">query_yes_no</span><span class="p">(</span><span class="s1">&#39;This download will take ~1.2GB of disk. Procede?&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">queryResponse</span><span class="p">:</span>
+                <span class="n">_download_extract_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">absolute</span><span class="p">(),</span> <span class="n">_cub_url</span><span class="p">,</span> <span class="s1">&#39;cubImages.tgz&#39;</span><span class="p">,</span> <span class="s1">&#39;tar&#39;</span><span class="p">)</span>
+                <span class="n">_download_extract_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">_cub_segmentations_url</span><span class="p">,</span> <span class="s1">&#39;cubExpl.tgz&#39;</span><span class="p">,</span> <span class="s1">&#39;tar&#39;</span><span class="p">,</span>
+                                       <span class="n">deletePrevDir</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">)</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Dataset download aborted.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Download interruped.&quot;</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">)</span>
+            
+        
+    <span class="k">def</span> <span class="nf">_check_integrity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">_check_pathlib_dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s1">&#39;images&#39;</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="n">_check_pathlib_dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s1">&#39;segmentations&#39;</span><span class="p">))</span>
+        
+    <span class="k">def</span> <span class="nf">_organize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Given the extracted files, deletes folders that </span>
+<span class="sd">        are not used and tidies up the directory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span> <span class="o">/</span> <span class="s1">&#39;attributes.txt&#39;</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;attributes&quot;</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;parts&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s1">&#39;bounding_boxes.txt&#39;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s1">&#39;README&#39;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s1">&#39;train_test_split.txt&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+            
+    <span class="k">def</span> <span class="nf">_get_class_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;classes.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            
+        <span class="n">classMap</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="n">classMap</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+            
+        <span class="k">return</span> <span class="n">classMap</span></div>
+            
+        
+        
+<div class="viewcode-block" id="OxfordIIIT"><a class="viewcode-back" href="../../../api/teex.saliencyMap.html#teex.saliencyMap.data.OxfordIIIT">[docs]</a><span class="k">class</span> <span class="nc">OxfordIIIT</span><span class="p">(</span><span class="n">_ClassificationDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; The Oxford-IIIT Pet Dataset. 7347 images from 37 categories with </span>
+<span class="sd">    approximately 200 images per class. From</span>
+<span class="sd">    </span>
+<span class="sd">    O. M. Parkhi, A. Vedaldi, A. Zisserman and C. V. Jawahar, &quot;Cats and dogs,&quot; </span>
+<span class="sd">    2012 IEEE Conference on Computer Vision and Pattern Recognition, 2012, </span>
+<span class="sd">    pp. 3498-3505, doi: 10.1109/CVPR.2012.6248092.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">OxfordIIIT</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">_oxford_iit_root</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_integrity</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Files do not exist or are corrupted. Building dataset...&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_isDownloaded</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_organize</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_isDownloaded</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">classMap</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labelMap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_class_map</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imNames</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imLabels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expNames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_image_info</span><span class="p">()</span>
+        
+    <span class="k">def</span> <span class="nf">_read_image_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">imgNames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">expNames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">scandir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;images&quot;</span><span class="p">):</span>
+            <span class="c1"># missing explanations for these 2 files</span>
+            <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">filename</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;.&quot;</span> \
+                <span class="ow">and</span> <span class="n">filename</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;Egyptian_Mau_165&quot;</span> \
+                <span class="ow">and</span> <span class="n">filename</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;Egyptian_Mau_167&quot;</span> \
+                <span class="ow">and</span> <span class="n">filename</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">!=</span> <span class="s2">&quot;mat&quot;</span><span class="p">:</span>
+                <span class="n">imgNames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">expNames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># get labels from labelMap</span>
+        <span class="n">imgLabels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">imgNames</span><span class="p">:</span>
+            <span class="n">imgLabels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_labelMap</span><span class="p">[</span><span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
+        
+        <span class="k">return</span> <span class="n">imgNames</span><span class="p">,</span> <span class="n">imgLabels</span><span class="p">,</span> <span class="n">expNames</span>
+        
+<div class="viewcode-block" id="OxfordIIIT.get_class_observations"><a class="viewcode-back" href="../../../api/teex.saliencyMap.html#teex.saliencyMap.data.OxfordIIIT.get_class_observations">[docs]</a>    <span class="k">def</span> <span class="nf">get_class_observations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classId</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get all observations from a particular class given its index.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            classId (int): Class index. It can be consulted from the attribute </span>
+<span class="sd">             :attr:`.OxfordIIIT.classMap`</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            imgs (list): Images pertaining to the specified class.</span>
+<span class="sd">            labels (list): Int labels pertaining to the specified class.</span>
+<span class="sd">            exps (list): Explanations pertaining to the specified class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="n">classId</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classMap</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid class id (see self.classMap).&quot;</span><span class="p">)</span>
+        
+        <span class="n">imgs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">exps</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">lab</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">exp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imLabels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imNames</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expNames</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">lab</span> <span class="o">==</span> <span class="n">classId</span><span class="p">:</span>
+                <span class="n">imgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;images&quot;</span> <span class="o">/</span> <span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">))</span>
+                <span class="n">exps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;annotations&quot;</span> <span class="o">/</span> <span class="n">exp</span><span class="p">))</span>
+            
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">classId</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">imgs</span><span class="p">))]</span>
+        
+        <span class="k">return</span> <span class="n">imgs</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">exps</span></div>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="n">img</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">exp</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+            
+            <span class="k">for</span> <span class="n">imName</span><span class="p">,</span> <span class="n">expName</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imNames</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expNames</span><span class="p">[</span><span class="n">item</span><span class="p">]):</span>
+                <span class="n">img</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;images&quot;</span> <span class="o">/</span> <span class="n">imName</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">))</span>
+                <span class="n">exp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;annotations&quot;</span> <span class="o">/</span> <span class="n">expName</span><span class="p">))</span>
+                
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;images&quot;</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imNames</span><span class="p">[</span><span class="n">item</span><span class="p">])</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">)</span>
+            <span class="n">exp</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;annotations&quot;</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expNames</span><span class="p">[</span><span class="n">item</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Invalid argument type.&#39;</span><span class="p">)</span>
+        
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imLabels</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">img</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">exp</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_oxford_iit_length</span>
+        
+    <span class="k">def</span> <span class="nf">_download</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">queryResponse</span> <span class="o">=</span> <span class="n">query_yes_no</span><span class="p">(</span><span class="s1">&#39;This download will take ~800MB of disk. Procede?&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">queryResponse</span><span class="p">:</span>
+                <span class="n">_download_extract_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">_oxford_iit_url</span><span class="p">,</span> <span class="s1">&#39;images.tar.gz&#39;</span><span class="p">,</span> <span class="s1">&#39;tar&#39;</span><span class="p">)</span>
+                <span class="n">_download_extract_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">_oxford_iit_masks_url</span><span class="p">,</span> <span class="s1">&#39;annotations.tar.gz&#39;</span><span class="p">,</span> <span class="s1">&#39;tar&#39;</span><span class="p">,</span>
+                                       <span class="n">deletePrevDir</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">)</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Dataset download aborted.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Download interruped.&quot;</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">_check_integrity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">_check_pathlib_dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s1">&#39;images&#39;</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="n">_check_pathlib_dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s1">&#39;annotations&#39;</span><span class="p">))</span>
+        
+    <span class="k">def</span> <span class="nf">_organize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Given the extracted files, deletes folders that </span>
+<span class="sd">        are not used and performs other preparation instructions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s1">&#39;annotations/README&#39;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s1">&#39;annotations/test.txt&#39;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s1">&#39;annotations/trainval.txt&#39;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s1">&#39;annotations/._trimaps&#39;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;annotations/list.txt&quot;</span><span class="p">,</span> 
+                  <span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;list.txt&quot;</span><span class="p">)</span>
+        
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;annotations/xmls&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># convert annotations to ..255 images, where 0 is background</span>
+        <span class="c1"># not annotated and 255 is foreground</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">scandir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;annotations/trimaps&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">filename</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;.&quot;</span><span class="p">:</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;annotations/trimaps&quot;</span> <span class="o">/</span> <span class="n">filename</span><span class="p">))</span>
+                <span class="n">corrImg</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">arr</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+                <span class="n">corrImg</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;annotations&quot;</span> <span class="o">/</span> <span class="n">filename</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;annotations/trimaps&quot;</span> <span class="o">/</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;annotations/trimaps&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+            
+    <span class="k">def</span> <span class="nf">_get_class_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">/</span> <span class="s2">&quot;list.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[</span><span class="mi">6</span><span class="p">:]</span>
+            
+        <span class="n">classMap</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="n">species</span> <span class="o">=</span> <span class="s2">&quot;cat&quot;</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;dog&quot;</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+            <span class="n">className</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">species</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="n">index</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">classId</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">classId</span> <span class="ow">in</span> <span class="n">classMap</span><span class="p">:</span>
+                <span class="n">classMap</span><span class="p">[</span><span class="n">classId</span><span class="p">]</span> <span class="o">=</span> <span class="n">className</span>
+            
+        <span class="n">labelMap</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">[</span><span class="mi">4</span><span class="p">:]:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">classMap</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="n">classMap</span><span class="p">,</span> <span class="n">labelMap</span></div>
+
+
 <span class="c1"># Data utils</span>
 
-<div class="viewcode-block" id="rgb_to_grayscale"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.rgb_to_grayscale">[docs]</a><span class="k">def</span> <span class="nf">rgb_to_grayscale</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
+<div class="viewcode-block" id="delete_sm_data"><a class="viewcode-back" href="../../../api/teex.saliencyMap.html#teex.saliencyMap.data.delete_sm_data">[docs]</a><span class="k">def</span> <span class="nf">delete_sm_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Removes from internal storage all downloaded Saliency Map datasets</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">smPath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;_datasets/saliencyMap/&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">smPath</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;There is no data downloaded.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="rgb_to_grayscale"><a class="viewcode-back" href="../../../api/teex.saliencyMap.html#teex.saliencyMap.data.rgb_to_grayscale">[docs]</a><span class="k">def</span> <span class="nf">rgb_to_grayscale</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Transforms a 3 channel RGB image into a grayscale image (1 channel).</span>
 
 <span class="sd">     :param np.ndarray img: of shape (imageH, imageW, 3)</span>
 <span class="sd">     :return np.ndarray: of shape (imageH, imageW) &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">img</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2989</span><span class="p">,</span> <span class="mf">0.5870</span><span class="p">,</span> <span class="mf">0.1140</span><span class="p">])</span></div>
 
-    <span class="k">return</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">),</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_RGB2GRAY</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="binarize_rgb_mask"><a class="viewcode-back" href="../../../teex.saliencyMap.html#teex.saliencyMap.data.binarize_rgb_mask">[docs]</a><span class="k">def</span> <span class="nf">binarize_rgb_mask</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">bgValue</span><span class="o">=</span><span class="s1">&#39;high&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<div class="viewcode-block" id="binarize_rgb_mask"><a class="viewcode-back" href="../../../api/teex.saliencyMap.html#teex.saliencyMap.data.binarize_rgb_mask">[docs]</a><span class="k">def</span> <span class="nf">binarize_rgb_mask</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">bgValue</span><span class="o">=</span><span class="s1">&#39;high&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Binarizes a RGB binary mask, letting the background (negative class) be 0. Use this function when the image to</span>
 <span class="sd">    binarize has a very defined background.</span>
 
@@ -528,46 +769,30 @@
 </pre></div>
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, Jesus Antonanzas.
-
-    </p>
+    <p>&#169; Copyright 2022, Chus Antonanzas.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

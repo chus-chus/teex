@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>teex.saliencyMap package &mdash; teex 1.0.4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="teex.wordImportance package" href="teex.wordImportance.html" />
+    <link rel="prev" title="teex.featureImportance package" href="teex.featureImportance.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> teex
+            <img src="../_static/rsz_teex_logo__.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../demos/examples.html">Notebook demos</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="teex.html">teex package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="teex.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="teex.decisionRule.html">teex.decisionRule package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.featureImportance.html">teex.featureImportance package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">teex.saliencyMap package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="teex.wordImportance.html">teex.wordImportance package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="teex.html#module-teex">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">teex</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">API reference</a> &raquo;</li>
+          <li><a href="teex.html">teex package</a> &raquo;</li>
+      <li>teex.saliencyMap package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/teex.saliencyMap.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="teex-saliencymap-package">
+<h1>teex.saliencyMap package<a class="headerlink" href="#teex-saliencymap-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-teex.saliencyMap.data">
+<span id="teex-saliencymap-data-module"></span><h2>teex.saliencyMap.data module<a class="headerlink" href="#module-teex.saliencyMap.data" title="Permalink to this heading"></a></h2>
+<p>Module for synthetic and real datasets with available ground truth saliency map explanations. Also contains
+methods and classes for saliency map data manipulation.</p>
+<p>All of the datasets must be instanced first. Then, when sliced, they all return the observations, labels and ground
+truth explanations, respectively. Note that all real-world datasets implement the 
+<code class="code docutils literal notranslate"><span class="pre">delete_data</span></code>, which allows to delete all of their downloaded internal data.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="teex.saliencyMap.data.CUB200">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.data.</span></span><span class="sig-name descname"><span class="pre">CUB200</span></span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#CUB200"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.CUB200" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_ClassificationDataset</span></code></p>
+<p>The CUB-200-2011 Classification Dataset. 11788 observations with 
+200 different classes. From</p>
+<p>Wah, Branson, Welinder, Perona, &amp; Belongie. (2022). CUB-200-2011 (1.0) [Data set]. 
+CaltechDATA. <a class="reference external" href="https://doi.org/10.22002/D1.20098">https://doi.org/10.22002/D1.20098</a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.saliencyMap.data.CUB200.get_class_observations">
+<span class="sig-name descname"><span class="pre">get_class_observations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#CUB200.get_class_observations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.CUB200.get_class_observations" title="Permalink to this definition"></a></dt>
+<dd><p>Get all observations from a particular class given its index.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>classId (int): Class index. It can be consulted from the attribute </dt><dd><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">CUB200.classMap</span></code></p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>imgs (list): Images pertaining to the specified class.
+labels (list): Int labels pertaining to the specified class.
+exps (list): Explanations pertaining to the specified class.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="teex.saliencyMap.data.Kahikatea">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.data.</span></span><span class="sig-name descname"><span class="pre">Kahikatea</span></span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#Kahikatea"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.Kahikatea" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_ClassificationDataset</span></code></p>
+<p>Binary classification dataset from [Y. Jia et al. (2021) Studying and Exploiting the Relationship Between Model
+Accuracy and Explanation Quality, ECML-PKDD 2021].</p>
+<p>This dataset contains images for Kahikatea (an endemic tree in New Zealand) classification. Positive examples
+(in which Kahikatea trees can be identified) are annotated with true explanations such that the Kahikatea trees are
+highlighted. If an image belongs to the negative class, None is provided as an explanation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">kDataset</span> <span class="o">=</span> <span class="n">Kahikatea</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">exp</span> <span class="o">=</span> <span class="n">kDataset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>where <code class="code docutils literal notranslate"><span class="pre">img</span></code> is a PIL Image, <code class="code docutils literal notranslate"><span class="pre">label</span></code> is an int and <code class="code docutils literal notranslate"><span class="pre">exp</span></code> is a PIL Image.
+When a slice is performed, obs, label and exp are lists of the objects described above.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="teex.saliencyMap.data.OxfordIIIT">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.data.</span></span><span class="sig-name descname"><span class="pre">OxfordIIIT</span></span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#OxfordIIIT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.OxfordIIIT" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_ClassificationDataset</span></code></p>
+<p>The Oxford-IIIT Pet Dataset. 7347 images from 37 categories with 
+approximately 200 images per class. From</p>
+<p>O. M. Parkhi, A. Vedaldi, A. Zisserman and C. V. Jawahar, “Cats and dogs,” 
+2012 IEEE Conference on Computer Vision and Pattern Recognition, 2012, 
+pp. 3498-3505, doi: 10.1109/CVPR.2012.6248092.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.saliencyMap.data.OxfordIIIT.get_class_observations">
+<span class="sig-name descname"><span class="pre">get_class_observations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#OxfordIIIT.get_class_observations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.OxfordIIIT.get_class_observations" title="Permalink to this definition"></a></dt>
+<dd><p>Get all observations from a particular class given its index.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>classId (int): Class index. It can be consulted from the attribute </dt><dd><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">OxfordIIIT.classMap</span></code></p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>imgs (list): Images pertaining to the specified class.
+labels (list): Int labels pertaining to the specified class.
+exps (list): Explanations pertaining to the specified class.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="teex.saliencyMap.data.SenecaSM">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.data.</span></span><span class="sig-name descname"><span class="pre">SenecaSM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nSamples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imageH</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imageW</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patternH</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patternW</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellH</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellW</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patternProp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillPct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorDev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomState</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">888</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#SenecaSM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.SenecaSM" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_SyntheticDataset</span></code></p>
+<p>Synthetic dataset with available saliency map explanations.</p>
+<p>Images and g.t. explanations generated following the procedure presented in [Evaluating local
+explanation methods on ground truth, Riccardo Guidotti, 2021]. The g.t. explanations are binary ndarray masks
+of shape (imageH, imageW) that indicate the position of the pattern in an image (zero array if the pattern is
+not present) and are generated  The generated RGB images belong to one class if they contain a certain
+generated pattern and to the other if not. The images are composed of homogeneous cells of size
+(cellH, cellW), which in turn compose a certain pattern of shape (patternH, patternW) that is inserted on
+some of the generated images.</p>
+<p>From this class one can also obtain a trained transparent model (instance of <a class="reference internal" href="#teex.saliencyMap.data.TransparentImageClassifier" title="teex.saliencyMap.data.TransparentImageClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransparentImageClassifier</span></code></a>).</p>
+<p>When sliced, this object will return</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>X (ndarray) of shape (nSamples, imageH, imageW, 3) or (imageH, imageW, 3). Generated image data.</p></li>
+<li><p>y (ndarray) of shape (nSamples,) or int. Image labels. 1 if an image contains the pattern and 0 otherwise.</p></li>
+<li><p>explanations (ndarray) of shape (nSamples, imageH, imageW) or (imageH, imageW). Ground truth explanations.</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nSamples</strong> (<em>int</em>) – number of images to generate.</p></li>
+<li><p><strong>imageH</strong> (<em>int</em>) – height in pixels of the images. Must be multiple of <code class="code docutils literal notranslate"><span class="pre">cellH</span></code>.</p></li>
+<li><p><strong>imageW</strong> (<em>int</em>) – width in pixels of the images. Must be multiple of <code class="code docutils literal notranslate"><span class="pre">cellW</span></code>.</p></li>
+<li><p><strong>patternH</strong> (<em>int</em>) – height in pixels of the pattern. Must be &lt;= <code class="code docutils literal notranslate"><span class="pre">imageH</span></code> and multiple of <code class="code docutils literal notranslate"><span class="pre">cellH</span></code>.</p></li>
+<li><p><strong>patternW</strong> (<em>int</em>) – width in pixels of the pattern. Must be &lt;= <code class="code docutils literal notranslate"><span class="pre">imageW</span></code> and multiple of <code class="code docutils literal notranslate"><span class="pre">cellW</span></code>.</p></li>
+<li><p><strong>cellH</strong> (<em>int</em>) – height in pixels of each cell.</p></li>
+<li><p><strong>cellW</strong> (<em>int</em>) – width in pixels of each cell.</p></li>
+<li><p><strong>patternProp</strong> (<em>float</em>) – ([0, 1]) percentage of appearance of the pattern in the dataset.</p></li>
+<li><p><strong>fillPct</strong> (<em>float</em>) – ([0, 1]) percentage of cells filled (not black) in each image.</p></li>
+<li><p><strong>colorDev</strong> (<em>float</em>) – ([0, 0.5])
+maximum val summed to 0 valued channels and minimum val substracted to 1 valued channels of filled cells.
+If 0, each cell will be completely red, green or blue. If &gt; 0, colors may be a mix of the three channels
+(one ~1, the other two ~0).</p></li>
+<li><p><strong>randomState</strong> (<em>int</em>) – random seed.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="teex.saliencyMap.data.TransparentImageClassifier">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.data.</span></span><span class="sig-name descname"><span class="pre">TransparentImageClassifier</span></span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#TransparentImageClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_BaseClassifier</span></code></p>
+<p>Used on the higher level data generation class <a class="reference internal" href="#teex.saliencyMap.data.SenecaSM" title="teex.saliencyMap.data.SenecaSM"><code class="xref py py-class docutils literal notranslate"><span class="pre">SenecaSM</span></code></a> (<strong>use that and get it from there
+preferably</strong>).</p>
+<p>Transparent, pixel-based classifier with pixel (features) importances as explanations. Predicts the
+class of the images based on whether they contain a certain specified pattern or not. Class 1 if they contain
+the pattern, 0 otherwise. To be trained only a pattern needs to be fed. Follows the sklean API. Presented in
+[Evaluating local explanation methods on ground truth, Riccardo Guidotti, 2021].</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.saliencyMap.data.TransparentImageClassifier.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#TransparentImageClassifier.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.explain" title="Permalink to this definition"></a></dt>
+<dd><p>Explain observations’ predictions with binary masks (pixel importance arrays).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obs</strong> (<em>np.ndarray</em>) – array of n images as ndarrays.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list with n binary masks as explanations.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.saliencyMap.data.TransparentImageClassifier.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellH</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellW</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#TransparentImageClassifier.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fits the model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.saliencyMap.data.TransparentImageClassifier.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#TransparentImageClassifier.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.predict" title="Permalink to this definition"></a></dt>
+<dd><p>Predicts the class for each observation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obs</strong> (<em>np.ndarray</em>) – array of n images as ndarrays of np.float32 type.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array of n predicted labels.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="teex.saliencyMap.data.TransparentImageClassifier.predict_proba">
+<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#TransparentImageClassifier.predict_proba"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.TransparentImageClassifier.predict_proba" title="Permalink to this definition"></a></dt>
+<dd><p>Predicts probability that each observation belongs to class 1 or 0. Probability of class 1 will be 1 if
+the image contains the pattern and 0 otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obs</strong> (<em>np.ndarray</em>) – array of n images as ndarrays.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array of n probability tuples of length 2.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.saliencyMap.data.binarize_rgb_mask">
+<span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.data.</span></span><span class="sig-name descname"><span class="pre">binarize_rgb_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bgValue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'high'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#binarize_rgb_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.binarize_rgb_mask" title="Permalink to this definition"></a></dt>
+<dd><p>Binarizes a RGB binary mask, letting the background (negative class) be 0. Use this function when the image to
+binarize has a very defined background.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img</strong> – (ndarray) of shape (imageH, imageW, 3), RGB mask to binarize.</p></li>
+<li><p><strong>bgValue</strong> – (str) Intensity of the negative class of the image to binarize: {‘high’, ‘low’}</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(ndarray) a binary mask.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.saliencyMap.data.delete_sm_data">
+<span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.data.</span></span><span class="sig-name descname"><span class="pre">delete_sm_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#delete_sm_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.delete_sm_data" title="Permalink to this definition"></a></dt>
+<dd><p>Removes from internal storage all downloaded Saliency Map datasets</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.saliencyMap.data.rgb_to_grayscale">
+<span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.data.</span></span><span class="sig-name descname"><span class="pre">rgb_to_grayscale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/teex/saliencyMap/data.html#rgb_to_grayscale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.data.rgb_to_grayscale" title="Permalink to this definition"></a></dt>
+<dd><p>Transforms a 3 channel RGB image into a grayscale image (1 channel).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>img</strong> (<em>np.ndarray</em>) – of shape (imageH, imageW, 3)</p>
+</dd>
+<dt class="field-even">Return np.ndarray</dt>
+<dd class="field-even"><p>of shape (imageH, imageW)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-teex.saliencyMap.eval">
+<span id="teex-saliencymap-eval-module"></span><h2>teex.saliencyMap.eval module<a class="headerlink" href="#module-teex.saliencyMap.eval" title="Permalink to this heading"></a></h2>
+<p>Module for evaluation of saliency map explanations.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="teex.saliencyMap.eval.saliency_map_scores">
+<span class="sig-prename descclassname"><span class="pre">teex.saliencyMap.eval.</span></span><span class="sig-name descname"><span class="pre">saliency_map_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sMaps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binThreshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtBackgroundVals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'high'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/teex/saliencyMap/eval.html#saliency_map_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#teex.saliencyMap.eval.saliency_map_scores" title="Permalink to this definition"></a></dt>
+<dd><p>Quality metrics for saliency map explanations, where each pixel is considered as a feature.
+Computes different scores of a saliency map explanation w.r.t. its ground truth explanation (a binary mask).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gts</strong> (<em>np.ndarray</em>) – <p>ground truth RGB or binary mask/s. Accepted shapes are</p>
+<blockquote>
+<div><ul>
+<li><p><em>(imageH, imageW)</em> A single grayscale mask, where each pixel should be 1 if it is part of the salient
+class and 0 otherwise.</p></li>
+<li><p><em>(imageH, imageW, 3)</em> A single RGB mask, where pixels that <strong>do not</strong> contain the salient class are all
+either black (all channels set to 0) or white (all channels set to max.).</p></li>
+<li><p><em>(nSamples, imageH, imageW)</em> Multiple grayscale masks, where for each where, in each image, each pixel
+should be 1 if it is part of the salient class and 0 otherwise.</p></li>
+<li><p><em>(nSamples, imageH, imageW, 3)</em> Multiple RGB masks, where for each image, pixels that <em>do not</em> contain
+the salient class are all either black (all channels set to 0) or white (all channels set to max.).</p></li>
+</ul>
+</div></blockquote>
+<p>If the g.t. masks are RGB they will be binarized (see param <code class="code docutils literal notranslate"><span class="pre">gtBackground</span></code> to specify the color of the
+pixels that pertain to the non-salient class).</p>
+</p></li>
+<li><p><strong>sMaps</strong> (<em>np.ndarray</em>) – <p>grayscale saliency map explanation/s ([0, 1] or [-1, 1] normalised). Supported shapes are</p>
+<ul>
+<li><p><em>(imageH, imageW)</em> A single explanation</p></li>
+<li><p><em>(nSamples, imageH, imageW)</em> Multiple explanations</p></li>
+</ul>
+</p></li>
+<li><p><strong>metrics</strong> – <p>(str / array-like of str, default=[‘auc’]) Quality metric/s to compute. Available:</p>
+<ul>
+<li><p>’auc’: ROC AUC score. The val of each pixel of each saliency map in <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> is considered as a
+prediction probability of the pixel pertaining to the salient class.</p></li>
+<li><p>’fscore’: F1 Score.</p></li>
+<li><p>’prec’: Precision Score.</p></li>
+<li><p>’rec’: Recall score.</p></li>
+<li><p>’cs’: Cosine Similarity.</p></li>
+</ul>
+<p>For ‘fscore’, ‘prec’, ‘rec’ and ‘cs’, the saliency maps in <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> are binarized (see param
+<code class="code docutils literal notranslate"><span class="pre">binThreshold</span></code>).</p>
+</p></li>
+<li><p><strong>binThreshold</strong> (<em>float</em>) – (in [0, 1]) pixels of images in <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> with a val bigger than this will be set to 1 and 0 otherwise
+when binarizing for the computation of ‘fscore’, ‘prec’, ‘rec’ and ‘auc’.</p></li>
+<li><p><strong>gtBackgroundVals</strong> (<em>str</em>) – Only used when provided ground truth explanations are RGB. Color of the background
+of the g.t. masks ‘low’ if pixels in the mask representing the non-salient class are dark, ‘high’ otherwise).</p></li>
+<li><p><strong>average</strong> (<em>bool</em>) – (default <code class="code docutils literal notranslate"><span class="pre">True</span></code>) Used only if <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> contain multiple
+observations. Should the computed metrics be averaged across all of the samples?</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>specified metric/s in the original order. Can be of shape</p>
+<ul class="simple">
+<li><p><em>(n_metrics,)</em> if only one image has been provided in both <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> or when both are
+contain multiple observations and <code class="code docutils literal notranslate"><span class="pre">average=True</span></code>.</p></li>
+<li><p><em>(n_metrics, n_samples)</em> if <code class="code docutils literal notranslate"><span class="pre">gts</span></code> and <code class="code docutils literal notranslate"><span class="pre">sMaps</span></code> contain multiple observations and
+<code class="code docutils literal notranslate"><span class="pre">average=False</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-teex.saliencyMap">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-teex.saliencyMap" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="teex.featureImportance.html" class="btn btn-neutral float-left" title="teex.featureImportance package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="teex.wordImportance.html" class="btn btn-neutral float-right" title="teex.wordImportance package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Chus Antonanzas.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

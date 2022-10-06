@@ -2,7 +2,9 @@
 methods and classes for saliency map data manipulation.
 
 All of the datasets must be instanced first. Then, when sliced, they all return the observations, labels and ground
-truth explanations, respectively. """
+truth explanations, respectively. Note that all real-world datasets implement the 
+:code:`delete_data` method, which allows to delete all of their downloaded internal data."""
+
 import os
 from pathlib import Path
 import random

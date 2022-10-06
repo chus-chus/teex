@@ -1,0 +1,673 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "4a7018d7-4241-4c9e-b53d-89ee7013e239",
+   "metadata": {},
+   "source": [
+    "# teex\n",
+    "\n",
+    "### Generating data with available g.t. decision rule explanations"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7eb821c4-9239-4dfa-8d36-45b47f17f81d",
+   "metadata": {},
+   "source": [
+    "We are going to see the available options for data generation with g.t. decision rule explanations and related methods."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 68,
+   "id": "c440ec05-6aae-4022-b62e-fdb903a62668",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from teex.decisionRule.data import Statement, DecisionRule, SenecaDR, str_to_decision_rule, rulefit_to_decision_rule\n",
+    "\n",
+    "from rulefit import RuleFit"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8aa1ffa4-5eea-4f73-bdb6-49790f9904b5",
+   "metadata": {},
+   "source": [
+    "#### 1. `DecisionRule` objects in **teex**\n",
+    "\n",
+    "To represent decision rules, *teex* provides a custom class. In short, we consider the atomic structure of a rule, a `Statement`, that represents an 'if' clause. Then, a `DecisionRule` object is comprised of a collection of `Statement` objects, which, if all held true, imply a result, also represented as a `Statement`. \n",
+    "\n",
+    "For example, given the Statements:\n",
+    "\n",
+    "- 'white_feathers' == true\n",
+    "- 'quacks' == true\n",
+    "\n",
+    "we can build the decision rule that says:\n",
+    "\n",
+    "- **if** (`white_feathers` == true) **and** (`quacks` == true) **then** (`is_duck` == true)\n",
+    "\n",
+    "In code, we can build this exact example:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 69,
+   "id": "24bee9c5-9d56-48f8-b937-361f98e6de77",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "IF 'white_feathers' = True, 'quacks' = True THEN 'is_duck' = True\n"
+     ]
+    }
+   ],
+   "source": [
+    "s1 = Statement('white_feathers', True)\n",
+    "s2 = Statement('quacks', True)\n",
+    "s3 = Statement('is_duck', True)\n",
+    "\n",
+    "dr = DecisionRule([s1, s2], s3)\n",
+    "print(dr)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3fe068f2-302a-41b4-8e28-40279d02a132",
+   "metadata": {},
+   "source": [
+    "or, more human-like:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 70,
+   "id": "21581538-7e69-4dfb-b705-967300afc39e",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<teex.decisionRule.data.DecisionRule object at 0x128cb9970> \n",
+      " IF 'white_feathers' = True, 'quacks' = True THEN 'is_duck' = True\n"
+     ]
+    }
+   ],
+   "source": [
+    "strRule = 'white_feathers = True & quacks = True -> is_duck = True'\n",
+    "dr = str_to_decision_rule(strRule, ruleType='unary')\n",
+    "\n",
+    "print(repr(dr), '\\n', dr)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "578b3bb2-5fca-4265-bff5-815ca02292ee",
+   "metadata": {},
+   "source": [
+    "Statements are flexible and can represent multiple operators (`{'=', '!=', '>', '<', '>=', '<='}`) and be binary for numeric features (`0.5 < feature < 1`, for example). Both **teex** and the methods themselves provide methods for easy manipulation of `Statement` and `DecisionRule` objects, such as insertion, deletion or upsertion of new statements into a decision rule object. We urge the keen user to take a look at the API documentation for more on this. \n",
+    "\n",
+    "The `DecisionRule` class provides a unified way of dealing with this kind of data, which allows for easier implementation of related methods, be it data generation or evaluation. So, all DecisionRule metrics work only with DecisionRule objects. Not to worry, because **teex** provides methods for transforming from common decision rule representations to DecisionRule objects."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d04de081-254a-4f06-8b49-0c6ca1acba6e",
+   "metadata": {},
+   "source": [
+    "#### 2. Generating artificial data with SenecaDR\n",
+    "\n",
+    "**note** This method in particular was not originally conceived as a data generation procedure, but rather as a way to generate transparent classifiers (i.e. a classifier with available ground truth explanations). We use that generated classifier and some artificially generated data to return a dataset with observations, labels and ground truth explanations. The dataset generated contains numerical features with a binary classification.\n",
+    "\n",
+    "As with all data generation procedures in **teex**, first an object needs to be instanced and then the data can be retrieved. We can adjust the number of samples we want, the number of features in the observations, the feature names and the random seed."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 71,
+   "id": "a5e91f04-832d-4503-87e0-6c80ba1de3ff",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Observation: [1.25824083 1.37756901 0.4123272 ] \n",
+      "Label: 0 \n",
+      "Explanation: IF 0.111 < 'c', -0.015 < 'a', 0.901 < 'b' <= 2.31 THEN 'Class' = 0\n"
+     ]
+    }
+   ],
+   "source": [
+    "dataGen = SenecaDR(nSamples=1000, nFeatures=3)\n",
+    "X, y, exps = dataGen[:]\n",
+    "\n",
+    "print(f'Observation: {X[0]} \\nLabel: {y[0]} \\nExplanation: {exps[0]}')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 72,
+   "id": "dca17845-eff0-4488-9130-2c11e3f96b93",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['a', 'b', 'c']"
+      ]
+     },
+     "execution_count": 72,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dataGen.featureNames"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0e9d4a16-8c86-4912-a7e2-ad7293f29da1",
+   "metadata": {},
+   "source": [
+    "See how the explanations generated are actually `DecisionRule` objects, with Statements for each class (not in all cases, though)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 73,
+   "id": "827c4223-991c-466e-8b84-a8673c96ef26",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[<teex.decisionRule.data.DecisionRule at 0x128cc7940>,\n",
+       " <teex.decisionRule.data.DecisionRule at 0x128cc7ac0>,\n",
+       " <teex.decisionRule.data.DecisionRule at 0x128cc7be0>,\n",
+       " <teex.decisionRule.data.DecisionRule at 0x128cc7d00>,\n",
+       " <teex.decisionRule.data.DecisionRule at 0x128cc7e20>]"
+      ]
+     },
+     "execution_count": 73,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "exps[:5]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a574fac3-7d4c-4375-8936-c4dc1d198a1a",
+   "metadata": {},
+   "source": [
+    "See how the explanations generated are actually `DecisionRule` objects, with Statements for each class (not in all cases, though). Note that we can also specify the feature names instead of letting them be automatically generated. As with all of **teex**'s `Seneca` methods, the underlying data generated procedure is carried out by a transparent model that follows the `sklearn` API (has `.predict`, `.predict_proba` and `.fit` methods). In this case, the model is a Decision Tree classifier, and the explanations are the decision paths that the trained model takes when performing predictions. We believe this class can be of utility to users for easily extracting explanations."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 74,
+   "id": "2b09ddb2-0126-4878-aebb-8ccab3b951fe",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from teex.decisionRule.data import TransparentRuleClassifier\n",
+    "\n",
+    "model = TransparentRuleClassifier()\n",
+    "\n",
+    "# it can fit any binary classification data, not just this example\n",
+    "model.fit(X, y, featureNames=['f1', 'f2', 'f3'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 75,
+   "id": "e703d736-c30d-478f-a793-414620bf7caa",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0 1 1 1 1]\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(model.predict(X[:5]))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 76,
+   "id": "4afe37b9-1972-4216-b15a-aa3054cc39f3",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[1., 0.],\n",
+       "       [0., 1.],\n",
+       "       [0., 1.],\n",
+       "       [0., 1.],\n",
+       "       [0., 1.]])"
+      ]
+     },
+     "execution_count": 76,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "model.predict_proba(X[:5])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 77,
+   "id": "1c6525de-3b5a-4c38-a74d-4c2dd968b1e4",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[<teex.decisionRule.data.DecisionRule at 0x128cb90a0>,\n",
+       " <teex.decisionRule.data.DecisionRule at 0x128cb92e0>,\n",
+       " <teex.decisionRule.data.DecisionRule at 0x128cb9ee0>,\n",
+       " <teex.decisionRule.data.DecisionRule at 0x128eaf9a0>,\n",
+       " <teex.decisionRule.data.DecisionRule at 0x128eaffa0>]"
+      ]
+     },
+     "execution_count": 77,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "model.explain(X[:5])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 78,
+   "id": "b2d6fd24-e110-45b5-9bdb-d7bb1aeb257a",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "IF 0.111 < 'f3', -0.015 < 'f1', 0.901 < 'f2' <= 2.31 THEN 'Class' = 0\n",
+      "IF 'f3' <= -0.324, 0.672 < 'f1', 'f2' <= -0.37 THEN 'Class' = 1\n",
+      "IF 'f3' <= -0.324, 0.672 < 'f1', 'f2' <= -0.37 THEN 'Class' = 1\n",
+      "IF -1.705 < 'f3' <= 0.111, 'f1' <= -0.041, 0.428 < 'f2' <= 0.63 THEN 'Class' = 1\n",
+      "IF -1.705 < 'f3' <= 0.111, 'f1' <= -0.041, 0.635 < 'f2' THEN 'Class' = 1\n"
+     ]
+    }
+   ],
+   "source": [
+    "for dr in model.explain(X[:5]):\n",
+    "    print(dr)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1763726a-5edc-47d4-b254-c7e9d67e167f",
+   "metadata": {},
+   "source": [
+    "For more information on the transparent model, please see the notebook on Feature Importance data generation or visit **teex**'s API documentation."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "de05b3b4-1300-4e16-9a44-40e1d3ff7c25",
+   "metadata": {},
+   "source": [
+    "##\n",
+    "#### 3. Transforming common representations into `DecisionRule` objects"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a3b452af-bd81-419f-89a9-3b602816c179",
+   "metadata": {},
+   "source": [
+    "If we want to evaluate common decision rule explanation methods and the evaluation methods in **teex** work only with `DecisionRule` objects, we need methods for transforming representations. We have seen how we can transform string representations with `str_to_decision_rule`, but another useful method is `rulefit_to_decision_rule`. It transforms the rules computed by the [RuleFit](https://github.com/christophM/rulefit) algorithm:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 79,
+   "id": "63a639aa-985b-4791-bc31-984b330f5b95",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# first, find some data\n",
+    "boston_data = pd.read_csv('https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv')\n",
+    "y = boston_data.medv.values\n",
+    "features = boston_data.columns\n",
+    "X = boston_data.drop(\"medv\", axis=1).values"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 99,
+   "id": "86625a81-f8e7-4935-95e9-9dc844f47fb1",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/Users/master/Google Drive/U/4t/TFG/teex/venv/lib/python3.8/site-packages/sklearn/linear_model/_coordinate_descent.py:530: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 2.20433295631139, tolerance: 2.1169160949554895\n",
+      "  model = cd_fast.enet_coordinate_descent(\n",
+      "/Users/master/Google Drive/U/4t/TFG/teex/venv/lib/python3.8/site-packages/sklearn/linear_model/_coordinate_descent.py:530: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations. Duality gap: 2.268052878131016, tolerance: 2.1169160949554895\n",
+      "  model = cd_fast.enet_coordinate_descent(\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "RuleFit(tree_generator=GradientBoostingRegressor(learning_rate=0.01,\n",
+       "                                                 max_depth=100,\n",
+       "                                                 max_leaf_nodes=5,\n",
+       "                                                 n_estimators=560,\n",
+       "                                                 random_state=559,\n",
+       "                                                 subsample=0.46436099318265595))"
+      ]
+     },
+     "execution_count": 99,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# instance a rule fit object and get explanations\n",
+    "rf = RuleFit()\n",
+    "rf.fit(X, y, feature_names=features)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8d7842f2-3a67-42a0-9fd6-98858f7a89b7",
+   "metadata": {},
+   "source": [
+    "The rules from RuleFit can be extracted from here:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 102,
+   "id": "72c479e3-c78f-483a-b024-7a587f34ceee",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>rule</th>\n",
+       "      <th>type</th>\n",
+       "      <th>coef</th>\n",
+       "      <th>support</th>\n",
+       "      <th>importance</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>crim</td>\n",
+       "      <td>linear</td>\n",
+       "      <td>-0.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>zn</td>\n",
+       "      <td>linear</td>\n",
+       "      <td>0.002153</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.048604</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>indus</td>\n",
+       "      <td>linear</td>\n",
+       "      <td>-0.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>chas</td>\n",
+       "      <td>linear</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>nox</td>\n",
+       "      <td>linear</td>\n",
+       "      <td>-0.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1720</th>\n",
+       "      <td>ptratio &lt;= 18.75 &amp; rm &lt;= 7.452499866485596</td>\n",
+       "      <td>rule</td>\n",
+       "      <td>-0.000000</td>\n",
+       "      <td>0.401709</td>\n",
+       "      <td>0.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1721</th>\n",
+       "      <td>dis &gt; 6.341400146484375</td>\n",
+       "      <td>rule</td>\n",
+       "      <td>-0.000000</td>\n",
+       "      <td>0.145299</td>\n",
+       "      <td>0.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1722</th>\n",
+       "      <td>lstat &gt; 5.184999942779541 &amp; ptratio &gt; 13.84999...</td>\n",
+       "      <td>rule</td>\n",
+       "      <td>-0.000000</td>\n",
+       "      <td>0.829060</td>\n",
+       "      <td>0.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1723</th>\n",
+       "      <td>tax &lt;= 298.0</td>\n",
+       "      <td>rule</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>0.333333</td>\n",
+       "      <td>0.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1724</th>\n",
+       "      <td>crim &gt; 18.737899780273438</td>\n",
+       "      <td>rule</td>\n",
+       "      <td>-0.000000</td>\n",
+       "      <td>0.029915</td>\n",
+       "      <td>0.000000</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>1725 rows × 5 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                                   rule    type      coef  \\\n",
+       "0                                                  crim  linear -0.000000   \n",
+       "1                                                    zn  linear  0.002153   \n",
+       "2                                                 indus  linear -0.000000   \n",
+       "3                                                  chas  linear  0.000000   \n",
+       "4                                                   nox  linear -0.000000   \n",
+       "...                                                 ...     ...       ...   \n",
+       "1720         ptratio <= 18.75 & rm <= 7.452499866485596    rule -0.000000   \n",
+       "1721                            dis > 6.341400146484375    rule -0.000000   \n",
+       "1722  lstat > 5.184999942779541 & ptratio > 13.84999...    rule -0.000000   \n",
+       "1723                                       tax <= 298.0    rule  0.000000   \n",
+       "1724                          crim > 18.737899780273438    rule -0.000000   \n",
+       "\n",
+       "       support  importance  \n",
+       "0     1.000000    0.000000  \n",
+       "1     1.000000    0.048604  \n",
+       "2     1.000000    0.000000  \n",
+       "3     1.000000    0.000000  \n",
+       "4     1.000000    0.000000  \n",
+       "...        ...         ...  \n",
+       "1720  0.401709    0.000000  \n",
+       "1721  0.145299    0.000000  \n",
+       "1722  0.829060    0.000000  \n",
+       "1723  0.333333    0.000000  \n",
+       "1724  0.029915    0.000000  \n",
+       "\n",
+       "[1725 rows x 5 columns]"
+      ]
+     },
+     "execution_count": 102,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "rf.get_rules()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b30a1e66-464b-4e47-9c0b-50dbce078f1f",
+   "metadata": {},
+   "source": [
+    "and we can convert them into `DecisionRule` objects with a single line. Note that only the rules are transform, not the base coefficients (**type** = linear). Our method also provides parameters for the minimum support and importance for a rule to be transformed."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 103,
+   "id": "afd6ea1e-33aa-44dd-a9ef-29db63c45ee3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# and transform into decision rule objects\n",
+    "dRules, skippedRows = rulefit_to_decision_rule(rules)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 104,
+   "id": "e5688ebd-54a1-4297-a81f-da5f813d677a",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[<teex.decisionRule.data.DecisionRule at 0x12efcbfa0>,\n",
+       " <teex.decisionRule.data.DecisionRule at 0x12ef1b100>,\n",
+       " <teex.decisionRule.data.DecisionRule at 0x12a32ad00>,\n",
+       " <teex.decisionRule.data.DecisionRule at 0x12a32a970>,\n",
+       " <teex.decisionRule.data.DecisionRule at 0x12a32a940>]"
+      ]
+     },
+     "execution_count": 104,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dRules[:5]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 105,
+   "id": "e1cc0006-674c-4f32-ab40-70ca0ef167a3",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "IF 'nox' <= 0.6694999933242798, 'dis' <= 1.3980499505996704 THEN None\n",
+      "IF 'ptratio' <= 18.65000057220459, 7.423499822616577 < 'rm' THEN None\n",
+      "IF 1.1736000180244446 < 'dis', 21.489999771118164 < 'lstat', 'rm' <= 7.423500061035156 THEN None\n",
+      "IF 7.433000087738037 < 'rm', 'lstat' <= 14.805000305175781 THEN None\n",
+      "IF 20.19499969482422 < 'lstat' THEN None\n"
+     ]
+    }
+   ],
+   "source": [
+    "for rule in dRules[:5]:\n",
+    "    print(rule)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e409f221-39f4-4316-8173-fac4f17af551",
+   "metadata": {},
+   "source": [
+    "<p float=\"left\">\n",
+    "  <img src=\"https://taiao.ai/img/6825_TAIAO_logo_1000x320.jpg\" alt=\"drawing\" style=\"width:150px;\"/>\n",
+    "  <img src=\"https://www.bourses-etudiants.ma/wp-content/uploads/2018/06/University-of-Waikato-logo.png\" alt=\"drawing\" style=\"width:150px;\"/>\n",
+    "  <img src=\"https://www.upc.edu/comunicacio/ca/identitat/descarrega-arxius-grafics/fitxers-marca-principal/upc-positiu-p3005.png\" alt=\"drawing\" style=\"width:200px;\"/>\n",
+    "</p>"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.6"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
