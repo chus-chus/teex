@@ -98,8 +98,8 @@ downloads and assigns data from the Kahikatea dataset:
 
 <p align="center">
     <img src="docs/images/kahikatea_sample.png" 
-         alt="drawing" width="180"/>
-    <img src="docs/images/kahikatea_gt.png" alt="drawing" width="180"/>
+         alt="drawing" width="200"/>
+    <img src="docs/images/kahikatea_gt.png" alt="drawing" width="200"/>
 </p>
 <body>
   <p align="center">Fig. 1 A <a href="https://zenodo.org/record/5059769#.YN7KKegzZPZ">Kahikatea</a> dataset sample. </p>
@@ -109,8 +109,8 @@ Other datasets, such as [CUB-200-2011](https://www.vision.caltech.edu/datasets/c
 
 <p align="center">
     <img src="docs/images/cub_sample.jpg" 
-         alt="drawing" width="150"/>
-    <img src="docs/images/cub_gt.png" alt="drawing" width="150"/>
+         alt="drawing" width="200"/>
+    <img src="docs/images/cub_gt.png" alt="drawing" width="200"/>
 </p>
 <body>
   <p align="center">Fig. 2 A <a href="https://www.vision.caltech.edu/datasets/cub_200_2011/">CUB-200-2011</a> dataset sample.  </p>
@@ -118,11 +118,11 @@ Other datasets, such as [CUB-200-2011](https://www.vision.caltech.edu/datasets/c
     
 <p align="center">
     <img src="docs/images/ox_sample.jpg" 
-         alt="drawing" width="150"/>
-    <img src="docs/images/ox_gt.png" alt="drawing" width="150"/>
+         alt="drawing" width="200"/>
+    <img src="docs/images/ox_gt.png" alt="drawing" width="200"/>
 </p>
 <body>
-  <p align="center">Fig. 3 An <a href="https://www.vision.caltech.edu/datasets/cub_200_2011/">Oxford-IIIT Pet Dataset</a> sample. </p>
+  <p align="center">Fig. 3 An <a href="https://www.robots.ox.ac.uk/~vgg/data/pets/">Oxford-IIIT Pet Dataset</a> sample. </p>
 </body>
 
 
