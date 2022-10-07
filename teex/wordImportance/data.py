@@ -11,9 +11,13 @@ from teex._baseClasses._baseDatasets import _ClassificationDataset
 
 
 class Newsgroup(_ClassificationDataset):
-    """ 20 Newsgroup dataset from https://github.com/SinaMohseni/ML-Interpretability-Evaluation-Benchmark
-
-    Contains 188 human annotaded newsgroup texts belonging to two categories.
+    """ 20 Newsgroup dataset. Contains 188 human 
+    annotaded newsgroup texts belonging to two categories. From
+    
+    Sina Mohseni, Jeremy E Block, and Eric Ragan. 2021. 
+    Quantitative Evaluation of Machine Learning 
+    Explanations: A Human-Grounded Benchmark. 
+    https://doi.org/10.1145/3397481.3450689
 
     :Example:
 
