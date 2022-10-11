@@ -55,7 +55,3 @@ class TestFIMetrics(unittest.TestCase):
         gts = np.array([0, 0, 0])
         preds = np.array([0, 0, 0])
         _ = feature_importance_scores(gts, preds, metrics=self.metrics)  # will crash if metrics not defined
-
-
-if __name__ == '__main__':
-    unittest.main()

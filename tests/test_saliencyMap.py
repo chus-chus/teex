@@ -149,7 +149,3 @@ class TestSMMetrics(unittest.TestCase):
                          [[0, 1], [0, 1], [0, 1]]])
         scores = saliency_map_scores(gt, pred, metrics=self.metrics, average=False)
         self.assertTrue((scores == np.zeros(len(self.metrics))).all())
-
-
-if __name__ == '__main__':
-    unittest.main()

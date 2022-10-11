@@ -84,7 +84,3 @@ class TestDRMetrics(unittest.TestCase):
         c1 = Statement('x', lowB=2, upperB=3, lowOp='<=', upperOp='<=')  # 2 < x < 3
         _ = rule_scores(DecisionRule([c1]), DecisionRule([c1]), metrics=self.metrics,
                         allFeatures=['a', 'b'])  # will crash if metrics not defined
-
-
-if __name__ == '__main__':
-    unittest.main()
