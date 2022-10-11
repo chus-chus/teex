@@ -7,7 +7,7 @@ from teex.saliencyMap.data import CUB200, OxfordIIIT, \
 from teex.saliencyMap.eval import saliency_map_scores, \
     _AVAILABLE_SALIENCY_MAP_METRICS
 from teex._datasets.info.kahikatea import _kahikateaNEntries
-from teex._datasets.info.kahikatea import _oxford_iit_length
+from teex._datasets.info.OxfordIIT_Pet import _oxford_iit_length
 
 
 class TestSMDataSenecea(unittest.TestCase):
