@@ -95,3 +95,5 @@ def _download_extract_file(filePath, fileUrl, fileName, format='zip', deletePrev
     shutil.unpack_archive(filePath / fileName, filePath, format)
 
     os.remove(filePath / fileName)
+    
+    return True
