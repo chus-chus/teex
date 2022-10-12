@@ -3,7 +3,7 @@
 import sys
 
 
-def query_yes_no(question, default="yes", _expectInput=True):
+def query_yes_no(question, default="yes", _expectInput=True): # pragma: no cover
     """Ask a yes/no question via raw_input() and return their answer.
 
     :param str question: is a string that is presented to the user.
