@@ -72,9 +72,6 @@ class TestSMDataSenecea(unittest.TestCase):
 class TestSMCUB200(unittest.TestCase):
     """ Test for the CUB-200-2011 dataset """
 
-    def setUp(self) -> None:
-        self.data = CUB200()
-
     def test_slices(self):
         d = CUB200()[:11]
         self.assertIsNotNone(d[:10])
@@ -86,8 +83,9 @@ class TestSMCUB200(unittest.TestCase):
                     e.close()
 
     def test_class_loading(self):
-        for c in self.data.classMap.keys():
-            obs = self.data.get_class_observations(c)
+        d = CUB200()
+        for c in d.classMap.keys():
+            obs = d.get_class_observations(c)
             self.assertIsNotNone(obs)
             # close pointers, as they generate alloc warnings in -Wall calls
             for i, t in enumerate(obs):
@@ -96,20 +94,20 @@ class TestSMCUB200(unittest.TestCase):
                         e.close()
                         
     def test_wrong_class(self):
-        self.assertRaises(ValueError, self.data.get_class_observations, None)
+        d = CUB200()
+        self.assertRaises(ValueError, d.get_class_observations, None)
                         
     def test_slice(self):
-        self.assertIsNotNone(self.data[0])
+        d = CUB200()
+        self.assertIsNotNone(d[0])
         
     def test_slice_invalid(self):
-        self.assertRaises(TypeError, self.data.__getitem__, "invalid slice!")
+        d = CUB200()
+        self.assertRaises(TypeError, d.__getitem__, "invalid slice!")
                         
 
 class TestSMOxfordIIIT(unittest.TestCase):
     """ Test for the Oxford IIIT Pet Dataset """
-
-    def setUp(self) -> None:
-        self.data = OxfordIIIT()
 
     def test_slices(self):
         d = OxfordIIIT()[:11]
@@ -122,8 +120,9 @@ class TestSMOxfordIIIT(unittest.TestCase):
                     e.close()
 
     def test_class_loading(self):
-        for c in self.data.classMap.keys():
-            obs = self.data.get_class_observations(c)
+        d = OxfordIIIT()
+        for c in d.classMap.keys():
+            obs = d.get_class_observations(c)
             self.assertIsNotNone(obs)
             # close pointers, as they generate alloc warnings in -Wall calls
             for i, t in enumerate(obs):
@@ -132,37 +131,42 @@ class TestSMOxfordIIIT(unittest.TestCase):
                         e.close()
                         
     def test_wrong_class(self):
-        self.assertRaises(ValueError, self.data.get_class_observations, None)
+        d = OxfordIIIT()
+        self.assertRaises(ValueError, d.get_class_observations, None)
                         
     def test_slice(self):
-        self.assertIsNotNone(self.data[0])
+        d = OxfordIIIT()
+        self.assertIsNotNone(d[0])
         
     def test_slice_invalid(self):
-        self.assertRaises(TypeError, self.data.__getitem__, "invalid slice!")
+        d = OxfordIIIT()
+        self.assertRaises(TypeError, d.__getitem__, "invalid slice!")
         
     def test_len(self):
-        self.assertEqual(len(self.data), _oxford_iit_length)
+        d = OxfordIIIT()
+        self.assertEqual(len(d), _oxford_iit_length)
 
 
 class TestSMKahikatea(unittest.TestCase):
     """ Test for saliency map data generation with seneca """
 
-    def setUp(self) -> None:
-        self.data = Kahikatea()
-
     def test_slices(self):
-        self.assertIsNotNone(self.data[:10])
-        self.assertIsNotNone(self.data[1:10])
-        self.assertIsNotNone(self.data[:10:2])
+        d = Kahikatea()
+        self.assertIsNotNone(d[:10])
+        self.assertIsNotNone(d[1:10])
+        self.assertIsNotNone(d[:10:2])
         
     def test_wrong_slice(self):
-        self.assertRaises(TypeError, self.data.__getitem__, None)
+        d = Kahikatea()
+        self.assertRaises(TypeError, d.__getitem__, None)
         
     def test_get_class(self):
-        self.assertIsNotNone(self.data.get_class_observations(0))
+        d = Kahikatea()
+        self.assertIsNotNone(d.get_class_observations(1))
         
     def test_len(self):
-        self.assertEqual(len(self.data), _kahikateaNEntries)
+        d = Kahikatea()
+        self.assertEqual(len(d), _kahikateaNEntries)
         
         
 class TestSMMetrics(unittest.TestCase):
