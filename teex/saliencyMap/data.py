@@ -295,8 +295,7 @@ class Kahikatea(_ClassificationDataset):
 
         if self._check_integrity() is False:
             print('Files do not exist or are corrupted. Building dataset...')
-            if self._download():
-                self._isDownloaded = True
+            self._download()
         else:
             self._isDownloaded = True
 
@@ -361,9 +360,10 @@ class Kahikatea(_ClassificationDataset):
                 _check_pathlib_dir(self._path / 'data/ve_positive') and
                 _check_pathlib_dir(self._path / 'data/ve_negative'))
 
-    def _download(self) -> bool:
+    def _download(self) -> bool: # pragma: no cover
         try:
             _download_extract_file(self._path, _kahikatea_url, 'rawKahikatea.zip')
+            self._isDownloaded = True
         except:
             warnings.warn("Download interruped.")
             shutil.rmtree(self._path)
@@ -479,7 +479,7 @@ class CUB200(_ClassificationDataset):
     def __len__(self) -> int:
         return _cub_length
         
-    def _download(self) -> bool:
+    def _download(self) -> bool: # pragma: no cover
         queryResponse = query_yes_no('This download will take ~1.2GB of disk. Procede?')
         try:
             if queryResponse:
@@ -500,7 +500,7 @@ class CUB200(_ClassificationDataset):
         return (_check_pathlib_dir(self._path / 'images') and
                 _check_pathlib_dir(self._path / 'segmentations'))
         
-    def _organize(self) -> None:
+    def _organize(self) -> None: # pragma: no cover
         """ Given the extracted files, deletes folders that 
         are not used and tidies up the directory.
         """
@@ -617,7 +617,7 @@ class OxfordIIIT(_ClassificationDataset):
     def __len__(self) -> int:
         return _oxford_iit_length
         
-    def _download(self) -> bool:
+    def _download(self) -> bool: # pragma: no cover
         queryResponse = query_yes_no('This download will take ~800MB of disk. Procede?')
         try:
             if queryResponse:
@@ -637,7 +637,7 @@ class OxfordIIIT(_ClassificationDataset):
         return (_check_pathlib_dir(self._path / 'images') and
                 _check_pathlib_dir(self._path / 'annotations'))
         
-    def _organize(self) -> None:
+    def _organize(self) -> None: # pragma: no cover
         """ Given the extracted files, deletes folders that 
         are not used and performs other preparation instructions.
         """

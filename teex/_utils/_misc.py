@@ -15,21 +15,6 @@ import functools
 from teex._utils._paths import _check_pathlib_dir
 
 
-def deprecated(func):
-    """This is a decorator which can be used to mark functions
-    as deprecated. It will result in a warning being emitted
-    when the function is used."""
-    @functools.wraps(func)
-    def new_func(*args, **kwargs):
-        warnings.simplefilter('always', DeprecationWarning)  # turn off filter
-        warnings.warn("Call to deprecated function {}.".format(func.__name__),
-                      category=DeprecationWarning,
-                      stacklevel=2)
-        warnings.simplefilter('default', DeprecationWarning)  # reset filter
-        return func(*args, **kwargs)
-    return new_func
-
-
 def _generate_feature_names(nFeatures: int) -> list:
     """ Generates a list of length *nFeatures* with combinatinos of the abecedary. """
 
@@ -74,7 +59,7 @@ def _download_file(url: str, root: str, filename: str) -> None:
     try:
         print('Downloading ' + url + '\nto ' + fpath)
         _url_retrieve(url, fpath)
-    except (urllib.error.URLError, IOError) as exc:
+    except (urllib.error.URLError, IOError) as exc: # pragma: no cover
         if url[:5] == 'https':
             url = url.replace('https:', 'http:')
             print('Failed download. Trying https -> http instead.'
@@ -101,7 +86,7 @@ def _download_extract_file(filePath, fileUrl, fileName, format='zip', deletePrev
 
     if not _check_pathlib_dir(filePath):
         os.makedirs(filePath)
-    elif deletePrevDir:
+    elif deletePrevDir: # pragma: no cover
         shutil.rmtree(filePath)
         os.makedirs(filePath)
 
@@ -110,3 +95,5 @@ def _download_extract_file(filePath, fileUrl, fileName, format='zip', deletePrev
     shutil.unpack_archive(filePath / fileName, filePath, format)
 
     os.remove(filePath / fileName)
+    
+    return True

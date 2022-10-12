@@ -11,9 +11,12 @@ class TestFIDataSeneca(unittest.TestCase):
     """ Test for feature importance data generation with seneca """
 
     def setUp(self) -> None:
-        self.nSamples = 3
+        self.nSamples = 5
         self.nFeatures = 2
-        self.senecaFI = SenecaFI(nSamples=self.nSamples, nFeatures=self.nFeatures)
+        self.senecaFI = SenecaFI(nSamples=self.nSamples, 
+                                 nFeatures=self.nFeatures, 
+                                 randomState=888)
+        self.model = self.senecaFI.transparentModel
         self.X, self.y, self.exps = self.senecaFI[:]
 
     def test_seneca_types(self):
@@ -31,6 +34,16 @@ class TestFIDataSeneca(unittest.TestCase):
         maxs = np.max(self.exps)
         self.assertTrue(mins >= -1)
         self.assertTrue(maxs <= 1)
+        
+    def test_seneca_model_predict_proba(self):
+        arr = np.array([[ 0.2, -0.1],
+                        [ 0.5, -0.9],
+                        [-0.6,  0.5]])
+        r = self.model.predict_proba(arr)
+        exp = np.array([[0.3, 0.6],
+                        [0.7, 0.2],
+                        [0.6, 0.3]])
+        self.assertTrue((np.trunc(r * 10) == np.trunc(exp * 10)).all())
 
 
 class TestFIMetrics(unittest.TestCase):
@@ -55,7 +68,3 @@ class TestFIMetrics(unittest.TestCase):
         gts = np.array([0, 0, 0])
         preds = np.array([0, 0, 0])
         _ = feature_importance_scores(gts, preds, metrics=self.metrics)  # will crash if metrics not defined
-
-
-if __name__ == '__main__':
-    unittest.main()

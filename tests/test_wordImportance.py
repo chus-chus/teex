@@ -55,7 +55,3 @@ class TestWIMetrics(unittest.TestCase):
 
         scores = word_importance_scores(w1, w2, metrics=self.metrics, average=False)
         self.assertTrue((scores == np.zeros((3, len(self.metrics)))).all())
-
-
-if __name__ == '__main__':
-    unittest.main()

@@ -1,0 +1,8 @@
+pandas==1.5.0
+tqdm==4.61.2
+numpy==1.22
+scikit-learn==1.1.2
+scipy==1.7.3
+sympy==1.8
+Pillow==9.0.1
+rulefit==0.3.1

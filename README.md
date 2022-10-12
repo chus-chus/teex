@@ -24,6 +24,10 @@ pip install teex
 
 **teex** is compatible with Python 3.8 and 3.9.
 
+## Documentation
+
+**teex**'s documentation and API reference can be found on [Read The Docs](https://teex.readthedocs.io).
+
 ## Usage overview
 
 teex is divided into subpackages, one for each explanation type. Each subpackage contains two modules, focused on two
@@ -145,33 +149,31 @@ X, y, exps = SenecaSM()[:]
 </body>
 
 
-## Tutorials and API
-
-**teex**'s documentation can be found on [Read The Docs](https://teex.readthedocs.io).
+## Tutorials and demos
 
 ---
-- [Improving model selection with explanation quality](https://github.com/chus-chus/teex/blob/main/docs/demos/)
+- [Improving model selection with explanation quality](https://teex.readthedocs.io/en/latest/demos/model_selection/model_selection_nb.html)
 ---
 *Saliency maps*
-- [Retrieving image data with g.t. saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/gen_saliency_map.ipynb)
-- [Evaluating Captum saliency map explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/eval_saliency_map.ipynb)
+- [Retrieving image data with g.t. saliency map explanations](https://teex.readthedocs.io/en/latest/demos/saliency_map/gen_saliency_map_nb.html)
+- [Evaluating Captum saliency map explanations](https://teex.readthedocs.io/en/latest/demos/saliency_map/eval_saliency_map_nb.html)
 ---
 *Feature importance vectors*
-- [Retrieving tabular data with g.t. feature importance explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/gen_feature_importance.ipynb)
-- [Evaluating LIME feature importance explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/eval_feature_importance.ipynb)
+- [Retrieving tabular data with g.t. feature importance explanations](https://teex.readthedocs.io/en/latest/demos/feature_importance/gen_feature_importance_nb.html)
+- [Evaluating LIME feature importance explanations](https://teex.readthedocs.io/en/latest/demos/feature_importance/eval_feature_importance_nb.html)
 ---
 *Decision rules*
-- [Retrieving tabular data with g.t. decision rule explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/gen_decision_rule.ipynb)
-- [Evaluating decision rule explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/eval_decision_rule.ipynb)
+- [Retrieving tabular data with g.t. decision rule explanations](https://teex.readthedocs.io/en/latest/demos/decision_rule/gen_decision_rule_nb.html)
+- [Evaluating decision rule explanations](https://teex.readthedocs.io/en/latest/demos/decision_rule/eval_decision_rule_nb.html)
 ---
 *Word importance vectors*
-- [Retrieving language data with g.t. word importance explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/gen_word_importance.ipynb)
-- [Evaluating word importance explanations](https://github.com/chus-chus/teex/blob/main/docs/demos/eval_word_importance.ipynb)
+- [Retrieving language data with g.t. word importance explanations](https://teex.readthedocs.io/en/latest/demos/word_importance/gen_word_importance_nb.html)
+- [Evaluating word importance explanations](https://teex.readthedocs.io/en/latest/demos/word_importance/eval_word_importance_nb.html)
 
 
 ## Contributing
 
-There is still work to do. Before contributing to **teex**, please take a moment to read the [manual](https://github.com/chus-chus/teex/blob/main/CONTRIBUTING.md).
+There is still work to do and we would really appreciate your help. Before contributing to **teex**, please take a moment to read the [manual](https://github.com/chus-chus/teex/blob/main/CONTRIBUTING.md).
 
 ## Acknowledgements
 This work has been made possible by the [University of Waikato](https://www.waikato.ac.nz/) under the scope of 

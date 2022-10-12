@@ -16,4 +16,6 @@ teex/_datasets/wordImportance
 teex/_datasets/featureImportance
 teex/_datasets/decisionRule
 
-./teex.code-workspace
+teex.code-workspace
+
+docs/_build/
