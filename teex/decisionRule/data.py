@@ -70,7 +70,7 @@ class Statement(object):
 
     def __eq__(self, other):
         if self.binary:
-            return self.feature == other.feature and self.lowOp == other.lowB and self.upperOp == other.upperB and \
+            return self.feature == other.feature and self.lowOp == other.lowOp and self.upperOp == other.upperOp and \
                    self.lowB == other.lowB and self.upperB == other.upperB
         else:
             return self.feature == other.feature and self.op == other.op and self.val == other.val
@@ -78,7 +78,10 @@ class Statement(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def __str__(self):
+    def __str__(self) -> str:
+        return self.__repr__()
+
+    def __repr__(self) -> str:
         if self.binary:
             if self.lowB != -np.inf and self.upperB != np.inf:
                 return f"{self.lowB} {self.lowOp} '{self.feature}' {self.upperOp} {self.upperB}"
@@ -92,7 +95,7 @@ class Statement(object):
             if self.val != np.inf:
                 return f"'{self.feature}' {self.op} {self.val}"
             else:
-                return f"'{self.feature}' not bounded"
+                return f"'{self.feature}' not bounded" 
 
     def __hash__(self):
         return hash(str(self))
@@ -153,7 +156,10 @@ class DecisionRule(object):
 
         self.result = result
 
-    def __str__(self):
+    def __str__(self) -> str:
+        return self.__repr__()
+    
+    def __repr__(self) -> str:
         return f"IF {', '.join([str(statement) for statement in self.statements.values()])} THEN {self.result}"
 
     def __len__(self):

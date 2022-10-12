@@ -295,8 +295,7 @@ class Kahikatea(_ClassificationDataset):
 
         if self._check_integrity() is False:
             print('Files do not exist or are corrupted. Building dataset...')
-            if self._download():
-                self._isDownloaded = True
+            self._download()
         else:
             self._isDownloaded = True
 
@@ -364,6 +363,7 @@ class Kahikatea(_ClassificationDataset):
     def _download(self) -> bool:
         try:
             _download_extract_file(self._path, _kahikatea_url, 'rawKahikatea.zip')
+            self._isDownloaded = True
         except:
             warnings.warn("Download interruped.")
             shutil.rmtree(self._path)

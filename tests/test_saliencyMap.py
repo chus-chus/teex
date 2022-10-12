@@ -8,6 +8,7 @@ from teex.saliencyMap.eval import saliency_map_scores, \
     _AVAILABLE_SALIENCY_MAP_METRICS
 from teex._datasets.info.kahikatea import _kahikateaNEntries
 from teex._datasets.info.OxfordIIT_Pet import _oxford_iit_length
+from teex._utils._errors import MetricNotAvailableError
 
 
 class TestSMDataSenecea(unittest.TestCase):
@@ -75,7 +76,7 @@ class TestSMCUB200(unittest.TestCase):
         self.data = CUB200()
 
     def test_slices(self):
-        d = self.data[:11]
+        d = CUB200()[:11]
         self.assertIsNotNone(d[:10])
         self.assertIsNotNone(d[1:10])
         self.assertIsNotNone(d[:10:2])
@@ -111,7 +112,7 @@ class TestSMOxfordIIIT(unittest.TestCase):
         self.data = OxfordIIIT()
 
     def test_slices(self):
-        d = self.data[:11]
+        d = OxfordIIIT()[:11]
         self.assertIsNotNone(d[:10])
         self.assertIsNotNone(d[1:10])
         self.assertIsNotNone(d[:10:2])
@@ -200,16 +201,54 @@ class TestSMMetrics(unittest.TestCase):
         scores = saliency_map_scores(gt, pred, metrics=self.metrics, average=False)
         self.assertEqual(len(scores), len(gt))
 
-    def test_metrics_wrong(self):
+    def test_metrics_0(self):
         gt = np.array([[[1, 0], [1, 0], [1, 0]],
                        [[1, 0], [1, 0], [1, 0]]])
         pred = np.array([[[0, 1], [0, 1], [0, 1]],
                          [[0, 1], [0, 1], [0, 1]]])
         scores = saliency_map_scores(gt, pred, metrics=self.metrics, average=False)
         self.assertTrue((scores == np.zeros(len(self.metrics))).all())
+    
+    def test_metric_none(self):
+        gt = np.array([[[1, 0], [1, 0], [1, 0]],
+                       [[1, 0], [1, 0], [1, 0]]])
+        pred = np.array([[[0, 1], [0, 1], [0, 1]],
+                         [[0, 1], [0, 1], [0, 1]]])
+        scores = saliency_map_scores(gt, pred, metrics=None, average=False)
+        self.assertTrue((scores == np.zeros(len(self.metrics))).all())
+        
+    def test_metric_str(self):
+        gt = np.array([[[1, 0], [1, 0], [1, 0]],
+                       [[1, 0], [1, 0], [1, 0]]])
+        pred = np.array([[[0, 1], [0, 1], [0, 1]],
+                         [[0, 1], [0, 1], [0, 1]]])
+        scores = saliency_map_scores(gt, pred, metrics="auc", average=False)
+        self.assertTrue((scores == np.zeros(len(self.metrics))).all())
+        
+    def test_invalid_metric(self):
+        gt = np.zeros((2, 2, 2))
+        self.assertRaises(MetricNotAvailableError, saliency_map_scores, gt, gt, "Invalid!")
+    
+    def test_multiple_rgb(self):
+        data = SenecaSM(nSamples=4, imageH=32, imageW=32, patternH=16,
+                             patternW=16, cellH=4, cellW=4, patternProp=0.5,
+                             fillPct=0.4, colorDev=0.5, randomState=7)
+        data, _, exps = data[:]
+        data = data[1:3,:,:]
+        exps = exps[1:3,:,:]
+        scores = saliency_map_scores(data, exps, metrics="auc")
+        self.assertAlmostEqual(round(scores[0], 2), 0.53)
+        
+    def test_wrong_gt_shape(self):
+        data = np.zeros((2, 2, 2, 2, 2))
+        self.assertRaises(ValueError, saliency_map_scores, data, data, "auc")
+        
+    def test_wrong_pred_shape(self):
+        gt = np.zeros((2, 2, 2, 2))
+        self.assertRaises(ValueError, saliency_map_scores, gt, gt, "auc")
         
 
-class TestPublicDataUtils(unittest.TestCase):
+class TestPublicSMDataUtils(unittest.TestCase):
     
     def test_delete_sm_data(self):
         _ = Kahikatea()

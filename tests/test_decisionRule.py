@@ -2,8 +2,41 @@ import unittest
 
 import numpy as np
 
-from teex.decisionRule.data import Statement, DecisionRule, SenecaDR
+from teex.decisionRule.data import Statement, DecisionRule, SenecaDR, clean_binary_statement, \
+    rule_to_feature_importance, _induce_binary_statement, \
+    _generate_binary_statement, str_to_decision_rule
 from teex.decisionRule.eval import rule_scores, _AVAILABLE_DECISION_RULE_METRICS
+
+class TestStatement(unittest.TestCase):
+    
+    def test_absence_bound(self):
+        self.assertRaises(ValueError, Statement, 'a', '<', 2)
+        
+    def test_lowerb_higher_upperb(self):
+        self.assertRaises(ValueError, Statement, 'a', '<', 5, '>', 6)
+        
+    def test_eq(self):
+        s = Statement('a', 1.5)
+        self.assertEqual(s, s)
+        
+    def test_eq_bin(self):
+        s = Statement('a',lowOp='<',lowB=2,upperOp='<',upperB=5)
+        self.assertEqual(s, s)
+        
+    def test_neq(self):
+        s = Statement('a',lowOp='<',lowB=2,upperOp='<',upperB=5)
+        a = Statement('b',lowOp='<',lowB=2,upperOp='<',upperB=5)
+        self.assertNotEqual(s, a)
+        
+    def test_str(self):
+        s = Statement('a',lowOp='<',lowB=2,upperOp='<',upperB=5)
+        self.assertEqual(s.__str__, s.__str__)
+        
+    def test_wrong_op(self):
+        self.assertRaises(ValueError, Statement, 'a', 1.5, 'Invalid!')
+        
+    def test_wrong_op_bin(self):
+        self.assertRaises(ValueError, Statement, 'a', 'Invalid_1', 5, 'Invalid_2', 6)
 
 
 class TestDecisionRuleClass(unittest.TestCase):
@@ -59,7 +92,51 @@ class TestDRDataSeneca(unittest.TestCase):
             for feature in exp.get_features():
                 usedFeatures[feature] = True
         self.assertTrue(sum(usedFeatures.values()) == len(allFeatures))
+        
+    def test_len(self):
+        self.assertEqual(len(self.data), 5)
 
+class TestDRDataUtils(unittest.TestCase):
+    
+    def setUp(self) -> None:
+        self.nSamples = 2
+        self.nFeatures = 2
+        self.data = SenecaDR(self.nSamples, self.nFeatures)
+        self.X, self.y, self.exps = self.data[:]
+    
+    def test_r_fi(self):
+        r = rule_to_feature_importance(self.exps, self.data.featureNames)
+        self.assertTrue((r == np.array([[0., 1.], [0., 1.]])).all())
+        
+    def test_induce_statements(self):
+        self.assertIsNotNone(_induce_binary_statement('a', '<', 3))
+        self.assertIsNotNone(_induce_binary_statement('a', '>', 3))
+        self.assertRaises(ValueError, _induce_binary_statement, 'a', 'Invalid', 3)
+        
+    def test_induce_binary_statements(self):
+        self.assertIsNotNone(_generate_binary_statement('a', '<', 3, '>', 1))
+        self.assertIsNotNone(_generate_binary_statement('a', '>', 1, '<', 3))
+        self.assertRaises(ValueError, _generate_binary_statement, 'a', 'Invalid!', 1, '<', 3)
+        
+    def test_clean_binary_statements(self):
+        r = clean_binary_statement([('>', 1), ('<', 1)])
+        self.assertEqual(r, ('>', 1, '<', 1))
+        self.assertRaises(ValueError, clean_binary_statement, [('Invalid', 1)])
+        
+    def test_str_to_dr(self):
+        r = 'a != 2.5 -> res > 3'
+        self.assertEqual("IF 'a' != 2.5 THEN 'res' > 3.0", 
+                         str_to_decision_rule(r,'unary').__str__())
+        r = 'a <= 2.5 & a > 1 -> res > 3'
+        self.assertEqual("IF 1.0 < 'a' <= 2.5 THEN 'res' > 3.0", 
+                         str_to_decision_rule(r,'binary').__str__())
+        r = 'a <= 2.5 & a > 1 & b > 1 -> res > 3 & res <= 5'
+        self.assertEqual("IF 1.0 < 'a' <= 2.5, 1.0 < 'b' THEN 3.0 < 'res' <= 5.0", 
+                         str_to_decision_rule(r,'binary').__str__())
+        r = 'a <= 2.5 & a > 1 & b > 1 -> res = class0'        
+        self.assertEqual("IF 1.0 < 'a' <= 2.5, 1.0 < 'b' THEN 'res' = class0", 
+                         str_to_decision_rule(r,'binary').__str__())
+        
 
 class TestDRMetrics(unittest.TestCase):
     """ Tests for the decisionRule metrics. """
