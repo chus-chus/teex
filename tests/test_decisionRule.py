@@ -1,10 +1,10 @@
 import unittest
-
 import numpy as np
 
 from teex.decisionRule.data import Statement, DecisionRule, SenecaDR, clean_binary_statement, \
     rule_to_feature_importance, _induce_binary_statement, \
-    _generate_binary_statement, str_to_decision_rule
+    _generate_binary_statement, str_to_decision_rule, \
+    rulefit_to_decision_rule
 from teex.decisionRule.eval import rule_scores, _AVAILABLE_DECISION_RULE_METRICS
 
 class TestStatement(unittest.TestCase):
@@ -136,6 +136,27 @@ class TestDRDataUtils(unittest.TestCase):
         r = 'a <= 2.5 & a > 1 & b > 1 -> res = class0'        
         self.assertEqual("IF 1.0 < 'a' <= 2.5, 1.0 < 'b' THEN 'res' = class0", 
                          str_to_decision_rule(r,'binary').__str__())
+        r = 'a <= 2.5 & a > 1 & a > 2 -> res = class0'        
+        self.assertEqual("IF 2.0 < 'a' <= 2.5 THEN 'res' = class0", 
+                         str_to_decision_rule(r,'binary').__str__())
+        self.assertRaises(ValueError, str_to_decision_rule, "a < 1 -> res = class", "invalid!")
+        r = 'a <= 2.5'        
+        self.assertEqual("IF 'a' <= 2.5 THEN None", 
+                         str_to_decision_rule(r,'binary').__str__())
+        
+    def test_rulefit_to_dr(self):
+        
+        import pandas as pd
+        from rulefit import RuleFit
+        
+        boston_data = pd.read_csv('https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv')
+        y = boston_data.medv.values
+        features = boston_data.columns
+        X = boston_data.drop("medv", axis=1).values
+        rf = RuleFit(random_state=888)
+        rf.fit(X[:10], y[:10], feature_names=features)
+        dRules, _ = rulefit_to_decision_rule(rf.get_rules())
+        self.assertTrue(isinstance(dRules[0], DecisionRule))
         
 
 class TestDRMetrics(unittest.TestCase):
