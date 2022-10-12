@@ -1,2 +1,2 @@
 [run]
-omit = ./teex/_BaseClasses
+omit = ./teex/_BaseClasses/
