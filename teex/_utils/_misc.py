@@ -59,7 +59,7 @@ def _download_file(url: str, root: str, filename: str) -> None:
     try:
         print('Downloading ' + url + '\nto ' + fpath)
         _url_retrieve(url, fpath)
-    except (urllib.error.URLError, IOError) as exc:
+    except (urllib.error.URLError, IOError) as exc: # pragma: no cover
         if url[:5] == 'https':
             url = url.replace('https:', 'http:')
             print('Failed download. Trying https -> http instead.'
@@ -86,7 +86,7 @@ def _download_extract_file(filePath, fileUrl, fileName, format='zip', deletePrev
 
     if not _check_pathlib_dir(filePath):
         os.makedirs(filePath)
-    elif deletePrevDir:
+    elif deletePrevDir: # pragma: no cover
         shutil.rmtree(filePath)
         os.makedirs(filePath)
 
