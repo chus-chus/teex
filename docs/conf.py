@@ -57,7 +57,7 @@ html_theme = 'furo'
 html_static_path = ['_static']
 
 html_logo = 'images/rsz_teex_logo__.png'
-html_favicon = 'images/favicon-32x32.ico'
+html_favicon = 'images/favicon-32x32.png'
 
 html_theme_options = {
         'logo_only': False
