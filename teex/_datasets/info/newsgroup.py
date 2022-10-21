@@ -3,7 +3,7 @@ from pathlib import Path
 
 random.seed(1)
 
-_newsgroup_url = "https://api.ipfsbrowser.com/ipfs/download.php?hash=Qmb5HG5NLZA3kSzaNesLamhUVT3fhVfmvr7gUXepz2z5Yw"
+_newsgroup_url = "https://api.ipfsbrowser.com/ipfs/download.php?hash=QmXFKWoqt4N9kTA5FfovQPmEvrsMhHrCLckKnVtijC8MVW"
 
 _newsgroupElecNames = ['53994', '53993', '53992', '53995', '53968', '54009', '54036', '54031', '54038', '54007',
                        '54000', '54053', '54065', '54062', '54001', '54039', '54006', '54030', '54008', '54037',
