@@ -23,7 +23,7 @@ copyright = '2022, Chus Antonanzas'
 author = 'Chus Antonanzas'
 
 # The full version, including alpha/beta/rc tags
-release = '1.1.1'
+release = '1.1.2'
 
 
 # -- General configuration ---------------------------------------------------
