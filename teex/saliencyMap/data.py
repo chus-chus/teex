@@ -398,6 +398,8 @@ class CUB200(_ClassificationDataset):
             if self._download():
                 self._isDownloaded = True
                 self._organize()
+            else:
+                return
         else:
             self._isDownloaded = True
 
@@ -488,8 +490,7 @@ class CUB200(_ClassificationDataset):
                                        deletePrevDir = False)
                 return True
             else:
-                shutil.rmtree(self._path)
-                warnings.warn("Dataset download aborted.")
+                warnings.warn("Dataset download cancelled.")
                 return False
         except:
             warnings.warn("Download interruped.")
@@ -543,6 +544,8 @@ class OxfordIIIT(_ClassificationDataset):
             if self._download():
                 self._isDownloaded = True
                 self._organize()
+            else:
+                return
         else:
             self._isDownloaded = True
 
@@ -626,8 +629,7 @@ class OxfordIIIT(_ClassificationDataset):
                                        deletePrevDir = False)
                 return True
             else:
-                shutil.rmtree(self._path)
-                warnings.warn("Dataset download aborted.")
+                warnings.warn("Dataset download cancelled.")
                 return False
         except:
             warnings.warn("Download interruped.")
