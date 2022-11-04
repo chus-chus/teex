@@ -152,9 +152,8 @@ X, y, exps = SenecaSM()[:]
 ## Tutorials and demos
 
 ---
-- [Improving model selection with explanation quality](https://teex.readthedocs.io/en/latest/demos/model_selection/model_selection_nb.html)
----
 *Saliency maps*
+- [Improving model selection with explanation quality](https://teex.readthedocs.io/en/latest/demos/model_selection/model_selection_nb.html)
 - [Retrieving image data with g.t. saliency map explanations](https://teex.readthedocs.io/en/latest/demos/saliency_map/gen_saliency_map_nb.html)
 - [Evaluating Captum saliency map explanations](https://teex.readthedocs.io/en/latest/demos/saliency_map/eval_saliency_map_nb.html)
 ---
