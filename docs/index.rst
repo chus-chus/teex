@@ -65,7 +65,7 @@ Other functionalities are included in each evaluation module.
 1.2. Metrics supported
 ========================
 
-Metrics available as of v1.0.0 are
+Metrics available as of ``v1.0.0`` are
 
 - **Feature Importance**  
   

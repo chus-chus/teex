@@ -1,4 +1,4 @@
-<p align="center">
+<p style = "text-align: center;">
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/teex_logo__.png" 
          alt="Our AI generated logo. Comes from the prompt: 'logo of a t, inspired by an AI that is fair and responsible.'" width="115"/>
 
@@ -21,16 +21,15 @@ The teex package is on [PyPI](https://pypi.org/project/teex/). To install it, si
 ```shell
 pip install teex
 ```
-
 **teex** is compatible with Python 3.8 and 3.9.
 
 ## Documentation
 
-**teex**'s documentation and API reference can be found on [Read The Docs](https://teex.readthedocs.io).
+**teex**'s documentation, in-depth examples and API reference can be found on [Read The Docs](https://teex.readthedocs.io).
 
 ## Usage overview
 
-teex is divided into subpackages, one for each explanation type. Each subpackage contains two modules, focused on two
+`teex` is divided into subpackages, one for each explanation type. Each subpackage contains two modules, focused on two
 distinct functionalities:
 
 - **eval**: contains _**evaluation**_ methods for that particular explanation type. For every subpackage, there is one high-level
@@ -42,7 +41,7 @@ distinct functionalities:
 ### Evaluation (with feature importance as an example)
 
 **What are feature importance vectors?** They are vectors with one entry per feature. Each entry contains a weight that 
-represents a feature's importance for the observation's outcome. Weights are usually in the range [-1, 1].
+represents a feature's importance for the observation's outcome. Weights are usually in the range $[-1, 1]$.
 
 Suppose that we have a dataset with available g.t. explanations (``gtExps``) and a model trained with it (``model``):
 
@@ -67,7 +66,7 @@ Other functionalities are included in each evaluation module. More about each ex
 
 #### Metrics supported:
 
-Metrics available as of v1.0.0 are
+Metrics available as of `v1.0.0` are
 
 - **Feature Importance**
   - **Cosine Similarity**: similarity between the two vectors is measured in an inner product space in terms of orientation.
@@ -78,14 +77,13 @@ Metrics available as of v1.0.0 are
 - **Saliency Maps**
   - Same metrics as in feature importance. Each pixel in an image is considered to be a feature.
 - **Decision Rules**
-  - **Complete Rule Quality**: Proportion of lower and upper bounds in a rule explanation whose that are eps-close to the respective lower and upper bounds (same feature) in the ground truth rule explanation amongst those that are not infinity.
+  - **Complete Rule Quality**: Proportion of lower and upper bounds in a rule explanation whose that are $\epsilon$-close to the respective lower and upper bounds (same feature) in the ground truth rule explanation amongst those that are not infinity.
   - All metrics in feature importance, where a transformation of the rule into feature importance vectors is performed first. See doc. for details.
 - **Word Importance**:
   - All metrics in feature importance, where a vocabulary is considered the feature space and a word importance explanation may or may not contain words from the vocabulary.
 
 Note how in **teex**, feature importance vectors are a universal representation: we 'translate' all other explanation types
 to feature importance vectors to allow a wider metric space.  
-
 
 ### Data
 
@@ -94,39 +92,48 @@ All of them are instanced as objects, and can be sliced as usual. For example:
 
 ```python
 from teex.saliencyMap.data import Kahikatea
-
 X, y, exps = Kahikatea()[:]
 ```
 
 downloads and assigns data from the Kahikatea dataset:    
 
-<p align="center">
+<p style = "text-align: center;">
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/kahikatea_sample.png" 
          alt="drawing" width="200"/>
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/kahikatea_gt.png" alt="drawing" width="200"/>
 </p>
 <body>
-  <p align="center">Fig. 1 A <a href="https://zenodo.org/record/5059769#.YN7KKegzZPZ">Kahikatea</a> dataset sample. </p>
+  <p style = "text-align: center;">Fig. 1 A <a href="https://zenodo.org/record/5059769#.YN7KKegzZPZ">Kahikatea</a> dataset sample. </p>
 </body>
 
 Other datasets, such as [CUB-200-2011](https://www.vision.caltech.edu/datasets/cub_200_2011/) and the [Oxford-IIIT Pet Dataset](https://www.robots.ox.ac.uk/~vgg/data/pets/), are available on **teex**, with over 19000 images and 230 distinct classes:
 
-<p align="center">
+```python
+   from teex.saliencyMap.data import CUB200
+   X, y, exps = CUB200()[:]
+```
+
+<p style = "text-align: center;">
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/cub_sample.jpg" 
          alt="drawing" width="200"/>
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/cub_gt.png" alt="drawing" width="200"/>
 </p>
 <body>
-  <p align="center">Fig. 2 A <a href="https://www.vision.caltech.edu/datasets/cub_200_2011/">CUB-200-2011</a> dataset sample.  </p>
+  <p style = "text-align: center;">Fig. 2 A <a href="https://www.vision.caltech.edu/datasets/cub_200_2011/">CUB-200-2011</a> dataset sample.  </p>
 </body>
     
-<p align="center">
+```python
+   from teex.saliencyMap.data import OxfordIIIT
+   X, y, exps = OxfordIIIT()[:]
+```
+
+<p style = "text-align: center;">
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/ox_sample.jpg" 
          alt="drawing" width="200"/>
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/ox_gt.png" alt="drawing" width="200"/>
 </p>
 <body>
-  <p align="center">Fig. 3 An <a href="https://www.robots.ox.ac.uk/~vgg/data/pets/">Oxford-IIIT Pet Dataset</a> sample. </p>
+  <p style = "text-align: center;">Fig. 3 An <a href="https://www.robots.ox.ac.uk/~vgg/data/pets/">Oxford-IIIT Pet Dataset</a> sample. </p>
 </body>
 
 
@@ -134,20 +141,20 @@ Synthetic datasets can also be easily generated:
 
 ```python
 from teex.saliencyMap.data import SenecaSM
-
 X, y, exps = SenecaSM()[:]
 ```
 
-<p align="center">
+<p style = "text-align: center;">
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/seneca_sm_sample.png" 
          alt="drawing" width="200"/>
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/seneca_sm_gt.png" alt="drawing" width="200"/>
 </p>
 <body>
-  <p align="center">Fig. 4 Artificial image and its g.t. saliency map explanation.
+  <p style = "text-align: center;">Fig. 4 Artificial image and its g.t. saliency map explanation.
  </p>
 </body>
 
+Datasets for all other explanation types are available too.
 
 ## Tutorials and demos
 
@@ -178,7 +185,7 @@ There is still work to do and we would really appreciate your help. Before contr
 This work has been made possible by the [University of Waikato](https://www.waikato.ac.nz/) under the scope of 
 the [TAIAO](https://taiao.ai/) project.
 
-<p align="center">
+<p style = "text-align: center;">
     <a href="https://taiao.ai">
         <img src="https://taiao.ai/assets/TAIAO_logo.png" alt="drawing" width="150"/>
     </a>
