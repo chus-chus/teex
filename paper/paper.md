@@ -23,14 +23,14 @@ authors:
     orcid: 0000-0002-3732-5787
     affiliation: 4
 affiliations:
- - name: AI Institute, University of Waikato, Hamilton, New Zealand
-   index: 1
-- name: Department of Physics, Universitat Politècnica de Catalunya, Barcelona, Spain
-   index: 2
- - name: LTCI, Télecom Paris, Institut Polytechnique de Paris, Palaiseau, France
-   index: 3
- - name: Department of Computer Science and AI Institute, University of Waikato, Hamilton, New Zealand
-   index: 4
+  - name: AI Institute, University of Waikato, Hamilton, New Zealand
+    index: 1
+  - name: Department of Physics, Universitat Politècnica de Catalunya, Barcelona, Spain
+    index: 2
+  - name: LTCI, Télecom Paris, Institut Polytechnique de Paris, Palaiseau, France
+    index: 3
+  - name: Department of Computer Science and AI Institute, University of Waikato, Hamilton, New Zealand
+    index: 4
 date: 10 November 2022
 bibliography: paper.bib
 ---
