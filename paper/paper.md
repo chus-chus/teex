@@ -55,16 +55,18 @@ We believe that providing a tool that implements this approach to evaluating exp
 
 |              | **Evaluation-centric?** | **Model-independent?** | **Explainer-independent?** | **XAI datasets?** |
 |--------------|:-------------------------:|:------------------------:|:----------------------------:|:-------------------:|
-| **Captum**   |         ❌        |         ❌        |           ❌          |      ❌      |
-| **AIX360**   |         ❌         |         ❌        |           ❌          |      ❌      |
-| **Torchray** |         ❌         |         ❌        |           ❌          |      ❌      |
-| **Quantus**  |         ✔️         |         ❌        |           ❌          |      ❌      |
-| **teex**     |         ✔️         |         ✔️        |           ✔️          |      ✔️      |
+| **Captum**   |         N        |         N        |           N          |      N      |
+| **AIX360**   |         N         |         N        |           N          |      N      |
+| **Torchray** |         N         |         N        |           N          |      N      |
+| **Quantus**  |         Y         |         N        |           N          |      N      |
+| **teex**     |         Y         |         Y        |           Y          |      Y      |
  
-*Table 1: Comparison of libraries that include functionality to evaluate explanations.*
+*Table 1: Comparison of libraries that include functionality to evaluate explanations. (Y)es / (N)o.*
+
+`teex` contributes to research on explainable AI by providing tested, streamlined, user-friendly tools to help researchers and end-users evaluate the quality of local explanations against ground truth. It has been conceived as an effort to help make XAI evaluation a more streamlined, reproducible, simple, and clear procedure, with ease-of-use and flexibility in mind, and can be used in tandem with other libraries for the generation and the evaluation of explanations.
 
 # Acknowledgements
 
-`teex` has been developed as part of the TAIAO project (Time-Evolving Data Science / Artificial Intelligence for Advanced Open Environmental Science), funded by the New Zealand Ministry of Business, Innovation, and Employment (MBIE).
+`teex` has been developed as part of the [TAIAO](https://taiao.ai) project (Time-Evolving Data Science / Artificial Intelligence for Advanced Open Environmental Science), funded by the New Zealand Ministry of Business, Innovation, and Employment (MBIE).
 
 # References
