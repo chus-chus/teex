@@ -1,4 +1,4 @@
-<p style = "text-align: center;">
+<p align = "center">
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/teex_logo__.png" 
          alt="Our AI generated logo. Comes from the prompt: 'logo of a t, inspired by an AI that is fair and responsible.'" width="115"/>
 
@@ -97,13 +97,13 @@ X, y, exps = Kahikatea()[:]
 
 downloads and assigns data from the Kahikatea dataset:    
 
-<p style = "text-align: center;">
+<p align = "center">
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/kahikatea_sample.png" 
          alt="drawing" width="200"/>
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/kahikatea_gt.png" alt="drawing" width="200"/>
 </p>
 <body>
-  <p style = "text-align: center;">Fig. 1 A <a href="https://zenodo.org/record/5059769#.YN7KKegzZPZ">Kahikatea</a> dataset sample. </p>
+  <p align = "center">Fig. 1 A <a href="https://zenodo.org/record/5059769#.YN7KKegzZPZ">Kahikatea</a> dataset sample. </p>
 </body>
 
 Other datasets, such as [CUB-200-2011](https://www.vision.caltech.edu/datasets/cub_200_2011/) and the [Oxford-IIIT Pet Dataset](https://www.robots.ox.ac.uk/~vgg/data/pets/), are available on **teex**, with over 19000 images and 230 distinct classes:
@@ -113,13 +113,13 @@ Other datasets, such as [CUB-200-2011](https://www.vision.caltech.edu/datasets/c
    X, y, exps = CUB200()[:]
 ```
 
-<p style = "text-align: center;">
+<p align = "center">
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/cub_sample.jpg" 
          alt="drawing" width="200"/>
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/cub_gt.png" alt="drawing" width="200"/>
 </p>
 <body>
-  <p style = "text-align: center;">Fig. 2 A <a href="https://www.vision.caltech.edu/datasets/cub_200_2011/">CUB-200-2011</a> dataset sample.  </p>
+  <p align = "center">Fig. 2 A <a href="https://www.vision.caltech.edu/datasets/cub_200_2011/">CUB-200-2011</a> dataset sample.  </p>
 </body>
     
 ```python
@@ -127,13 +127,13 @@ Other datasets, such as [CUB-200-2011](https://www.vision.caltech.edu/datasets/c
    X, y, exps = OxfordIIIT()[:]
 ```
 
-<p style = "text-align: center;">
+<p align = "center">
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/ox_sample.jpg" 
          alt="drawing" width="200"/>
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/ox_gt.png" alt="drawing" width="200"/>
 </p>
 <body>
-  <p style = "text-align: center;">Fig. 3 An <a href="https://www.robots.ox.ac.uk/~vgg/data/pets/">Oxford-IIIT Pet Dataset</a> sample. </p>
+  <p align = "center">Fig. 3 An <a href="https://www.robots.ox.ac.uk/~vgg/data/pets/">Oxford-IIIT Pet Dataset</a> sample. </p>
 </body>
 
 
@@ -144,13 +144,13 @@ from teex.saliencyMap.data import SenecaSM
 X, y, exps = SenecaSM()[:]
 ```
 
-<p style = "text-align: center;">
+<p align = "center">
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/seneca_sm_sample.png" 
          alt="drawing" width="200"/>
     <img src="https://raw.githubusercontent.com/chus-chus/teex/master/docs/images/seneca_sm_gt.png" alt="drawing" width="200"/>
 </p>
 <body>
-  <p style = "text-align: center;">Fig. 4 Artificial image and its g.t. saliency map explanation.
+  <p align = "center">Fig. 4 Artificial image and its g.t. saliency map explanation.
  </p>
 </body>
 
@@ -185,7 +185,7 @@ There is still work to do and we would really appreciate your help. Before contr
 This work has been made possible by the [University of Waikato](https://www.waikato.ac.nz/) under the scope of 
 the [TAIAO](https://taiao.ai/) project.
 
-<p style = "text-align: center;">
+<p align = "center">
     <a href="https://taiao.ai">
         <img src="https://taiao.ai/assets/TAIAO_logo.png" alt="drawing" width="150"/>
     </a>
