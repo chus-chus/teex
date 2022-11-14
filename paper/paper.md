@@ -51,7 +51,11 @@ Statement of need: its first section is a combination of summary (black-box mode
 
 # Statement of need
 
-The current rise in usage of black-box ML models in all aspects of the industry and research is making *XAI* more popular than ever. New explanation methods are being presented at a fast pace, and this gives rise to the need for their evaluation. Given the early state of *XAI* evaluation methods and their dependence on the task context, there is a need for tools that support *XAI* evaluation in a (1) general, (2) extensible and (3) simple way. `teex` addresses all three points. (1), by allowing evaluation of the most used explanation types in a model/explainer-independent manner. (2), by encapsulating evaluation methods for each explanation type. (3), by providing single-line evaluation API's and comprehensive documentation, including tutorials and use cases.
+The current rise in usage of black-box ML models in all aspects of the industry and research is making *XAI* more popular than ever. New explanation methods are being presented at a fast pace, and this gives rise to the need for their evaluation. Given the early state of *XAI* evaluation methods and their dependence on the task context, there is a need for tools that support their usage in a (1) general, (2) extensible and (3) simple way. `teex` addresses all three points:
+
+1. By allowing evaluation of the most used explanation types in a model/explainer-independent manner. 
+2. By clearly encapsulating functionality: evaluation and data generation methods exist within distinct modules, inside a sub-package for each explanation type. API's are stardardized between all modules and architecural structure is clearly laid out.
+3. By providing single-line evaluation API's and comprehensive documentation, including tutorials and use cases.
 
 ## Related software
 
@@ -67,13 +71,6 @@ We believe that providing a tool that implements this approach to evaluating exp
 | **Quantus**  |         Y         |         N        |           N          |      N      |
 | **teex**     |         Y         |         Y        |           Y          |      Y      |
 *Table 1: Comparison of libraries that include functionality to evaluate explanations. (Y)es / (N)o.*
-
-# High-level architecture
-
-Because `teex` is an explanation-centric package, for each explanation type supported, a sub-package exists. Each sub-package contains two modules:
-
-- **Evaluation** module. Contains all metrics and related methods for performing the evaluation of explanations. Metrics are implemented in a standalone manner and included in general-purpose evaluation functions.
-- **Data** module. Mainly contains the implementation of datasets with available ground-truth explanations (both real-world and synthetic) as classes, as well as high- and low-level data structures needed for the representation of each explanation type. In order for `teex` to be more tightly integrated with popular explainer libraries, they also contain wrapper methods.
 
 # Acknowledgements
 
