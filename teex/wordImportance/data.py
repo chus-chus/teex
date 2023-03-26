@@ -46,13 +46,15 @@ class Newsgroup(_ClassificationDataset):
                     obs.append(t.read())
                 label.append(classLabel)
                 with open(str(self._path / ('expl/' + name + '.json')), 'rb') as t:
-                    exp.append(json.load(t)['words'])
+                    _e = json.load(t)['words']
+                    exp.append({word[0]: word[1] for word in _e})
         elif isinstance(item, int):
             with open(str(self._path / ('data/' + _newsgroupAll[item])), 'rb') as t:
                 obs = t.read()
             label = _newsgroupLabels[item]
             with open(str(self._path / ('expl/' + _newsgroupAll[item] + '.json')), 'rb') as t:
-                exp = json.load(t)['words']
+                _e = json.load(t)['words']
+                exp = {word[0]: word[1] for word in _e}
         else:
             raise TypeError('Invalid argument type.')
 
@@ -67,6 +69,7 @@ class Newsgroup(_ClassificationDataset):
 
     def _download(self) -> None:
         _download_extract_file(self._path, _newsgroup_url, 'rawNewsgroup.zip')
+        self._isDownloaded = True
 
     def _get_class_map(self) -> dict:
         return {0: 'electronics', 1: 'medicine'}
