@@ -187,7 +187,7 @@ the [TAIAO](https://taiao.ai/) project.
 
 <p align = "center">
     <a href="https://taiao.ai">
-        <img src="https://taiao.ai/assets/TAIAO_logo.png" alt="drawing" width="150"/>
+        <img src="https://raw.githubusercontent.com/chus-chus/teex/main/docs/images/TAIAO_logo.png" alt="drawing" width="150"/>
     </a>
     <a href="https://www.waikato.ac.nz/">
         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/b/bd/University_of_Waikato_logo.svg/1200px-University_of_Waikato_logo.svg.png" alt="drawing" width="45"/>
