@@ -176,6 +176,23 @@ Datasets for all other explanation types are available too.
 - [Retrieving language data with g.t. word importance explanations](https://teex.readthedocs.io/en/latest/demos/word_importance/gen_word_importance_nb.html)
 - [Evaluating word importance explanations](https://teex.readthedocs.io/en/latest/demos/word_importance/eval_word_importance_nb.html)
 
+## Citations
+
+If you use **teex**, please cite its paper:
+
+```
+@article{ANTONANZAS2023126642,
+    title = {teex: A toolbox for the evaluation of explanations},
+    journal = {Neurocomputing},
+    volume = {555},
+    pages = {126642},
+    year = {2023},
+    issn = {0925-2312},
+    doi = {https://doi.org/10.1016/j.neucom.2023.126642},
+    url = {https://www.sciencedirect.com/science/article/pii/S0925231223007658},
+    author = {Jesús M. Antoñanzas and Yunzhe Jia and Eibe Frank and Albert Bifet and Bernhard Pfahringer}
+}
+```
 
 ## Contributing
 
