@@ -12,7 +12,9 @@
 
 A Python **t**oolbox for the **e**valuation of machine learning **ex**planations.
 
-This project aims to provide a simple way of **evaluating** individual black box explanations against ground truth. Moreover, it contains a collection of easy-to-access datasets with available g.t. explanations.
+*note*: this repo is no longer regularly maintained.
+
+This project aims to provide a simple way of **evaluating** individual black box explanations against ground truth. It also contains a collection of datasets with available ground truth explanations.
 
 ## Installation
 
